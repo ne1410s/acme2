@@ -5,6 +5,7 @@ export default abstract class Acme2 {
 
     public static async test(): Promise<any> {
 
+        var b64u = Text.textToBase64Url('hello, world');
         return await Crypto.gen();        
     }
 
