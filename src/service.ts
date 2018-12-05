@@ -1,11 +1,11 @@
-import Utility from "./utility";
+import { ServiceResponse } from "./response";
+import { ServiceRequest } from "./request";
 
-export default abstract class Service {
+abstract class OperationBase<TRequest extends ServiceRequest, TResponse extends ServiceResponse<TRequest>> {
 
-    public static async test2(): Promise<any> {
+    abstract async invoke(request: TRequest): Promise<TResponse>;
+}
 
-        const interim = await Utility.test();
-        return `${interim} the floogle`;
-    }
+export default class Acme2Service {
 
 }
