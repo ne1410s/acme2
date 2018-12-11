@@ -1,22 +1,22 @@
-import { TokenOperation } from "./operations/token";
+import { CreateAccountOperation } from "./operations/create-account";
+import { GetTokenOperation } from "./operations/get-token";
 
-export enum Acme2Environment {
-    Staging = 'https://acme-staging-v02.api.letsencrypt.org/acme',
-    Production = 'https://acme-v02.api.letsencrypt.org/acme'
-}
-
-export class Acme2Service {
+export default class Acme2 {
     
-    public readonly baseUrl: string;
+    public readonly token: GetTokenOperation;
+    public readonly create: CreateAccountOperation;
 
-    private readonly tokenOperation: TokenOperation;
+    private readonly urls: any = {
+        staging: 'https://acme-staging-v02.api.letsencrypt.org/acme',
+        production: 'https://acme-v02.api.letsencrypt.org/acme'
+    };
 
-    constructor(env: Acme2Environment) {
-        this.baseUrl = env.valueOf();
-        this.tokenOperation = new TokenOperation(`${this.baseUrl}/new-nonce`, 'head');
-    }
+    constructor(env: 'staging | production') {
 
-    async getToken(): Promise<string> {
-        return await this.tokenOperation.invoke();
+        const baseUrl = this.urls[env];
+
+        this.token = new GetTokenOperation(baseUrl);
+        this.create = new CreateAccountOperation(baseUrl);
+
     }
 }

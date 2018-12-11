@@ -1,19 +1,17 @@
 import { PayloadOperation } from "./payload";
-import { IAccountRequest } from "../../requests/account";
+import { IAccountRequest, IToken } from "../../requests/account";
 
-export abstract class AccountOperation<TRequest extends IAccountRequest, TResponse> extends PayloadOperation<TRequest, TResponse> {
+export abstract class AccountOperation<TRequest extends IAccountRequest, TResponse extends IToken> extends PayloadOperation<TRequest, TResponse> {
     
-    protected async getExtraProtectedData(requestData: TRequest): Promise<any> {
+    protected getExtraProtectedData(requestData: TRequest): any {
 
-        await Promise.resolve();
-        
         return {
-            kid: `${this.baseUrl}/acct/${requestData.accountId}`
+            kid: `${this.baseUrl}/acct/${requestData.id}`
         };
     }
 
     protected getSecret(requestData: TRequest): JsonWebKey {
         
-        return requestData.secret;
+        return requestData.keys.privateJwk;
     }
 }

@@ -1,20 +1,33 @@
-const expect = require('chai').expect;
-const fetch = require('node-fetch');
-global.Headers = fetch.Headers;
+const Chai = require('chai');
+const Acme2 = require('../dist/index');
 
-const ne14 = {
-    acme2: require('../dist/index')
-};
+const sut = new Acme2('staging');
+let token;
 
 describe('#acme tokens', () => {
 
-    it('should provide a token', async () => {
+    it('should get a token', async () => {
 
-        var env = ne14.acme2.Acme2Environment.Staging;
-        var sut = new ne14.acme2.Acme2Service(env);
-        var result = await sut.getToken() || '';
-
+        var result = await sut.token.invoke();
         console.log('result ->', result);
-        expect(result).to.not.be.empty;
+        Chai.expect(result.token || '').to.not.be.empty;
+        token = result.token;
+    });
+
+    it('should create an account', async () => {
+
+        var request = { 
+            termsAgreed: true,
+            emails: ['test@test.com'],
+            token: token
+        };
+
+        try {
+            var result = await sut.create.invoke(request);
+            console.log('result ->', result);
+        } catch (err) {
+            console.log('error ->', err);
+            throw new Chai.AssertionError('An error occurred');
+        }
     });
 });

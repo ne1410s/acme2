@@ -1,27 +1,15 @@
 import Text from "@ne1410s/text";
 import Crypto from "@ne1410s/crypto";
 import { JsonOperation } from "@ne1410s/http";
+import { IToken } from "../../requests/account";
 
-import { TokenOperation } from "../token";
+export abstract class PayloadOperation<TRequest extends IToken, TResponse extends IToken> extends JsonOperation<TRequest, TResponse> {
 
-export abstract class PayloadOperation<TRequest, TResponse> extends JsonOperation<TRequest, TResponse> {
+    constructor (url: string) {
 
-    private readonly tokenOperation: TokenOperation;
-
-    get protectedData(): any {
-        return {
-            alg: 'RS256',
-            nonce: this.tokenOperation.invoke(),
-            url: this.url
-        };
-    }
-
-    constructor (protected baseUrl: string, relPath: string) {
-
-        super(`${baseUrl}${relPath}`, 'post');
+        super(url, 'post');
 
         this.headers.set('content-type', 'application/jose+json');
-        this.tokenOperation = new TokenOperation(`${baseUrl}/new-nonce`);
     }
 
     /**
@@ -35,15 +23,16 @@ export abstract class PayloadOperation<TRequest, TResponse> extends JsonOperatio
 
     serialise(requestData: TRequest): string {
 
+        const protect = {
+            ...this.getProtectedData(requestData),
+            ...this.getExtraProtectedData(requestData)
+        };
+
         const mappedRequest = this.mapValidRequest(requestData);
+        const encodedPayload = Text.objectToBase64Url(mappedRequest);
+        const encodedProtect = Text.objectToBase64Url(protect);
 
-        const encodedPayload = Text.objectToBase64Url(mappedRequest);        
-        const encodedProtect = Text.objectToBase64Url({ 
-            ...this.protectedData,
-            ...this.getExtraProtectedData(mappedRequest)
-        });
-
-        const secret = this.getSecret(mappedRequest);
+        const secret = this.getSecret(requestData);
         const signature = Crypto.sign(`${encodedProtect}.${encodedPayload}`, secret);
 
         return JSON.stringify({
@@ -53,11 +42,20 @@ export abstract class PayloadOperation<TRequest, TResponse> extends JsonOperatio
         });
     }
 
+    protected async getProtectedData(requestData: TRequest): Promise<any> {
+
+        return {
+            alg: 'RS256',
+            nonce: requestData.token,
+            url: this.url
+        };
+    }
+
     /**
      * Additional properties of the protected header vary according to context.
      * @param requestData The request data.
      */
-    protected abstract async getExtraProtectedData(requestData: TRequest): Promise<any>;
+    protected abstract getExtraProtectedData(requestData: TRequest): any;
 
     /**
      * Secret may be obtained from the request else is generated.

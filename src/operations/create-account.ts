@@ -1,19 +1,24 @@
 import { NonAccountOperation } from "./base/non-account";
-import { ICreateAccountRequest, IAccountDetails } from "../requests/account";
+import { ICreateAccountRequest, ICreateAccountResponse } from "../requests/account";
 import { ValidationError } from "@ne1410s/http";
 
-export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRequest, IAccountDetails> {
+export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRequest, ICreateAccountResponse> {
     
+    constructor (baseUrl: string) {
+        
+        super(`${baseUrl}/new-acct`);
+    }
+
     validateRequest(requestData: ICreateAccountRequest): void {
         
         const messages: string[] = [];
 
         if (requestData.emails.length == 0) {
-            messages.push('At least one email must be provided');
+            messages.push('At least one email is required');
         }
 
         if (!requestData.termsAgreed) {
-            messages.push('The terms must be agreed to');
+            messages.push('Terms agreement is required');
         }
 
         if (messages.length !== 0) {
@@ -29,22 +34,32 @@ export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRe
         };
     }
 
-    async deserialise(response: Response): Promise<IAccountDetails> {
+    async deserialise(response: Response): Promise<ICreateAccountResponse> {
+        
         const raw = await response.json();
 
-        // TODO!
+        return {
+            id: raw.id,
+            status: raw.status,
+            created: new Date(raw.createdAt),
+            initialIp: raw.initialIp,
+            link: response.headers.get('link'),
+            url: response.headers.get('location'),
+            token: response.headers.get('replay-nonce'),
+            keys: this.keys
+        };
     }
     
-    validateResponse(responseData: IAccountDetails): void {
+    validateResponse(responseData: ICreateAccountResponse): void {
         
         const messages: string[] = [];
 
-        if (!responseData.accountId) {
-            messages.push('No account id was obtained');
+        if (!responseData.id) {
+            messages.push('Id is required');
         }
 
-        if (!responseData.secret) {
-            messages.push('No account secret was obtained');
+        if (!responseData.keys) {
+            messages.push('Keys are required');
         }
 
         if (messages.length !== 0) {

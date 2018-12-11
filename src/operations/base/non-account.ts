@@ -1,14 +1,20 @@
 import Crypto from "@ne1410s/crypto";
 import { PayloadOperation } from "./payload";
 import { IKeyPair_Jwk } from "@ne1410s/crypto/dist/interfaces";
+import { IToken } from "../../requests/account";
 
-export abstract class NonAccountOperation<TRequest, TResponse> extends PayloadOperation<TRequest, TResponse> {
+export abstract class NonAccountOperation<TRequest extends IToken, TResponse extends IToken> extends PayloadOperation<TRequest, TResponse> {
 
-    private keys: IKeyPair_Jwk;
+    protected keys: IKeyPair_Jwk;
 
-    protected async getExtraProtectedData(requestData: TRequest): Promise<any> {
-
+    async invoke(requestData: TRequest): Promise<TResponse> {
+        
         this.keys = await Crypto.gen();
+
+        return await super.invoke(requestData);
+    }
+
+    protected getExtraProtectedData(requestData: TRequest): any {
 
         return {
             jwk: this.keys.publicJwk
@@ -17,10 +23,6 @@ export abstract class NonAccountOperation<TRequest, TResponse> extends PayloadOp
 
     protected getSecret(requestData: TRequest): JsonWebKey {
         
-        if (!this.keys) {
-            throw new Error('Keys have not been generated');
-        }
-
         return this.keys.privateJwk;
     }
 }
