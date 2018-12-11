@@ -14,6 +14,7 @@ describe('#acme tokens', () => {
         var sut = new ne14.acme2.Acme2Service(env);
         var result = await sut.getToken() || '';
 
+        console.log('result ->', result);
         expect(result).to.not.be.empty;
     });
 });
