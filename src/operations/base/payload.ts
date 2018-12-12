@@ -22,7 +22,7 @@ export abstract class PayloadOperation<TRequest extends IToken, TResponse extend
         return requestData;
     }
 
-    serialise(requestData: TRequest): string {
+    async serialise(requestData: TRequest): Promise<string> {
 
         // Encode payload content
         const mappedRequest = this.mapValidRequest(requestData);
@@ -37,11 +37,7 @@ export abstract class PayloadOperation<TRequest extends IToken, TResponse extend
         // Sign the encoded content
         const secret = this.getSecret(requestData);
         const signable = `${encodedProtect}.${encodedPayload}`;
-        const signature = Crypto.sign(signable, secret);
-
-        console.log('payl', mappedRequest, '->', encodedPayload);
-        console.log('prot', protectedMerged, '->', encodedProtect);
-        console.log('sig', signature);
+        const signature = await Crypto.sign(signable, secret);
 
         return JSON.stringify({
             payload: encodedPayload,
