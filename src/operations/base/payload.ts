@@ -13,8 +13,9 @@ export abstract class PayloadOperation<TRequest extends IToken, TResponse extend
     }
 
     /**
-     * Facilitates separate data structure from the generic request type.
-     * By default, the request object is used as-is.
+     * Enables a different model to be exposed to the caller besides that which
+     * gets dispatched. This is called as part serialisation; after validation
+     * has taken place. (By default, the caller model is dispatched).
      * @param requestData The request data.
      */
     mapValidRequest(requestData: TRequest): any {
@@ -23,17 +24,22 @@ export abstract class PayloadOperation<TRequest extends IToken, TResponse extend
 
     serialise(requestData: TRequest): string {
 
-        const protect = {
-            ...this.getProtectedData(requestData),
-            ...this.getExtraProtectedData(requestData)
-        };
-
+        // Encode payload content
         const mappedRequest = this.mapValidRequest(requestData);
         const encodedPayload = Text.objectToBase64Url(mappedRequest);
-        const encodedProtect = Text.objectToBase64Url(protect);
 
+        // Encode protected content
+        const protectedRaw = this.getProtectedData(requestData);
+        const protectedRawExtra = this.getExtraProtectedData(requestData);
+        const protectedMerged = { ...protectedRaw, ...protectedRawExtra };
+        const encodedProtect = Text.objectToBase64Url(protectedMerged);
+
+        console.log(protectedMerged);
+
+        // Sign the encoded content
         const secret = this.getSecret(requestData);
-        const signature = Crypto.sign(`${encodedProtect}.${encodedPayload}`, secret);
+        const signable = `${encodedProtect}.${encodedPayload}`;
+        const signature = Crypto.sign(signable, secret);
 
         return JSON.stringify({
             payload: encodedPayload,
@@ -42,7 +48,7 @@ export abstract class PayloadOperation<TRequest extends IToken, TResponse extend
         });
     }
 
-    protected async getProtectedData(requestData: TRequest): Promise<any> {
+    protected getProtectedData(requestData: TRequest): any {
 
         return {
             alg: 'RS256',

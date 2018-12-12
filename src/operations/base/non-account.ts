@@ -1,6 +1,7 @@
 import Crypto from "@ne1410s/crypto";
-import { PayloadOperation } from "./payload";
 import { IKeyPair_Jwk } from "@ne1410s/crypto/dist/interfaces";
+import { ValidationError } from "@ne1410s/http";
+import { PayloadOperation } from "./payload";
 import { IToken } from "../../requests/account";
 
 export abstract class NonAccountOperation<TRequest extends IToken, TResponse extends IToken> extends PayloadOperation<TRequest, TResponse> {
@@ -12,6 +13,19 @@ export abstract class NonAccountOperation<TRequest extends IToken, TResponse ext
         this.keys = await Crypto.gen();
 
         return await super.invoke(requestData);
+    }
+
+    validateRequest(requestData: TRequest): void {
+        
+        const messages: string[] = [];
+
+        if (!this.keys || !this.keys.privateJwk || !this.keys.publicJwk) {
+            messages.push('Keys have not been generated correctly');
+        }
+
+        if (messages.length !== 0) {
+            throw new ValidationError(this.keys, messages);
+        }
     }
 
     protected getExtraProtectedData(requestData: TRequest): any {

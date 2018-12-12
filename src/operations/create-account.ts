@@ -11,6 +11,8 @@ export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRe
 
     validateRequest(requestData: ICreateAccountRequest): void {
         
+        super.validateRequest(requestData);
+
         const messages: string[] = [];
 
         if (requestData.emails.length == 0) {
