@@ -1,13 +1,13 @@
 import Text from "@ne1410s/text";
 import Crypto from "@ne1410s/crypto";
 import { JsonOperation } from "@ne1410s/http";
-import { IToken } from "../../requests/account";
+import { IToken } from "../../interface";
 
 export abstract class PayloadOperation<TRequest extends IToken, TResponse extends IToken> extends JsonOperation<TRequest, TResponse> {
 
-    constructor (url: string) {
+    constructor (protected baseUrl: string, relativePath: string) {
 
-        super(url, 'post');
+        super(`${baseUrl}${relativePath}`, 'post');
 
         this.headers.set('content-type', 'application/jose+json');
     }
@@ -34,12 +34,14 @@ export abstract class PayloadOperation<TRequest extends IToken, TResponse extend
         const protectedMerged = { ...protectedRaw, ...protectedRawExtra };
         const encodedProtect = Text.objectToBase64Url(protectedMerged);
 
-        console.log(protectedMerged);
-
         // Sign the encoded content
         const secret = this.getSecret(requestData);
         const signable = `${encodedProtect}.${encodedPayload}`;
         const signature = Crypto.sign(signable, secret);
+
+        console.log('payl', mappedRequest, '->', encodedPayload);
+        console.log('prot', protectedMerged, '->', encodedProtect);
+        console.log('sig', signature);
 
         return JSON.stringify({
             payload: encodedPayload,

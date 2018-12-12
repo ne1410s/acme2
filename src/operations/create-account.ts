@@ -1,12 +1,12 @@
 import { NonAccountOperation } from "./base/non-account";
-import { ICreateAccountRequest, ICreateAccountResponse } from "../requests/account";
-import { ValidationError } from "@ne1410s/http";
+import { ICreateAccountRequest, ICreateAccountResponse } from "../interface";
+import { ValidationError, HttpResponseError } from "@ne1410s/http";
 
 export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRequest, ICreateAccountResponse> {
     
     constructor (baseUrl: string) {
         
-        super(`${baseUrl}/new-acct`);
+        super(baseUrl, '/new-acct');
     }
 
     validateRequest(requestData: ICreateAccountRequest): void {
@@ -24,7 +24,7 @@ export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRe
         }
 
         if (messages.length !== 0) {
-            throw new ValidationError(requestData, messages);
+            throw new ValidationError('The request is invalid', requestData, messages);
         }
     }
 
@@ -38,13 +38,18 @@ export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRe
 
     async deserialise(response: Response): Promise<ICreateAccountResponse> {
         
-        const raw = await response.json();
+        const responseText = await response.text();
 
+        if (!response.ok) {
+            throw new HttpResponseError(response.status, response.statusText, response.headers, responseText);
+        }      
+
+        const json = JSON.parse(responseText);
         return {
-            id: raw.id,
-            status: raw.status,
-            created: new Date(raw.createdAt),
-            initialIp: raw.initialIp,
+            id: json.id,
+            status: json.status,
+            created: new Date(json.createdAt),
+            initialIp: json.initialIp,
             link: response.headers.get('link'),
             url: response.headers.get('location'),
             token: response.headers.get('replay-nonce'),
@@ -65,7 +70,7 @@ export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRe
         }
 
         if (messages.length !== 0) {
-            throw new ValidationError(responseData, messages);
+            throw new ValidationError('The response is invalid', responseData, messages);
         }
     }
 }

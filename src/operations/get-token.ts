@@ -1,9 +1,10 @@
 import { ValidationError, JsonBodylessOperation } from "@ne1410s/http"
-import { IToken } from "../requests/account";
+import { IToken } from "../interface";
 
 export class GetTokenOperation extends JsonBodylessOperation<IToken> {
 
     constructor(baseUrl: string) {
+
         super(`${baseUrl}/new-nonce`, 'head');
     }
     
@@ -18,8 +19,14 @@ export class GetTokenOperation extends JsonBodylessOperation<IToken> {
 
     validateResponse(responseData: IToken): void {
 
+        const messages: string[] = [];
+
         if (!/^[\w-]{43}$/gi.test(responseData.token)) {
-            throw new ValidationError(responseData);
+            messages.push(`Bad token: '${responseData.token}'`);
+        }
+
+        if (messages.length !== 0) {
+            throw new ValidationError('The response is invalid', responseData, messages);
         }
     }
 }
