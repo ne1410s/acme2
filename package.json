@@ -40,8 +40,8 @@
     "typescript": "^3.2.1"
   },
   "dependencies": {
-    "@ne1410s/crypto": "0.0.2",
+    "@ne1410s/crypto": "0.0.3",
     "@ne1410s/http": "0.0.8",
-    "@ne1410s/text": "0.0.5"
+    "@ne1410s/text": "0.0.6"
   }
 }
