@@ -1,5 +1,5 @@
 import { ValidationError, JsonBodylessOperation } from "@ne1410s/http"
-import { IResponse } from "../interfaces/base";
+import { IResponse } from "../../interfaces/token/base";
 
 export class GetTokenOperation extends JsonBodylessOperation<IResponse> {
 

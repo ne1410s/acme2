@@ -1,7 +1,7 @@
-import { AccountOperation } from "./base/account";
-import { IAccountRequest, IResponse } from "../interfaces/base";
+import { AccountOperation } from "../base/account";
+import { IAccountRequest } from "../../interfaces/account/base";
 import { HttpResponseError, ValidationError } from "@ne1410s/http";
-import { IDeleteAccountResponse } from "../interfaces/delete-account";
+import { IDeleteAccountResponse } from "../../interfaces/account/delete";
 
 export class DeleteAccountOperation extends AccountOperation<IAccountRequest, IDeleteAccountResponse, any> {
     

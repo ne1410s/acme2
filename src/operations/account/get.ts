@@ -1,6 +1,6 @@
 import { ValidationError, HttpResponseError } from "@ne1410s/http";
-import { AccountOperation } from "./base/account";
-import { IAccountRequest, IAccountResponse } from "../interfaces/base";
+import { AccountOperation } from "../base/account";
+import { IAccountRequest, IAccountResponse } from "../../interfaces/account/base";
 
 export class GetAccountOperation extends AccountOperation<IAccountRequest, IAccountResponse, any> {
 

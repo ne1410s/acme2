@@ -1,6 +1,6 @@
-import { AccountOperation } from "./base/account";
-import { IUpdateAccountRequest, IUpdateAccountPayload } from "../interfaces/update-account";
-import { IAccountResponse } from "../interfaces/base";
+import { AccountOperation } from "../base/account";
+import { IUpdateAccountRequest, IUpdateAccountPayload } from "../../interfaces/account/update";
+import { IAccountResponse } from "../../interfaces/account/base";
 import { HttpResponseError, ValidationError } from "@ne1410s/http";
 
 export class UpdateAccountOperation extends AccountOperation<IUpdateAccountRequest, IAccountResponse, IUpdateAccountPayload> {

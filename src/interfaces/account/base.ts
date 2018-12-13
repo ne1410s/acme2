@@ -1,8 +1,5 @@
 import { IKeyPair_Jwk } from "@ne1410s/crypto/dist/interfaces";
-
-export interface IToken {
-    token: string;
-}
+import { IRequest, IResponse } from "../token/base";
 
 export interface IAccount {
     id: number;
@@ -18,10 +15,6 @@ export interface IAccountDetails {
     contacts: Array<string>;
 }
 
-export interface IRequest extends IToken { }
-
 export interface IAccountRequest extends IRequest, IAccount { }
-
-export interface IResponse extends IToken { }
 
 export interface IAccountResponse extends IResponse, IAccountDetails { }

@@ -1,7 +1,7 @@
 import Text from "@ne1410s/text";
 import Crypto from "@ne1410s/crypto";
 import { JsonOperation, ValidationError } from "@ne1410s/http";
-import { IRequest, IResponse } from "../../interfaces/base";
+import { IRequest, IResponse } from "../../interfaces/token/base";
 
 export abstract class PayloadOperation<TRequest extends IRequest, TResponse extends IResponse, TPayload> extends JsonOperation<TRequest, TResponse> {
 

@@ -2,7 +2,7 @@ import Crypto from "@ne1410s/crypto";
 import { IKeyPair_Jwk } from "@ne1410s/crypto/dist/interfaces";
 import { ValidationError } from "@ne1410s/http";
 import { PayloadOperation } from "./payload";
-import { IRequest, IResponse } from "../../interfaces/base";
+import { IRequest, IResponse } from "../../interfaces/token/base";
 
 export abstract class NonAccountOperation<TRequest extends IRequest, TResponse extends IResponse, TPayload> extends PayloadOperation<TRequest, TResponse, TPayload> {
 
