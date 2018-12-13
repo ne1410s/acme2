@@ -27,15 +27,16 @@ export class GetAccountOperation extends AccountOperation<IAccountRequest, IAcco
 
         if (!response.ok) {
             throw new HttpResponseError(response.status, response.statusText, response.headers, responseText);
-        }      
-
+        }
+        
         const json = JSON.parse(responseText);
+
         return {
             status: json.status,
             created: new Date(json.createdAt),
             initialIp: json.initialIp,
             link: response.headers.get('link'),
-            url: response.headers.get('location'),
+            url: this._url,
             token: response.headers.get('replay-nonce')
         };
     }
