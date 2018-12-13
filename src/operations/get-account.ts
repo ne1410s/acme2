@@ -14,7 +14,7 @@ export class GetAccountOperation extends AccountOperation<IAccountRequest, IAcco
         super.validateRequest(requestData);
 
         // Once deemed valid; correct the operation url at invocation time
-        this.url = this.getAccountUrl(requestData);
+        this._url = this.getAccountUrl(requestData);
     }
 
     mapValidRequest(requestData: IAccountRequest): any {
