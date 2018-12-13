@@ -1,4 +1,4 @@
-import { AccountOperation } from "../base/account";
+import { AccountOperation } from "../abstract/account";
 import { IAccountRequest } from "../../interfaces/account/base";
 import { HttpResponseError, ValidationError } from "@ne1410s/http";
 import { IDeleteAccountResponse } from "../../interfaces/account/delete";
