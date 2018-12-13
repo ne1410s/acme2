@@ -51,7 +51,7 @@ export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRe
             created: new Date(json.createdAt),
             initialIp: json.initialIp,
             link: response.headers.get('link'),
-            url: response.headers.get('location'),
+            accountUrl: response.headers.get('location'),
             token: response.headers.get('replay-nonce'),
             contacts: json.contact,
             keys: this.keys

@@ -36,7 +36,7 @@ export class GetAccountOperation extends AccountOperation<IAccountRequest, IAcco
             created: new Date(json.createdAt),
             initialIp: json.initialIp,
             link: response.headers.get('link'),
-            url: this._url,
+            accountUrl: this._url,
             token: response.headers.get('replay-nonce'),
             contacts: json.contact
         };

@@ -1,14 +1,18 @@
 import { IAccountRequest } from "../account/base";
 
 export interface IUpsertOrderRequest extends IAccountRequest {
-    emails: Array<string>;
+    domains: Array<string>;
+    startsOn?: Date;
+    endsOn?: Date;
 }
 
 export interface IDomainIdentfier {
-    type: string,
-    value: string
+    type: string;
+    value: string;
 }
 
 export interface IUpsertOrderPayload {
-    identifiers: Array<IDomainIdentfier>
+    identifiers: Array<IDomainIdentfier>;
+    notBefore?: string;
+    notAfter?: string;
 }

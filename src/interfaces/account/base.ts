@@ -11,7 +11,7 @@ export interface IAccountDetails {
     created: Date;
     initialIp: string;
     link: string;
-    url: string;
+    accountUrl: string;
     contacts: Array<string>;
 }
 

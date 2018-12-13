@@ -45,12 +45,12 @@ export class UpdateAccountOperation extends AccountOperation<IUpdateAccountReque
         const json = JSON.parse(responseText);
         return {
             status: json.status,
-            created: new Date(json.createdAt),
+            created: json.createdAt,
             initialIp: json.initialIp,
             link: response.headers.get('link'),
-            url: this._url,
+            accountUrl: this._url,
+            contacts: json.contact,
             token: response.headers.get('replay-nonce'),
-            contacts: json.contact
         };
     }
         
