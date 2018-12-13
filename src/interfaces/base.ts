@@ -15,6 +15,7 @@ export interface IAccountDetails {
     initialIp: string;
     link: string;
     url: string;
+    contacts: Array<string>;
 }
 
 export interface IRequest extends IToken { }

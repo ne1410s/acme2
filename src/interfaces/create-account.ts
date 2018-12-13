@@ -1,4 +1,4 @@
-import { IToken, IAccount, IRequest, IAccountResponse } from "./base";
+import { IAccount, IRequest, IAccountResponse } from "./base";
 
 export interface ICreateAccountRequest extends IRequest {
     termsAgreed: boolean;

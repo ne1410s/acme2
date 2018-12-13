@@ -1,6 +1,6 @@
 import Text from "@ne1410s/text";
 import Crypto from "@ne1410s/crypto";
-import { JsonOperation } from "@ne1410s/http";
+import { JsonOperation, ValidationError } from "@ne1410s/http";
 import { IRequest, IResponse } from "../../interfaces/base";
 
 export abstract class PayloadOperation<TRequest extends IRequest, TResponse extends IResponse, TPayload> extends JsonOperation<TRequest, TResponse> {
@@ -34,6 +34,19 @@ export abstract class PayloadOperation<TRequest extends IRequest, TResponse exte
             protected: encodedProtect,
             signature: signature
         });
+    }
+
+    validateResponse(responseData: IResponse): void {
+        
+        const messages: string[] = [];
+
+        if (!responseData || !responseData.token) {
+            messages.push('Token is expected');
+        }
+
+        if (messages.length !== 0) {
+            throw new ValidationError('The response is invalid', responseData, messages);
+        }
     }
     
     /**

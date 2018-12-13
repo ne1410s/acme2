@@ -53,20 +53,23 @@ export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRe
             link: response.headers.get('link'),
             url: response.headers.get('location'),
             token: response.headers.get('replay-nonce'),
+            contacts: json.contact,
             keys: this.keys
         };
     }
     
     validateResponse(responseData: ICreateAccountResponse): void {
         
+        super.validateResponse(responseData);
+
         const messages: string[] = [];
 
         if (!responseData.id) {
-            messages.push('Id is required');
+            messages.push('Id is expected');
         }
 
         if (!responseData.keys) {
-            messages.push('Keys are required');
+            messages.push('Keys are expected');
         }
 
         if (messages.length !== 0) {

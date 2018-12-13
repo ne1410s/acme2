@@ -20,7 +20,7 @@ describe('#acme tokens', () => {
         token = result.token;
     });
 
-    /* it('should create an account', async () => {
+    it('should create an account', async () => {
 
         var request = { 
             termsAgreed: true,
@@ -35,8 +35,8 @@ describe('#acme tokens', () => {
             console.log('error ->', err);
             throw new Chai.AssertionError('An error occurred');
         }
-    }); */
-
+    });
+ 
     it('should load account details', async () => {
 
         var request = { 
@@ -47,6 +47,41 @@ describe('#acme tokens', () => {
 
         try {
             var result = await sut.get.invoke(request);
+            console.log('result ->', result);
+        } catch (err) {
+            console.log('error ->', err);
+            throw new Chai.AssertionError('An error occurred');
+        }
+    });
+ 
+    it('should update account details', async () => {
+
+        var request = { 
+            id: 7570242,
+            token: token,
+            keys: KEYS_7570242_STAGING,
+            emails: ['abc@xyz.com']
+        };
+
+        try {
+            var result = await sut.update.invoke(request);
+            console.log('result ->', result);
+        } catch (err) {
+            console.log('error ->', err);
+            throw new Chai.AssertionError('An error occurred');
+        }
+    });
+
+    it('should delete accounts', async () => {
+
+        var request = { 
+            id: 7570242,
+            token: token,
+            keys: KEYS_7570242_STAGING
+        };
+
+        try {
+            var result = await sut.delete.invoke(request);
             console.log('result ->', result);
         } catch (err) {
             console.log('error ->', err);

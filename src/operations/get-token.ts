@@ -22,7 +22,7 @@ export class GetTokenOperation extends JsonBodylessOperation<IResponse> {
         const messages: string[] = [];
 
         if (!/^[\w-]{43}$/gi.test(responseData.token)) {
-            messages.push(`Bad token: '${responseData.token}'`);
+            messages.push(`Unexpected token format: '${responseData.token}'`);
         }
 
         if (messages.length !== 0) {

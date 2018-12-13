@@ -1,9 +1,10 @@
-import { ValidationError, HttpResponseError } from "@ne1410s/http";
 import { AccountOperation } from "./base/account";
-import { IAccountRequest, IAccountResponse } from "../interfaces/base";
+import { IAccountRequest, IResponse } from "../interfaces/base";
+import { HttpResponseError, ValidationError } from "@ne1410s/http";
+import { IDeleteAccountResponse } from "../interfaces/delete-account";
 
-export class GetAccountOperation extends AccountOperation<IAccountRequest, IAccountResponse, any> {
-
+export class DeleteAccountOperation extends AccountOperation<IAccountRequest, IDeleteAccountResponse, any> {
+    
     constructor (baseUrl: string) {
         
         super(baseUrl, '/acct/{id}');
@@ -11,45 +12,39 @@ export class GetAccountOperation extends AccountOperation<IAccountRequest, IAcco
 
     validateRequest(requestData: IAccountRequest): void {
 
-        super.validateRequest(requestData);
-
         // Once deemed valid; correct the operation url at invocation time
         this._url = this.getAccountUrl(requestData);
     }
 
     protected toPayload(requestData: IAccountRequest): any {
-        return {};
+        return {
+            status: 'deactivated'
+        };
     }
 
-    async deserialise(response: Response, requestData: IAccountRequest): Promise<IAccountResponse> {
+    async deserialise(response: Response, requestData: IAccountRequest): Promise<IDeleteAccountResponse> {
         
         const responseText = await response.text();
 
         if (!response.ok) {
             throw new HttpResponseError(response.status, response.statusText, response.headers, responseText);
-        }
-        
-        const json = JSON.parse(responseText);
+        }      
 
+        const json = JSON.parse(responseText);
         return {
             status: json.status,
-            created: new Date(json.createdAt),
-            initialIp: json.initialIp,
-            link: response.headers.get('link'),
-            url: this._url,
-            token: response.headers.get('replay-nonce'),
-            contacts: json.contact
+            token: response.headers.get('replay-nonce')
         };
     }
-    
-    validateResponse(responseData: IAccountResponse): void {
+
+    validateResponse(responseData: IDeleteAccountResponse): void {
         
         super.validateResponse(responseData);
         
         const messages: string[] = [];
 
-        if (!responseData.status) {
-            messages.push('Status is expected');
+        if (responseData.status !== 'deactivated') {
+            messages.push('Unexpected status: ' + responseData.status);
         }
 
         if (messages.length !== 0) {
