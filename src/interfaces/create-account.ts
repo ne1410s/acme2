@@ -1,14 +1,10 @@
-import { IToken, IAccount } from "./base";
+import { IToken, IAccount, IRequest, IAccountResponse } from "./base";
 
-export interface ICreateAccountRequest extends IToken {
+export interface ICreateAccountRequest extends IRequest {
     termsAgreed: boolean;
     emails: Array<string>;
 }
 
-export interface ICreateAccountResponse extends IAccount, IToken {
-    status: string;
-    created: Date;
-    initialIp: string;
-    link: string;
-    url: string;
+export interface ICreateAccountResponse extends IAccount, IAccountResponse {
+
 }

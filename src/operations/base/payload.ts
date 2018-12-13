@@ -1,9 +1,9 @@
 import Text from "@ne1410s/text";
 import Crypto from "@ne1410s/crypto";
 import { JsonOperation } from "@ne1410s/http";
-import { IToken } from "../../interfaces/base";
+import { IRequest, IResponse } from "../../interfaces/base";
 
-export abstract class PayloadOperation<TRequest extends IToken, TResponse extends IToken> extends JsonOperation<TRequest, TResponse> {
+export abstract class PayloadOperation<TRequest extends IRequest, TResponse extends IResponse> extends JsonOperation<TRequest, TResponse> {
 
     constructor (protected baseUrl: string, relativePath: string) {
 

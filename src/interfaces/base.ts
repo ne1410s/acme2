@@ -9,4 +9,18 @@ export interface IAccount {
     keys: IKeyPair_Jwk;
 }
 
-export interface IAccountRequest extends IAccount, IToken { }
+export interface IAccountDetails {
+    status: string;
+    created: Date;
+    initialIp: string;
+    link: string;
+    url: string;
+}
+
+export interface IRequest extends IToken { }
+
+export interface IAccountRequest extends IRequest, IAccount { }
+
+export interface IResponse extends IToken { }
+
+export interface IAccountResponse extends IResponse, IAccountDetails { }
