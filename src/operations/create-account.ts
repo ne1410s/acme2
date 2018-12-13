@@ -1,8 +1,8 @@
 import { ValidationError, HttpResponseError } from "@ne1410s/http";
 import { NonAccountOperation } from "./base/non-account";
-import { ICreateAccountRequest, ICreateAccountResponse } from "../interfaces/create-account";
+import { ICreateAccountRequest, ICreateAccountResponse, ICreateAccountPayload } from "../interfaces/create-account";
 
-export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRequest, ICreateAccountResponse> {
+export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRequest, ICreateAccountResponse, ICreateAccountPayload> {
     
     constructor (baseUrl: string) {
         
@@ -28,7 +28,7 @@ export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRe
         }
     }
 
-    mapValidRequest(requestData: ICreateAccountRequest): any {
+    toPayload(requestData: ICreateAccountRequest): ICreateAccountPayload {
         return {
             contact: requestData.emails.map(r => `mailto:${r}`),
             onlyReturnExisting: false,

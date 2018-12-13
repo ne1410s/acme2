@@ -4,7 +4,7 @@ import { ValidationError } from "@ne1410s/http";
 import { PayloadOperation } from "./payload";
 import { IRequest, IResponse } from "../../interfaces/base";
 
-export abstract class NonAccountOperation<TRequest extends IRequest, TResponse extends IResponse> extends PayloadOperation<TRequest, TResponse> {
+export abstract class NonAccountOperation<TRequest extends IRequest, TResponse extends IResponse, TPayload> extends PayloadOperation<TRequest, TResponse, TPayload> {
 
     protected keys: IKeyPair_Jwk;
 

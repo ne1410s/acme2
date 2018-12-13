@@ -5,6 +5,10 @@ export interface ICreateAccountRequest extends IRequest {
     emails: Array<string>;
 }
 
-export interface ICreateAccountResponse extends IAccount, IAccountResponse {
-
+export interface ICreateAccountPayload {
+    contact: Array<string>;
+    onlyReturnExisting: boolean;
+    termsOfServiceAgreed: boolean;
 }
+
+export interface ICreateAccountResponse extends IAccount, IAccountResponse { }

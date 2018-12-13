@@ -1,8 +1,8 @@
+import { ValidationError, HttpResponseError } from "@ne1410s/http";
 import { AccountOperation } from "./base/account";
 import { IAccountRequest, IAccountResponse } from "../interfaces/base";
-import { ValidationError, HttpResponseError } from "@ne1410s/http";
 
-export class GetAccountOperation extends AccountOperation<IAccountRequest, IAccountResponse> {
+export class GetAccountOperation extends AccountOperation<IAccountRequest, IAccountResponse, any> {
 
     constructor (baseUrl: string) {
         
@@ -17,11 +17,8 @@ export class GetAccountOperation extends AccountOperation<IAccountRequest, IAcco
         this._url = this.getAccountUrl(requestData);
     }
 
-    mapValidRequest(requestData: IAccountRequest): any {
-                
-        // TODO ??
-
-        return super.mapValidRequest(requestData);
+    protected toPayload(requestData: IAccountRequest): any {
+        return {};
     }
 
     async deserialise(response: Response, requestData: IAccountRequest): Promise<IAccountResponse> {

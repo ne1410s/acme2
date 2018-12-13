@@ -3,7 +3,7 @@ import Crypto from "@ne1410s/crypto";
 import { JsonOperation } from "@ne1410s/http";
 import { IRequest, IResponse } from "../../interfaces/base";
 
-export abstract class PayloadOperation<TRequest extends IRequest, TResponse extends IResponse> extends JsonOperation<TRequest, TResponse> {
+export abstract class PayloadOperation<TRequest extends IRequest, TResponse extends IResponse, TPayload> extends JsonOperation<TRequest, TResponse> {
 
     constructor (protected baseUrl: string, relativePath: string) {
 
@@ -12,21 +12,11 @@ export abstract class PayloadOperation<TRequest extends IRequest, TResponse exte
         this.headers.set('content-type', 'application/jose+json');
     }
 
-    /**
-     * Enables a different model to be exposed to the caller besides that which
-     * gets dispatched. This is called as part serialisation; after validation
-     * has taken place. (By default, the caller model is dispatched).
-     * @param requestData The request data.
-     */
-    mapValidRequest(requestData: TRequest): any {
-        return requestData;
-    }
-
     async serialise(requestData: TRequest): Promise<string> {
 
         // Encode payload content
-        const mappedRequest = this.mapValidRequest(requestData);
-        const encodedPayload = Text.objectToBase64Url(mappedRequest);
+        const payloadRaw = this.toPayload(requestData);
+        const encodedPayload = Text.objectToBase64Url(payloadRaw);
 
         // Encode protected content
         const protectedRaw = this.getProtectedData(requestData);
@@ -45,15 +35,14 @@ export abstract class PayloadOperation<TRequest extends IRequest, TResponse exte
             signature: signature
         });
     }
-
-    protected getProtectedData(requestData: TRequest): any {
-
-        return {
-            alg: 'RS256',
-            nonce: requestData.token,
-            url: this.url
-        };
-    }
+    
+    /**
+     * Enables a different model to be exposed to the caller besides that which
+     * gets sent as payload. This is called as part serialisation; after
+     * validation has taken place.
+     * @param requestData The request data.
+     */
+    protected abstract toPayload(requestData: TRequest): TPayload;
 
     /**
      * Additional properties of the protected header vary according to context.
@@ -66,4 +55,13 @@ export abstract class PayloadOperation<TRequest extends IRequest, TResponse exte
      * @param requestData The request data.
      */
     protected abstract getSecret(requestData: TRequest): JsonWebKey;
+
+    private getProtectedData(requestData: TRequest): any {
+
+        return {
+            alg: 'RS256',
+            nonce: requestData.token,
+            url: this.url
+        };
+    }
 }

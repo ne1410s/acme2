@@ -2,7 +2,7 @@ import { ValidationError } from "@ne1410s/http";
 import { PayloadOperation } from "./payload";
 import { IAccountRequest, IResponse } from "../../interfaces/base";
 
-export abstract class AccountOperation<TRequest extends IAccountRequest, TResponse extends IResponse> extends PayloadOperation<TRequest, TResponse> {
+export abstract class AccountOperation<TRequest extends IAccountRequest, TResponse extends IResponse, TPayload> extends PayloadOperation<TRequest, TResponse, TPayload> {
     
     validateRequest(requestData: IAccountRequest): void {
         
