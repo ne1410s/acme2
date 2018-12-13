@@ -1,5 +1,5 @@
 import { PayloadOperation } from "./payload";
-import { IAccountRequest, IToken } from "../../interface";
+import { IAccountRequest, IToken } from "../../interfaces/base";
 
 export abstract class AccountOperation<TRequest extends IAccountRequest, TResponse extends IToken> extends PayloadOperation<TRequest, TResponse> {
     

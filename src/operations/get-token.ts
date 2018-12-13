@@ -1,14 +1,14 @@
 import { ValidationError, JsonBodylessOperation } from "@ne1410s/http"
-import { IToken } from "../interface";
+import { IGetTokenResponse } from "../interfaces/get-token";
 
-export class GetTokenOperation extends JsonBodylessOperation<IToken> {
+export class GetTokenOperation extends JsonBodylessOperation<IGetTokenResponse> {
 
     constructor(baseUrl: string) {
 
         super(`${baseUrl}/new-nonce`, 'head');
     }
     
-    async deserialise(response: Response): Promise<IToken> {
+    async deserialise(response: Response): Promise<IGetTokenResponse> {
 
         await Promise.resolve();
         
@@ -17,7 +17,7 @@ export class GetTokenOperation extends JsonBodylessOperation<IToken> {
         };
     }
 
-    validateResponse(responseData: IToken): void {
+    validateResponse(responseData: IGetTokenResponse): void {
 
         const messages: string[] = [];
 

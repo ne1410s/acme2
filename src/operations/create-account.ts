@@ -1,5 +1,5 @@
 import { NonAccountOperation } from "./base/non-account";
-import { ICreateAccountRequest, ICreateAccountResponse } from "../interface";
+import { ICreateAccountRequest, ICreateAccountResponse } from "../interfaces/create-account";
 import { ValidationError, HttpResponseError } from "@ne1410s/http";
 
 export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRequest, ICreateAccountResponse> {
