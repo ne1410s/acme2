@@ -56,7 +56,7 @@ export class UpsertOrderOperation extends AccountOperation<IUpsertOrderRequest, 
             status: json.status,
             orderUrl: location,
             expires: json.expires,
-            authorizations: json.authorizations,
+            authzKeys: json.authorizations,
             finalize: json.finalize,
             identifiers: json.identifiers,
             token: response.headers.get('replay-nonce'),
@@ -81,7 +81,7 @@ export class UpsertOrderOperation extends AccountOperation<IUpsertOrderRequest, 
             messages.push('Status is expected');
         }
 
-        if (!responseData.authorizations || responseData.authorizations.length == 0) {
+        if (!responseData.authzKeys || responseData.authzKeys.length == 0) {
             messages.push('At least one authorization url is expected');
         }
 

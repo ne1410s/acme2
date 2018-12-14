@@ -39,14 +39,15 @@ export class GetOrderOperation extends JsonOperation<IOrderRequest, IOrderRespon
 
         const json = JSON.parse(responseText),
               location = response.headers.get('location') || '',
-              locParts = location.split('/');
+              locParts = location.split('/'),
+              authzParts = (json.authorizations || '').split('/');
 
         return {
             id: requestData.orderId,
             status: json.status,
             orderUrl: this._url,
             expires: json.expires,
-            authorizations: json.authorizations,
+            authzKeys: json.authorizations,
             finalize: json.finalize,
             identifiers: json.identifiers
         };
@@ -69,7 +70,7 @@ export class GetOrderOperation extends JsonOperation<IOrderRequest, IOrderRespon
             messages.push('Status is expected');
         }
 
-        if (!responseData.authorizations || responseData.authorizations.length == 0) {
+        if (!responseData.authzKeys || responseData.authzKeys.length == 0) {
             messages.push('At least one authorization url is expected');
         }
 
