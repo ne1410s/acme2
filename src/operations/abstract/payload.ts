@@ -39,8 +39,9 @@ export abstract class PayloadOperation<TRequest extends IRequest, TResponse exte
     validateResponse(responseData: IResponse): void {
         
         const messages: string[] = [];
+        responseData = responseData || {} as IResponse;
 
-        if (!responseData || !responseData.token) {
+        if (!responseData.token) {
             messages.push('Token is expected');
         }
 

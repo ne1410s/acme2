@@ -8,8 +8,9 @@ export abstract class AccountOperation<TRequest extends IAccountRequest, TRespon
     validateRequest(requestData: IAccountRequest): void {
         
         const messages: string[] = [];
+        requestData = requestData || {} as IAccountRequest;
 
-        if (!requestData || !requestData.id) {
+        if (!requestData.id) {
             messages.push('Id is required');
         }
 

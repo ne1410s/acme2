@@ -39,7 +39,19 @@ describe('#acme tokens', () => {
         }        
     });
 
-    it('should ...', async () => {
+    it('should get an order', async () => {
 
+        var request = {
+            accountId: 7571668,
+            orderId: 16187123
+        };
+        try {
+            var result = await sut.orders.get.invoke(request);
+            console.log('result ->', result);
+
+        } catch (err) {
+            console.log('error ->', err);
+            throw new Chai.AssertionError('An error occurred');
+        }  
     });
 });

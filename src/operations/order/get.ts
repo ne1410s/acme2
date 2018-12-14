@@ -1,45 +1,35 @@
-import { ValidationError, HttpResponseError } from "@ne1410s/http";
-import { AccountOperation } from "../abstract/account";
-import { IUpsertOrderRequest, IUpsertOrderPayload } from "../../interfaces/order/upsert";
-import { IActiveOrderResponse } from "../../interfaces/order/base";
+import { IOrderRequest, IOrderResponse } from "../../interfaces/order/base";
+import { JsonOperation, ValidationError, HttpResponseError } from "@ne1410s/http";
 
-export class UpsertOrderOperation extends AccountOperation<IUpsertOrderRequest, IActiveOrderResponse, IUpsertOrderPayload> {
+export class GetOrderOperation extends JsonOperation<IOrderRequest, IOrderResponse> {
     
-    constructor (baseUrl: string) {
-        
-        super(baseUrl, '/new-order');
+    constructor (private baseUrl: string) {
+
+        super(`${baseUrl}/order/{accountId}/{orderId}`, 'get');
     }
 
-    validateRequest(requestData: IUpsertOrderRequest): void {
-
-        super.validateRequest(requestData);
+    validateRequest(requestData: IOrderRequest): void {
 
         const messages: string[] = [];
+        requestData = requestData || {} as IOrderRequest;
 
-        if (!requestData.domains || requestData.domains.length == 0) {
-            messages.push('At least one email is required');
+        if (!requestData.accountId) {
+            messages.push('Account id is required');
         }
 
-        if (requestData.startsOn || requestData.endsOn) {
-            messages.push('Start and end dates are not currently implemented');
+        if (!requestData.orderId) {
+            messages.push('Order id is required');
         }
         
         if (messages.length !== 0) {
             throw new ValidationError('The request is invalid', requestData, messages);
         }
-    }
 
-    protected toPayload(requestData: IUpsertOrderRequest): IUpsertOrderPayload {
-        return {
-            // TODO: Map start & end dates to iso strings
-            identifiers: requestData.domains.map(domain => ({
-                type: 'dns',
-                value: domain
-            }))
-        }
+        // Once deemed valid; correct the operation url at invocation time
+        this._url = `${this.baseUrl}/order/${requestData.accountId}/${requestData.orderId}`;
     }
-
-    async deserialise(response: Response, requestData: IUpsertOrderRequest): Promise<IActiveOrderResponse> {
+    
+    async deserialise(response: Response, requestData: IOrderRequest): Promise<IOrderResponse> {
         
         const responseText = await response.text();
 
@@ -52,22 +42,20 @@ export class UpsertOrderOperation extends AccountOperation<IUpsertOrderRequest, 
               locParts = location.split('/');
 
         return {
-            id: parseInt(locParts[locParts.length - 1], 10),
+            id: requestData.orderId,
             status: json.status,
-            orderUrl: location,
+            orderUrl: this._url,
             expires: json.expires,
             authorizations: json.authorizations,
             finalize: json.finalize,
-            identifiers: json.identifiers,
-            token: response.headers.get('replay-nonce'),
+            identifiers: json.identifiers
         };
     }
         
-    validateResponse(responseData: IActiveOrderResponse): void {
-        
-        super.validateResponse(responseData);
+    validateResponse(responseData: IOrderResponse): void {
         
         const messages: string[] = [];
+        responseData = responseData || {} as IOrderResponse;
 
         if (!responseData.id) {
             messages.push('Id is expected');
