@@ -37,19 +37,19 @@ export class GetOrderOperation extends JsonOperation<IOrderRequest, IOrderRespon
             throw new HttpResponseError(response.status, response.statusText, response.headers, responseText);
         }      
 
-        const json = JSON.parse(responseText),
-              location = response.headers.get('location') || '',
-              locParts = location.split('/'),
-              authzParts = (json.authorizations || '').split('/');
+        const json = JSON.parse(responseText);
 
         return {
             id: requestData.orderId,
             status: json.status,
             orderUrl: this._url,
             expires: json.expires,
-            authzKeys: json.authorizations,
             finalize: json.finalize,
-            identifiers: json.identifiers
+            identifiers: json.identifiers,
+            authCodes: json.authorizations.map((authUrl: string) => {
+                const authUrlParts = authUrl.split('/');
+                return authUrlParts[authUrlParts.length - 1];
+            })
         };
     }
         
@@ -70,8 +70,12 @@ export class GetOrderOperation extends JsonOperation<IOrderRequest, IOrderRespon
             messages.push('Status is expected');
         }
 
-        if (!responseData.authzKeys || responseData.authzKeys.length == 0) {
-            messages.push('At least one authorization url is expected');
+        if (!responseData.authCodes || responseData.authCodes.length == 0) {
+            messages.push('At least one authorization code is expected');
+        }
+        
+        if (!responseData.expires) {
+            messages.push('Expiry date is expected');
         }
 
         if (!responseData.finalize || responseData.finalize == '') {

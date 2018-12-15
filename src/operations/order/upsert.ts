@@ -56,10 +56,13 @@ export class UpsertOrderOperation extends AccountOperation<IUpsertOrderRequest, 
             status: json.status,
             orderUrl: location,
             expires: json.expires,
-            authzKeys: json.authorizations,
             finalize: json.finalize,
             identifiers: json.identifiers,
             token: response.headers.get('replay-nonce'),
+            authCodes: json.authorizations.map((authUrl: string) => {
+                const authUrlParts = authUrl.split('/');
+                return authUrlParts[authUrlParts.length - 1];
+            })
         };
     }
         
@@ -81,8 +84,12 @@ export class UpsertOrderOperation extends AccountOperation<IUpsertOrderRequest, 
             messages.push('Status is expected');
         }
 
-        if (!responseData.authzKeys || responseData.authzKeys.length == 0) {
-            messages.push('At least one authorization url is expected');
+        if (!responseData.authCodes || responseData.authCodes.length == 0) {
+            messages.push('At least one authorization code is expected');
+        }
+
+        if (!responseData.expires) {
+            messages.push('Expiry date is expected');
         }
 
         if (!responseData.finalize || responseData.finalize == '') {

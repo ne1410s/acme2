@@ -1,4 +1,4 @@
-const Chai = require('chai');
+/* const Chai = require('chai');
 const Acme2 = require('../dist/index');
 
 const sut = new Acme2('staging');
@@ -54,4 +54,4 @@ describe('#acme tokens', () => {
             throw new Chai.AssertionError('An error occurred');
         }  
     });
-});
+}); */

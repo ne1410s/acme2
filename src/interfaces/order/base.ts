@@ -12,7 +12,7 @@ export interface IOrderResponse {
     orderUrl: string;
     expires: Date;
     identifiers: Array<IDomainIdentfier>;
-    authzKeys: Array<string>;
+    authCodes: Array<string>;
     finalize: string;
 }
 
