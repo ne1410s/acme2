@@ -1,8 +1,8 @@
 import { JsonOperation, ValidationError, HttpResponseError } from "@ne1410s/http";
-import { IChallengeRequest } from "../../interfaces/challenge/base";
-import { IChallengeListResponse } from "../../interfaces/challenge/list";
+import { IChallengeRequest, IChallengeResponse, IChallenge } from "../../interfaces/challenge/base";
+import { IFulfilmentData } from "../../interfaces/challenge/fulfil";
 
-export class ListChallengesOperation extends JsonOperation<IChallengeRequest, IChallengeListResponse> {
+export class ListChallengesOperation extends JsonOperation<IChallengeRequest, IChallengeResponse> {
     
     constructor (private baseUrl: string) {
 
@@ -26,7 +26,7 @@ export class ListChallengesOperation extends JsonOperation<IChallengeRequest, IC
         this._url = `${this.baseUrl}/authz/${requestData.authCode}`;
     }
 
-    async deserialise(response: Response, requestData: IChallengeRequest): Promise<IChallengeListResponse> {
+    async deserialise(response: Response, requestData: IChallengeRequest): Promise<IChallengeResponse> {
         
         const responseText = await response.text();
 
@@ -34,15 +34,16 @@ export class ListChallengesOperation extends JsonOperation<IChallengeRequest, IC
             throw new HttpResponseError(response.status, response.statusText, response.headers, responseText);
         }      
 
-        const json = JSON.parse(responseText);
+        const json = JSON.parse(responseText) as IChallengeResponse;
+        json.challenges.forEach(c => this.addFulfilmentData(c));
 
-        return json as IChallengeListResponse;
+        return json;
     }
     
-    validateResponse(responseData: IChallengeListResponse): void {
+    validateResponse(responseData: IChallengeResponse): void {
         
         const messages: string[] = [];
-        responseData = responseData || {} as IChallengeListResponse;
+        responseData = responseData || {} as IChallengeResponse;
 
         if (!responseData.challenges || responseData.challenges.length == 0) {
             messages.push('At least one challenge is expected');
@@ -65,4 +66,28 @@ export class ListChallengesOperation extends JsonOperation<IChallengeRequest, IC
         }
     }
 
+    addFulfilmentData(challenge: IChallenge): void {
+
+        const data: any = { keyAuth: 'lol' };
+
+        switch (challenge.type) {
+
+            case 'dns-01':
+                data.name = 'dns name';
+                break;
+            
+            case 'http-01':
+                data.name = 'http name';
+                break;
+            
+            case 'tls-alpn-01':
+                data.name = 'tls name';
+                break;
+            
+            default:
+                throw new Error('Unsupported challenge');
+        }
+
+        challenge.fulfilmentData = data;
+    }
 }
