@@ -1,22 +1,24 @@
 import { IDomainIdentfier } from "../order/upsert";
-import { IFulfilmentData } from "./fulfil";
-
-export interface IChallengeRequest {
-    authCode: string;
-    publicJwk: JsonWebKey;
-}
 
 export interface IChallenge {
     status: string;
     token: string;
     type: string;
     url: string;
-    fulfilmentData: IFulfilmentData;
 }
 
-export interface IChallengeResponse {
-    challenges: Array<IChallenge>;
+export interface IFulfilmentData {
+    implemented: boolean;
+    keyAuth: string;
+    title: string;
+    content: string;
+    more: any;
+}
+
+export interface IChallengeDetails extends IChallenge {
     expires: Date;
     identifier: IDomainIdentfier;
     status: string;
+    fulfilmentData: IFulfilmentData;
+    wildcard: boolean;
 }
