@@ -1,4 +1,4 @@
-const Chai = require('chai');
+/* const Chai = require('chai');
 const Acme2 = require('../dist/index');
 
 const sut = new Acme2('staging');
@@ -6,7 +6,7 @@ const RUN_CACHE = { accountId: null, token: null, keys: null };
 
 describe('#acme tokens', () => {
 
-    /* it('should add an order', async () => {
+    it('should add an order', async () => {
 
         // token
         var tokenResult = await sut.tokens.get.invoke();
@@ -53,7 +53,7 @@ describe('#acme tokens', () => {
             console.log('error ->', err);
             throw new Chai.AssertionError('An error occurred');
         }  
-    }); */
+    });
 
     it('should finalise an order', async () => {
 
@@ -81,4 +81,4 @@ describe('#acme tokens', () => {
             throw new Chai.AssertionError('An error occurred');
         }  
     })
-});
+}); */
