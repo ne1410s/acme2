@@ -87,5 +87,4 @@ export class FinaliseOrderOperation extends AccountOperation<IFinaliseOrderReque
             throw new ValidationError('The response is invalid', responseData, messages);
         }
     }
-
 }

@@ -1,4 +1,4 @@
-const Chai = require('chai');
+/* const Chai = require('chai');
 const Acme2 = require('../dist/index');
 
 const sut = new Acme2('staging');
@@ -9,7 +9,7 @@ describe('#acme challenges', () => {
 
     it('should list basic challenge data', async () => {
 
-        var getOrderRequest = { accountId: 7604814, orderId: 16575435 };
+        var getOrderRequest = { accountId: 7606531, orderId: 16589829 };
         var getOrderResponse = await sut.orders.get.invoke(getOrderRequest);
         var authCode = getOrderResponse.authCodes[0];
         
@@ -44,13 +44,13 @@ describe('#acme challenges', () => {
     
         var fulfil_request = {
             challengeDetail: deet_response.detail[0],
-            accountId: 7604814,
+            accountId: 7606531,
             token: tokenResponse.token,
             keys: {
-                privateJwk: {"alg":"RS256","d":"Rxz3536cCj7Kt-6sthq-MAVanbK-X3aTHfW4qwGQg0J6K_HqsmBoPthqh-C-VoWOFbys0L0aSFWA7En7xksgF2H050HUGFRHT98EVOrtpNO8b7l9dNrAgROSRY7RnJMVtOgZpicoqyXLWv316pItRNl-LCDT6HHGkr-6Qd1UEDagz07uK3Bqu2RBdzwll1WAKH2NtLSo4tnKgFtozBTnK8xS2O2iDZMCp_uwAys2oNFPuIs7Bp5oLcTpWsE6Dm-sjq3je1ZKaccW_RhT1t9O8VvcnvKps-X92V8nOmx4YZ6BcHGq3iwopyDa1XuhT4B9MZIPwYDg0rGLYNrdiS08pQ","dp":"pzLh7_C55fjPAOCDd-3uUOAdtIZ551B2ENS_BoaSCPTKl8bHiIgfiN7elxK6_dB1y2wfF_n5AVvG-xOEjYETksnK0oQmjr4d9Zk6FPT-OU4NJ3xicwcPpTwLiFrotfVnY7QBdfIfoeW2XqxDzYVACrfxBQdgpGZ49sDAUCBLwo0","dq":"eVSjIA3KeVESEeieigafGujLjcDYKaXytJs-3MWFS1r2qw5M4qnl_ui2g0UFzoeUAGiDc5qbbBPTlM4MKS4DqHCmzIkD6OM7NzDrCTMIwCn3IGQKa2i0jbo9y4ATXe6ElrkhHjffmLOein7wLZ7kUTLvpBpzLqmduMQz6_qRjAU","e":"AQAB","ext":true,"key_ops":["sign"],"kty":"RSA","n":"lcb4NWX-AgGL4Tm5DBoMry9hmmoGGRelPhW3c2ZlLQ5OcwZDFA31VvZXHqLTQkPBayLTcOmtAhV1YQz-zAhLzyGSvskKnDY_MaZAcVTBrnSlis2-9504OALTJH4EP5oAjRgOf5GMkUMmZgC0748OcWapoeXc1uP1OgySNaEdoFaTjuzh0pSvdkLqHysY4mfNXjkesUoC_A9O94dRd8Gn94XD4r8Xog6WmkSCHpBEGx1y7S76a35mBRsfWhnzZF3lC3_E6H36cd5sIVgGULd6TJw5jUphWQaG5SyavSpzPLSWtR7oVrdDCTdSubAk1ZiZORroRSR5oKxwCtxBp_tn5w","p":"zxnQRK31j-XH0xjmbSRO_uYghGYkC4vTr7wbV9gYde9uXeQbrB6oDWKOQi0pd790K2Zr_mEj_B0cBzYtvM_m2-cFs318AMIP6ES-FRw-HewJ-Xw7BpPuweIQTDT-0F8NWYRp1cS1SRN7D9WWvoqeQR_2E4eb9cbp1huTCxos2ys","q":"uSQ8qKQ9iA8WpmYnmxUvQirlGm_8iK0e3HHqPnsZC6eIlhe186eGgTqnhv92yQi2J5G6lYPV9VN8zMpnB5OwkoMp2yywX1DtVwr2e0_8A3kq_uFirHs9gnOYoWYy7VMrt1bQiD2MMJX2jyVJjPe1X9XaGNgaCtdPP3YsEs1yGDU","qi":"uog5ZsPbLH1O8Dxz06m9eWuQGDcg223LoAnGLo1SkwQkiWhcyHnoB_A_u7Wmk9H3mLAJ0gg_uLJzfBcdjxiOO_IwRMtkR7xLk2ro3KwvvZZcPtCMKesW_vUh26Rjcu4Nskpmhor7SzvQ7V_6S4DEmBBxgTLef7tkK06HcmECUgI"},
-                publicJwk: {"alg":"RS256","e":"AQAB","ext":true,"key_ops":[],"kty":"RSA","n":"lcb4NWX-AgGL4Tm5DBoMry9hmmoGGRelPhW3c2ZlLQ5OcwZDFA31VvZXHqLTQkPBayLTcOmtAhV1YQz-zAhLzyGSvskKnDY_MaZAcVTBrnSlis2-9504OALTJH4EP5oAjRgOf5GMkUMmZgC0748OcWapoeXc1uP1OgySNaEdoFaTjuzh0pSvdkLqHysY4mfNXjkesUoC_A9O94dRd8Gn94XD4r8Xog6WmkSCHpBEGx1y7S76a35mBRsfWhnzZF3lC3_E6H36cd5sIVgGULd6TJw5jUphWQaG5SyavSpzPLSWtR7oVrdDCTdSubAk1ZiZORroRSR5oKxwCtxBp_tn5w"}
+                privateJwk: { alg: "RS256", d: "CWvwQiqN8JRr__tE9Bx0UYtswD-gsll2-l5qY-DcLXBxmjPEyZcUpTrb8kzhXgMTXOmxVV_sehT6PKTb5r2veoLQnPdsuwBninV_QUVQlDfuWdKp-8R8G1amaHkhD1sNe0lz8AlUqAt6_jx8aLikvXi5Nq4X96NG37OrGUa_D716gD3xu6lrfTBt8ShOVivZxTdUP2TmWF4SMpqWBH0E5FTNiJc9p7OISIQK_3MsFt4KrgWNs_C89O0IrWhY92dt6MIN8dMSftrEzXGOvMUBtQFnFn5gk5a5AZzNpPrCbZVgdDhLFsVqJMpNeLo6Q3LuK37DvCriHmBbdoZxaCrooQ", dp: "a7CO2ktiYpAqZNLOEKKZ_vVD573r9WQiZEjJWFvd9Vpd-cSND_Kcnx3rRsQSNBsOuy06Nb7vLs8mH6LGkrfYBZrQPFB3oV3X3riPJvDDyt6DBraNheVRkWz6HWhcgK2-v26kQ8SzuOjvtOiHneEVS6z37oNETWwbkTFrv2fsTgE", dq: "DYP6jSzIhVF-nMf1is6D2NYTnbDvRFhaU0uvXc-DQlOxSYfPW43EHxpQkSN4l4U5LvR8VrDq1V7dWHFNZVTd999jwo_7QgOEe_RZ5-8LaAKD-rJ65UhrMBJQPah4ZocBOu5ZT4MeAjxCMgsQrQOPGTbpkU_RHWd1uyGj-PKJcsc", e: "AQAB", ext: true, key_ops: ["sign"], kty: "RSA", n: "h2yKk1Fj65U97JajLuCN03Ye6xtP7FuX5SC_eeFKfsHur98nWcyG4Z__1yv43QR8FUhbzaapnnFgsOxLjP0e63BT-59pNuQKmqEuOT7Km0YTIdRAQX49BXXr6A48KP5HRNwpvoxZWaVE9ce4pkC06RcWLCX9y5Knw7ql2oqlCrtellSDK_sX_50I2G0-cbyahuLiMkUY8iymYycGj58IIh770rpVfCozs25zxIv2p-wgKTKFYFQZn7zudRHfQ38yZTdvEyk9T59btyJPxDxq91uL1zJKNunqUuSreWhC0z7PMV5yKg1mkIJc9vC9qTKRV-4ZYSz3-qTXIcACOd0C6w", p: "vWVqzirYak8CrBztqtFbkqBH3bfPG-t_rFGnMZvoYDxeOn5z_q3B6HCgu6BSmtsyYq3Raj53r4c7yYqmWCTJWl9W4m_Qavz8WV3bEGCVBPZQDncSHLVOhzCNpXG5Rk7q4FNX84fpHt03DegDj7kf2qSuvT8czakBoVbsqPhGt-E", q: "tww5aI4VKrGlcZ0xgVohFVDp0jb26lekxpmqsWEHWFilVdCKJnemiIObPinio1swoLQLzox8jNApBDaxk-ERO5aYyGJ_LgOfsA3adB7cWI5qZnIJ09ebTDUhsrFV6kcx_YtOxBU96m30zOi1JU8z1VxAjdrHTJTuM-sAuAZ5pEs", qi: "K4ZfT3OotqKVGVjOZ9zoLa0W5Lj5MV0zidCdfzLXqi1mFx1cG5MZRruyLFH-12yEupXQhw3DqZBXToTzxVc-761dhgexWc5PZs2HJ1SjZzPDTVmbmfSvXe-EY1MYfRw7Cv03lGVZ3HriO3iW10P3rWXaKbBkpJCxNh6GJSu80JU" },
+                publicJwk: { alg: "RS256", e: "AQAB", ext: true, key_ops: [], kty: "RSA", n: "h2yKk1Fj65U97JajLuCN03Ye6xtP7FuX5SC_eeFKfsHur98nWcyG4Z__1yv43QR8FUhbzaapnnFgsOxLjP0e63BT-59pNuQKmqEuOT7Km0YTIdRAQX49BXXr6A48KP5HRNwpvoxZWaVE9ce4pkC06RcWLCX9y5Knw7ql2oqlCrtellSDK_sX_50I2G0-cbyahuLiMkUY8iymYycGj58IIh770rpVfCozs25zxIv2p-wgKTKFYFQZn7zudRHfQ38yZTdvEyk9T59btyJPxDxq91uL1zJKNunqUuSreWhC0z7PMV5yKg1mkIJc9vC9qTKRV-4ZYSz3-qTXIcACOd0C6w" }
             }
-        }
+        };
 
         try {
             var response = await sut.challenges.fulfil.invoke(fulfil_request);
@@ -62,4 +62,4 @@ describe('#acme challenges', () => {
         }
         
     });
-});
+}); */

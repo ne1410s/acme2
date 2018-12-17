@@ -28,7 +28,7 @@ export class UpdateAccountOperation extends AccountOperation<IUpdateAccountReque
         this._url = this.getAccountUrl(requestData);
     }
 
-    protected toPayload(requestData: IUpdateAccountRequest): IUpdateAccountPayload {
+    protected async toPayload(requestData: IUpdateAccountRequest): Promise<IUpdateAccountPayload> {
         return {
             contact: requestData.emails.map(r => `mailto:${r}`)
         };

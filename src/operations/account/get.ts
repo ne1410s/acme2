@@ -17,7 +17,7 @@ export class GetAccountOperation extends AccountOperation<IAccountRequest, IAcco
         this._url = this.getAccountUrl(requestData);
     }
 
-    protected toPayload(requestData: IAccountRequest): any {
+    protected async toPayload(requestData: IAccountRequest): Promise<any> {
         return {};
     }
 
