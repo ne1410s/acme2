@@ -13,7 +13,9 @@ describe('#acme challenges', () => {
         
         try {
             var result = await sut.challenges.list.invoke({ authCode });
-            console.log('result ->', result);
+            result.challenges.forEach(c => {
+                console.log(c.type + ': fulfilment data ->', c.fulfilmentData);
+            });
 
         } catch (err) {
             console.log('error ->', err);

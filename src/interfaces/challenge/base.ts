@@ -3,6 +3,7 @@ import { IFulfilmentData } from "./fulfil";
 
 export interface IChallengeRequest {
     authCode: string;
+    publicJwk: JsonWebKey;
 }
 
 export interface IChallenge {

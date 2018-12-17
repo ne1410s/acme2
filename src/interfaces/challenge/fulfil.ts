@@ -3,7 +3,7 @@ import { IResponse } from "../token/base";
 
 export interface IFulfilmentData {
     keyAuth: string;
-    name: string;
+    title: string;
     content: string;
 }
 

@@ -1,3 +1,4 @@
+import Crypto from "@ne1410s/crypto";
 import { JsonOperation, ValidationError, HttpResponseError } from "@ne1410s/http";
 import { IChallengeRequest, IChallengeResponse, IChallenge } from "../../interfaces/challenge/base";
 import { IFulfilmentData } from "../../interfaces/challenge/fulfil";
@@ -18,6 +19,10 @@ export class ListChallengesOperation extends JsonOperation<IChallengeRequest, IC
             messages.push('Authorization code is required');
         }
 
+        if (!requestData.publicJwk) {
+            messages.push('Public key is required');
+        }
+
         if (messages.length !== 0) {
             throw new ValidationError('The request is invalid', requestData, messages);
         }
@@ -35,7 +40,12 @@ export class ListChallengesOperation extends JsonOperation<IChallengeRequest, IC
         }      
 
         const json = JSON.parse(responseText) as IChallengeResponse;
-        json.challenges.forEach(c => this.addFulfilmentData(c));
+
+        json.challenges.forEach(async challenge => { 
+            challenge.fulfilmentData = await this.generateFulfilmentData(
+                challenge,
+                requestData.publicJwk);
+        });
 
         return json;
     }
@@ -66,28 +76,38 @@ export class ListChallengesOperation extends JsonOperation<IChallengeRequest, IC
         }
     }
 
-    addFulfilmentData(challenge: IChallenge): void {
+    private async generateFulfilmentData(challenge: IChallenge, publicJwk: JsonWebKey): Promise<IFulfilmentData> {
 
-        const data: any = { keyAuth: 'lol' };
+        const keyAuth = await this.generateKeyAuth(challenge.token, publicJwk),
+              fdata = { keyAuth } as IFulfilmentData;
 
         switch (challenge.type) {
 
             case 'dns-01':
-                data.name = 'dns name';
+                fdata.title = `_acme-challenge.SOMEDOMAIN`;
                 break;
             
             case 'http-01':
-                data.name = 'http name';
+                fdata.title = 'http name';
                 break;
             
             case 'tls-alpn-01':
-                data.name = 'tls name';
+                fdata.title = 'tls name';
                 break;
             
             default:
-                throw new Error('Unsupported challenge');
+                throw new Error('Unrecognised challenge type: ' + challenge.type);
         }
 
-        challenge.fulfilmentData = data;
+        return fdata;
+    }
+
+    private async generateKeyAuth(challengeToken: string, publicJwk: JsonWebKey): Promise<string> {
+
+        const keyBase = { e: publicJwk.e, kty: publicJwk.kty, n: publicJwk.n },
+              keyBaseText = JSON.stringify(keyBase),
+              keyBaseHash = await Crypto.digest(keyBaseText);
+        
+        return `${challengeToken}.${keyBaseHash}`;
     }
 }
