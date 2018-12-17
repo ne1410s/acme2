@@ -1,7 +1,7 @@
 import Crypto from "@ne1410s/crypto";
 import { OperationBase, ValidationError } from "@ne1410s/http";
 import { IGetChallengeDetailRequest, IGetChallengeDetailResponse } from "../../interfaces/challenge/get-detail";
-import { IFulfilmentData, IChallenge, IChallengeDetails } from "../../interfaces/challenge/base";
+import { IFulfilmentData, IChallenge, IChallengeDetail } from "../../interfaces/challenge/base";
 
 export class GetChallengeDetailOperation extends OperationBase<IGetChallengeDetailRequest, IGetChallengeDetailResponse> {
     
@@ -27,8 +27,14 @@ export class GetChallengeDetailOperation extends OperationBase<IGetChallengeDeta
         const orig = requestData.listResponse,
               domain = orig.identifier.value,
               detailsArray = await Promise.all(orig.challenges.map(async challenge => {
-                  const retVal = challenge as IChallengeDetails;
+
+                  const retVal = challenge as IChallengeDetail,
+                        urlParts = challenge.url.split('/');
+
+                  retVal.id = parseInt(urlParts[urlParts.length - 1], 10);
+                  retVal.authCode = requestData.listResponse.authCode;
                   retVal.fulfilmentData = await this.generateFulfilmentData(challenge, domain, requestData.publicJwk);
+
                   return retVal;
               }));
 

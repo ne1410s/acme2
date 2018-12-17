@@ -41,7 +41,8 @@ export class ListChallengesOperation extends JsonOperation<IListChallengesReques
             expires: json.expires,
             identifier: json.identifier,
             status: json.status,
-            wildcard: !!json.wildcard
+            wildcard: !!json.wildcard,
+            authCode: requestData.authCode
         };
     }
     

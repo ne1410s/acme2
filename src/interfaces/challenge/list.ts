@@ -11,4 +11,5 @@ export interface IListChallengesResponse {
     identifier: IDomainIdentfier;
     status: string;
     wildcard: boolean;
+    authCode: string;
 }

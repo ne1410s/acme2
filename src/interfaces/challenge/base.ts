@@ -15,6 +15,8 @@ export interface IFulfilmentData {
     more: any;
 }
 
-export interface IChallengeDetails extends IChallenge {
+export interface IChallengeDetail extends IChallenge {
+    id: number;
+    authCode: string;
     fulfilmentData: IFulfilmentData;
 }
