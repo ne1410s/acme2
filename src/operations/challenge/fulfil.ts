@@ -24,8 +24,8 @@ export class FulfilChallengeOperation extends AccountOperation<IFulfilChallengeR
             messages.push('Auth code is required');
         }
 
-        if (!requestData.challengeDetail.id) {
-            messages.push('Id is required');
+        if (!requestData.challengeDetail.challengeId) {
+            messages.push('Challenge id is required');
         }
 
         if (messages.length !== 0) {
@@ -33,11 +33,11 @@ export class FulfilChallengeOperation extends AccountOperation<IFulfilChallengeR
         }
 
         // Once deemed valid; correct the operation url at invocation time
-        this._url = `${this.baseUrl}/challenge/${requestData.challengeDetail.authCode}/${requestData.challengeDetail.id}`;
+        this._url = `${this.baseUrl}/challenge/${requestData.challengeDetail.authCode}/${requestData.challengeDetail.challengeId}`;
     }
 
     
-    protected toPayload(requestData: IFulfilChallengeRequest): IFulfilChallengePayload {
+    protected async toPayload(requestData: IFulfilChallengeRequest): Promise<IFulfilChallengePayload> {
         return {
             keyAuthorization: requestData.challengeDetail.fulfilmentData.keyAuth
         };

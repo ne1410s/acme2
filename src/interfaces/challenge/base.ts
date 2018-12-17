@@ -1,4 +1,3 @@
-import { IDomainIdentfier } from "../order/upsert";
 
 export interface IChallenge {
     status: string;
@@ -16,7 +15,7 @@ export interface IFulfilmentData {
 }
 
 export interface IChallengeDetail extends IChallenge {
-    id: number;
+    challengeId: number;
     authCode: string;
     fulfilmentData: IFulfilmentData;
 }

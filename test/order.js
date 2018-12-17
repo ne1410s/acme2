@@ -2,7 +2,7 @@
 const Acme2 = require('../dist/index');
 
 const sut = new Acme2('staging');
-const RUN_CACHE = { id: null, token: null, keys: null };
+const RUN_CACHE = { accountId: null, token: null, keys: null };
 
 describe('#acme tokens', () => {
 
@@ -18,14 +18,14 @@ describe('#acme tokens', () => {
             token: tokenResult.token
         };
         var accountResult = await sut.accounts.create.invoke(accountRequest);
-        RUN_CACHE.id = accountResult.id;
+        RUN_CACHE.accountId = accountResult.accountId;
         RUN_CACHE.token = accountResult.token;
         RUN_CACHE.keys = accountResult.keys;
 
         // order
         var orderRequest = {
             domains: ['test.biz'],
-            id: RUN_CACHE.id,
+            accountId: RUN_CACHE.accountId,
             token: RUN_CACHE.token,
             keys: RUN_CACHE.keys
         };

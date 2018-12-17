@@ -28,7 +28,7 @@ export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRe
         }
     }
 
-    toPayload(requestData: ICreateAccountRequest): ICreateAccountPayload {
+    protected async toPayload(requestData: ICreateAccountRequest): Promise<ICreateAccountPayload> {
         return {
             contact: requestData.emails.map(r => `mailto:${r}`),
             onlyReturnExisting: false,
@@ -46,7 +46,7 @@ export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRe
 
         const json = JSON.parse(responseText);
         return {
-            id: json.id,
+            accountId: json.id,
             status: json.status,
             created: new Date(json.createdAt),
             initialIp: json.initialIp,
@@ -64,7 +64,7 @@ export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRe
 
         const messages: string[] = [];
 
-        if (!responseData.id) {
+        if (!responseData.accountId) {
             messages.push('Id is expected');
         }
 

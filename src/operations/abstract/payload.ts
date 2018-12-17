@@ -15,7 +15,7 @@ export abstract class PayloadOperation<TRequest extends IRequest, TResponse exte
     async serialise(requestData: TRequest): Promise<string> {
 
         // Encode payload content
-        const payloadRaw = this.toPayload(requestData);
+        const payloadRaw = await this.toPayload(requestData);
         const encodedPayload = Text.objectToBase64Url(payloadRaw);
 
         // Encode protected content
@@ -56,7 +56,7 @@ export abstract class PayloadOperation<TRequest extends IRequest, TResponse exte
      * validation has taken place.
      * @param requestData The request data.
      */
-    protected abstract toPayload(requestData: TRequest): TPayload;
+    protected abstract async toPayload(requestData: TRequest): Promise<TPayload>;
 
     /**
      * Additional properties of the protected header vary according to context.

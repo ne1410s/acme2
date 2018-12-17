@@ -31,7 +31,7 @@ export class GetChallengeDetailOperation extends OperationBase<IGetChallengeDeta
                   const retVal = challenge as IChallengeDetail,
                         urlParts = challenge.url.split('/');
 
-                  retVal.id = parseInt(urlParts[urlParts.length - 1], 10);
+                  retVal.challengeId = parseInt(urlParts[urlParts.length - 1], 10);
                   retVal.authCode = requestData.listResponse.authCode;
                   retVal.fulfilmentData = await this.generateFulfilmentData(challenge, domain, requestData.publicJwk);
 

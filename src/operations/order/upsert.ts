@@ -29,14 +29,14 @@ export class UpsertOrderOperation extends AccountOperation<IUpsertOrderRequest, 
         }
     }
 
-    protected toPayload(requestData: IUpsertOrderRequest): IUpsertOrderPayload {
+    protected async toPayload(requestData: IUpsertOrderRequest): Promise<IUpsertOrderPayload> {
         return {
             // TODO: Map start & end dates to iso strings
             identifiers: requestData.domains.map(domain => ({
                 type: 'dns',
                 value: domain
             }))
-        }
+        };
     }
 
     async deserialise(response: Response, requestData: IUpsertOrderRequest): Promise<IActiveOrderResponse> {
@@ -52,11 +52,11 @@ export class UpsertOrderOperation extends AccountOperation<IUpsertOrderRequest, 
               locParts = location.split('/');
 
         return {
-            id: parseInt(locParts[locParts.length - 1], 10),
+            orderId: parseInt(locParts[locParts.length - 1], 10),
             status: json.status,
             orderUrl: location,
             expires: json.expires,
-            finalize: json.finalize,
+            finaliseUrl: json.finalize,
             identifiers: json.identifiers,
             token: response.headers.get('replay-nonce'),
             authCodes: json.authorizations.map((authUrl: string) => {
@@ -72,7 +72,7 @@ export class UpsertOrderOperation extends AccountOperation<IUpsertOrderRequest, 
         
         const messages: string[] = [];
 
-        if (!responseData.id) {
+        if (!responseData.orderId) {
             messages.push('Id is expected');
         }
 
@@ -92,8 +92,8 @@ export class UpsertOrderOperation extends AccountOperation<IUpsertOrderRequest, 
             messages.push('Expiry date is expected');
         }
 
-        if (!responseData.finalize || responseData.finalize == '') {
-            messages.push('Finalize url is expected');
+        if (!responseData.finaliseUrl || responseData.finaliseUrl == '') {
+            messages.push('Finalise url is expected');
         }
 
         if (messages.length !== 0) {

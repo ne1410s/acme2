@@ -16,7 +16,7 @@ export class DeleteAccountOperation extends AccountOperation<IAccountRequest, ID
         this._url = this.getAccountUrl(requestData);
     }
 
-    protected toPayload(requestData: IAccountRequest): any {
+    protected async toPayload(requestData: IAccountRequest): Promise<any> {
         return {
             status: 'deactivated'
         };

@@ -10,8 +10,8 @@ export abstract class AccountOperation<TRequest extends IAccountRequest, TRespon
         const messages: string[] = [];
         requestData = requestData || {} as IAccountRequest;
 
-        if (!requestData.id) {
-            messages.push('Id is required');
+        if (!requestData.accountId) {
+            messages.push('Account id is required');
         }
 
         if (!requestData.keys || !requestData.keys.privateJwk) {
@@ -28,7 +28,7 @@ export abstract class AccountOperation<TRequest extends IAccountRequest, TRespon
     }
 
     protected getAccountUrl(requestData: TRequest): string {
-        return `${this.baseUrl}/acct/${requestData.id}`;
+        return `${this.baseUrl}/acct/${requestData.accountId}`;
     }
 
     protected getExtraProtectedData(requestData: TRequest): any {

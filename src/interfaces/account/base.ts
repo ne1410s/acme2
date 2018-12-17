@@ -2,7 +2,7 @@ import { IKeyPair_Jwk } from "@ne1410s/crypto/dist/interfaces";
 import { IRequest, IResponse } from "../token/base";
 
 export interface IAccount {
-    id: number;
+    accountId: number;
     keys: IKeyPair_Jwk;
 }
 

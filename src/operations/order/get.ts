@@ -40,11 +40,11 @@ export class GetOrderOperation extends JsonOperation<IOrderRequest, IOrderRespon
         const json = JSON.parse(responseText);
 
         return {
-            id: requestData.orderId,
+            orderId: requestData.orderId,
             status: json.status,
             orderUrl: this._url,
             expires: json.expires,
-            finalize: json.finalize,
+            finaliseUrl: json.finalize,
             identifiers: json.identifiers,
             authCodes: json.authorizations.map((authUrl: string) => {
                 const authUrlParts = authUrl.split('/');
@@ -58,7 +58,7 @@ export class GetOrderOperation extends JsonOperation<IOrderRequest, IOrderRespon
         const messages: string[] = [];
         responseData = responseData || {} as IOrderResponse;
 
-        if (!responseData.id) {
+        if (!responseData.orderId) {
             messages.push('Id is expected');
         }
 
@@ -78,8 +78,8 @@ export class GetOrderOperation extends JsonOperation<IOrderRequest, IOrderRespon
             messages.push('Expiry date is expected');
         }
 
-        if (!responseData.finalize || responseData.finalize == '') {
-            messages.push('Finalize url is expected');
+        if (!responseData.finaliseUrl || responseData.finaliseUrl == '') {
+            messages.push('Finalise url is expected');
         }
 
         if (messages.length !== 0) {

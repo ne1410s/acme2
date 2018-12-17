@@ -2,7 +2,7 @@
 const Acme2 = require('../dist/index');
 
 const sut = new Acme2('staging');
-const RUN_CACHE = { id: null, token: null, keys: null };
+const RUN_CACHE = { accountId: null, token: null, keys: null };
 
 describe('#acme tokens', () => {
 
@@ -29,7 +29,7 @@ describe('#acme tokens', () => {
             console.log('result ->', result);
 
             // Cache the account data
-            RUN_CACHE.id = result.id;
+            RUN_CACHE.accountId = result.accountId;
             RUN_CACHE.token = result.token;
             RUN_CACHE.keys = result.keys;
 
@@ -42,7 +42,7 @@ describe('#acme tokens', () => {
     it('should load account details', async () => {
 
         var request = { 
-            id: RUN_CACHE.id,
+            accountId: RUN_CACHE.accountId,
             token: RUN_CACHE.token,
             keys: RUN_CACHE.keys
         };
@@ -63,7 +63,7 @@ describe('#acme tokens', () => {
     it('should update account details', async () => {
 
         var request = { 
-            id: RUN_CACHE.id,
+            accountId: RUN_CACHE.accountId,
             token: RUN_CACHE.token,
             keys: RUN_CACHE.keys,
             emails: ['abc@xyz.com']
@@ -85,7 +85,7 @@ describe('#acme tokens', () => {
     it('should delete accounts', async () => {
 
         var request = { 
-            id: RUN_CACHE.id,
+            accountId: RUN_CACHE.accountId,
             token: RUN_CACHE.token,
             keys: RUN_CACHE.keys
         };

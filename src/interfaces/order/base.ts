@@ -7,13 +7,13 @@ export interface IOrderRequest {
 }
 
 export interface IOrderResponse {
-    id: number;
+    orderId: number;
     status: string;
     orderUrl: string;
     expires: Date;
     identifiers: Array<IDomainIdentfier>;
     authCodes: Array<string>;
-    finalize: string;
+    finaliseUrl: string;
 }
 
 export interface IActiveOrderResponse extends IResponse, IOrderResponse { }
