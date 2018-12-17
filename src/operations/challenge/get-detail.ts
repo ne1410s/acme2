@@ -1,11 +1,11 @@
 import Crypto from "@ne1410s/crypto";
 import { OperationBase, ValidationError } from "@ne1410s/http";
-import { IGetFulfilmentDataRequest, IGetFulfilmentDataResponse } from "../../interfaces/challenge/get-fulfilment-data";
+import { IGetChallengeDetailRequest, IGetChallengeDetailResponse } from "../../interfaces/challenge/get-detail";
 import { IFulfilmentData, IChallenge, IChallengeDetails } from "../../interfaces/challenge/base";
 
-export class GetFulfilmentDataOperation extends OperationBase<IGetFulfilmentDataRequest, IGetFulfilmentDataResponse> {
+export class GetChallengeDetailOperation extends OperationBase<IGetChallengeDetailRequest, IGetChallengeDetailResponse> {
     
-    validateRequest(requestData: IGetFulfilmentDataRequest): void {
+    validateRequest(requestData: IGetChallengeDetailRequest): void {
         
         const messages: string[] = [];
 
@@ -22,23 +22,21 @@ export class GetFulfilmentDataOperation extends OperationBase<IGetFulfilmentData
         }
     }
        
-    protected async invokeInternal(requestData: IGetFulfilmentDataRequest): Promise<IGetFulfilmentDataResponse> {
+    protected async invokeInternal(requestData: IGetChallengeDetailRequest): Promise<IGetChallengeDetailResponse> {
         
         const orig = requestData.listResponse,
               domain = orig.identifier.value,
-              fDataArray = await Promise.all(orig.challenges.map(async chal =>
-                    await this.generateFulfilmentData(chal, domain, requestData.publicJwk)));
+              detailsArray = await Promise.all(orig.challenges.map(async challenge => {
+                  const retVal = challenge as IChallengeDetails;
+                  retVal.fulfilmentData = await this.generateFulfilmentData(challenge, domain, requestData.publicJwk);
+                  return retVal;
+              }));
 
         return {
-            detailedChallenges: fDataArray
-                .filter(fdata => fdata.implemented)
-                .map(fdata => ({
-                    expires: orig.expires,
-                    identifier: orig.identifier,
-                    status: orig.status,
-                    fulfilmentData: fdata,
-                    wildcard: orig.wildcard
-                }) as IChallengeDetails)
+            domain: domain,
+            wildcard: orig.wildcard,
+            expires: orig.expires,
+            detail: detailsArray.filter(d => d.fulfilmentData.implemented)
         };
     }
 
@@ -86,34 +84,34 @@ export class GetFulfilmentDataOperation extends OperationBase<IGetFulfilmentData
         return `${challengeToken}.${keyBaseHash}`;
     }
 
-    validateResponse(responseData: IGetFulfilmentDataResponse): void {
+    validateResponse(responseData: IGetChallengeDetailResponse): void {
         
         const messages: string[] = [];
-        responseData = responseData || {} as IGetFulfilmentDataResponse;
+        responseData = responseData || {} as IGetChallengeDetailResponse;
 
-        if (!responseData.detailedChallenges || responseData.detailedChallenges.length == 0) {
+        if (!responseData.detail || responseData.detail.length == 0) {
             messages.push('Challenge details are expected');
         }
         else {
-            responseData.detailedChallenges.forEach(dc => {
+            responseData.detail.forEach(d => {
 
-                    const fdata = dc.fulfilmentData || {} as IFulfilmentData;
+                    const fdata = d.fulfilmentData || {} as IFulfilmentData;
 
-                    if (!dc.type || dc.type.length == 0) {
-                        messages.push('Challenge type is expected')
+                    if (!d.type || !d.type) {
+                        messages.push('Challenge identifier type is expected');
                     }
                     else {
 
                         if (!fdata.content) {
-                            messages.push(`Content is expected for: ${dc.type} challenge`);
+                            messages.push(`Content is expected for: ${d.type} challenge`);
                         }
 
                         if (!fdata.keyAuth) {
-                            messages.push(`Key auth is expected for: ${dc.type} challenge`);
+                            messages.push(`Key auth is expected for: ${d.type} challenge`);
                         }
                 
                         if (!fdata.title) {
-                            messages.push(`Title is expected for: ${dc.type} challenge`);
+                            messages.push(`Title is expected for: ${d.type} challenge`);
                         }
                     }
                 }

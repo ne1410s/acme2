@@ -16,9 +16,5 @@ export interface IFulfilmentData {
 }
 
 export interface IChallengeDetails extends IChallenge {
-    expires: Date;
-    identifier: IDomainIdentfier;
-    status: string;
     fulfilmentData: IFulfilmentData;
-    wildcard: boolean;
 }
