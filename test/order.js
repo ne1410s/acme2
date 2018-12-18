@@ -80,5 +80,22 @@ describe('#acme tokens', () => {
             console.log('error ->', err);
             throw new Chai.AssertionError('An error occurred');
         }  
-    })
-}); */
+    });
+
+    it('should download a certificate', async () => {
+
+        var request = {
+            certificateUrl: 'https://acme-staging-v02.api.letsencrypt.org/acme/cert/faf7a065201b40b1d4c2fcad5af131b214ce',
+            //contentType: 'application/pem-certificate-chain'
+        };
+        
+        try {
+            var result = await sut.orders.getCert.invoke(request);
+            console.log('result ->', result);
+
+        } catch (err) {
+            console.log('error ->', err);
+            throw new Chai.AssertionError('An error occurred');
+        } 
+    });
+});  */
