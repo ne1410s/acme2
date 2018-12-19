@@ -10,7 +10,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rimraf dist",
-    "build": "rollup -cm",
+    "build": "tsc",
     "test": "npm run clean && npm run build && mocha --exit",
     "publish-patch": "npm version patch && npm run test && npm publish --access public"
   },
@@ -32,11 +32,8 @@
   "homepage": "https://github.com/ne1410s/acme2#readme",
   "devDependencies": {
     "chai": "^4.2.0",
-    "eslint": "^5.9.0",
     "mocha": "^5.2.0",
     "rimraf": "^2.6.2",
-    "rollup": "^0.67.4",
-    "rollup-plugin-typescript2": "^0.18.0",
     "typescript": "^3.2.1"
   },
   "dependencies": {
