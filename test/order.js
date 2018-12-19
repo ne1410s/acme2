@@ -1,7 +1,7 @@
 /* const Chai = require('chai');
-const Acme2 = require('../dist/index');
+const ne14 = require('../dist/index');
 
-const sut = new Acme2('staging');
+const sut = new ne14.Acme2('staging');
 const RUN_CACHE = { accountId: null, token: null, keys: null };
 
 describe('#acme tokens', () => {

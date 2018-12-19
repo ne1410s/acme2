@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
-const Acme2 = require('../dist/index').default;
+const ne14 = require('../dist/index');
 
-const SUT = new Acme2('staging'),
+const SUT = new ne14.Acme2('staging'),
       CACHE = { token: '', aid: 0, keys: {}, oid: 0, authCodes: [], challengesList: {}, challengeDetail: {} };
 
 describe('#acme e2e', () => {
@@ -28,8 +28,6 @@ describe('#acme e2e', () => {
         CACHE.aid = aid;
         CACHE.keys = result.keys;
     });
-
-    return;
 
     it('should update-account', async () => {
 

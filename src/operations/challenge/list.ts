@@ -1,5 +1,4 @@
 import { HttpResponseError, JsonOperation, ValidationError } from "@ne1410s/http";
-import {  } from "../../interfaces/challenge/base";
 import { IListChallengesRequest, IListChallengesResponse } from "../../interfaces/challenge/list";
 
 export class ListChallengesOperation extends JsonOperation<IListChallengesRequest, IListChallengesResponse> {

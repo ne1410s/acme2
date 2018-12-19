@@ -3,7 +3,7 @@ import { AccountOperations } from "./operations/account/wrapped-up";
 import { OrderOperations } from "./operations/order/wrapped-up";
 import { ChallengeOperations } from "./operations/challenge/wrapped-up";
 
-export default class Acme2 {
+export class Acme2 {
     
     public readonly tokens: TokenOperations;
     public readonly accounts: AccountOperations;
