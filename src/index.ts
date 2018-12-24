@@ -1,9 +1,10 @@
 import * as express from "express";
+import * as config from "./api-config.json";
 import { Acme2Service } from "./services/acme2";
-import Config from "./config";
 
 const app = express();
-const svc = new Acme2Service(Config.apiEnvironment);
+const env = config.useProductionApi ? 'production' : 'staging';
+const svc = new Acme2Service(env as any);
 
 const proc = (q: express.Request, r: express.Response, entity: string, operation: string) => {
     (svc as any)[entity][operation].invoke({ ...q.body, ...q.query })
@@ -32,6 +33,6 @@ app.get('/challenge/detail', (q, r) => proc(q, r, 'challenges', 'detail'));
 app.put('/challenge/fulfil', (q, r) => proc(q, r, 'challenges', 'fulfil'));
 
 // Start!
-app.listen(Config.portNumber, Config.hostName, () => {
-    console.log(`Listening on ${Config.hostName}:${Config.portNumber}`);
+app.listen(config.portNumber, config.hostName, () => {
+    console.log(`Listening on ${config.hostName}:${config.portNumber}`);
 });
