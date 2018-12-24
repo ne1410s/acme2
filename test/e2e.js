@@ -1,4 +1,4 @@
-const expect = require('chai').expect;
+/* const expect = require('chai').expect;
 const ne14 = require('../dist/index');
 
 const SUT = new ne14.Acme2('staging'),
@@ -171,4 +171,4 @@ async function invokeOrLog(entity, operation, params) {
         console.log('-------------------------------------------------');
         throw error;
     }
-}
+} */
