@@ -1,6 +1,6 @@
 {
   "name": "@ne1410s/acme2",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "ES ACME v2 Wrapper",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
