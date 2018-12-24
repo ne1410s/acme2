@@ -1,27 +1,37 @@
-import { TokenOperations } from "./operations/token/wrapped-up";
-import { AccountOperations } from "./operations/account/wrapped-up";
-import { OrderOperations } from "./operations/order/wrapped-up";
-import { ChallengeOperations } from "./operations/challenge/wrapped-up";
+import * as express from "express";
+import { Acme2Service } from "./services/acme2";
+import Config from "./config";
 
-export class Acme2 {
-    
-    public readonly tokens: TokenOperations;
-    public readonly accounts: AccountOperations;
-    public readonly orders: OrderOperations;
-    public readonly challenges: ChallengeOperations;
+const app = express();
+const svc = new Acme2Service(Config.apiEnvironment);
 
-    private readonly urls: any = {
-        staging: 'https://acme-staging-v02.api.letsencrypt.org/acme',
-        production: 'https://acme-v02.api.letsencrypt.org/acme'
-    };
+const proc = (q: express.Request, r: express.Response, entity: string, operation: string) => {
+    (svc as any)[entity][operation].invoke({ ...q.body, ...q.query })
+        .then((res: any) => r.json(res))
+        .catch((err: any) => r.json(err));
+};
 
-    constructor(env: 'staging | production') {
+// Token Operations
+app.get('/token', (q, r) => proc(q, r, 'tokens', 'get'));
 
-        const baseUrl = this.urls[env];
+// Account Operations
+app.post('/account', (q, r) => proc(q, r, 'accounts', 'create'));
+app.get('/account', (q, r) => proc(q, r, 'accounts', 'get'));
+app.put('/account', (q, r) => proc(q, r, 'accounts', 'update'));
+app.delete('/account', (q, r) => proc(q, r, 'accounts', 'delete'));
 
-        this.tokens = new TokenOperations(baseUrl);
-        this.accounts = new AccountOperations(baseUrl);
-        this.orders = new OrderOperations(baseUrl);
-        this.challenges = new ChallengeOperations(baseUrl);
-    }
-}
+// Order Operations
+app.get('/order', (q, r) => proc(q, r, 'orders', 'get'));
+app.put('/order', (q, r) => proc(q, r, 'orders', 'upsert'));
+app.put('/order/finalise', (q, r) => proc(q, r, 'orders', 'finalise'));
+app.get('/order/cert', (q, r) => proc(q, r, 'orders', 'getcert'));
+
+// Challenge Operations
+app.get('/challenge', (q, r) => proc(q, r, 'challenges', 'list'));
+app.get('/challenge/detail', (q, r) => proc(q, r, 'challenges', 'detail'));
+app.put('/challenge/fulfil', (q, r) => proc(q, r, 'challenges', 'fulfil'));
+
+// Start!
+app.listen(Config.portNumber, Config.hostName, () => {
+    console.log(`Listening on ${Config.hostName}:${Config.portNumber}`);
+});
