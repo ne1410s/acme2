@@ -1,7 +1,7 @@
 /* const Chai = require('chai');
-const ne14 = require('../dist/index');
+const ne14 = require('../dist/services/acme2');
 
-const sut = new ne14.Acme2('staging');
+const sut = new ne14.Acme2Service('staging');
 let orig_response,
     deet_response;
 

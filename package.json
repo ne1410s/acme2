@@ -2,14 +2,14 @@
   "name": "@ne1410s/acme2",
   "version": "0.1.2",
   "description": "ES ACME v2 Wrapper",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
+  "main": "dist/server.js",
+  "module": "dist/server.es.js",
   "files": [
     "dist"
   ],
-  "types": "dist/index.d.ts",
+  "types": "dist/server.d.ts",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "node dist/server.js",
     "clean": "rimraf dist",
     "build": "tsc",
     "dev": "npx tsc-watch --onSuccess \"npm run start\"",

@@ -33,6 +33,6 @@ app.get('/challenge/detail', (q, r) => proc(q, r, 'challenges', 'detail'));
 app.put('/challenge/fulfil', (q, r) => proc(q, r, 'challenges', 'fulfil'));
 
 // Start!
-app.listen(config.portNumber, config.hostName, () => {
-    console.log(`Listening on ${config.hostName}:${config.portNumber}`);
+app.listen(config.portNumber, () => {
+    console.log(`Listening on port ${config.portNumber}`);
 });

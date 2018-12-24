@@ -1,7 +1,7 @@
 /* const expect = require('chai').expect;
-const ne14 = require('../dist/index');
+const ne14 = require('../dist/services/acme2');
 
-const SUT = new ne14.Acme2('staging'),
+const SUT = new ne14.Acme2Service('staging'),
       CACHE = { token: '', aid: 0, keys: {}, oid: 0, authCodes: [], challengesList: {}, challengeDetail: {} };
 
 describe('#acme e2e', () => {

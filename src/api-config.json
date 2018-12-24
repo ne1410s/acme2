@@ -1,5 +1,4 @@
 {
-    "hostName": "localhost",
-    "portNumber": 3000,
+    "portNumber": 80,
     "useProductionApi": false
 }
