@@ -41,7 +41,7 @@
     "typescript": "^3.2.1"
   },
   "dependencies": {
-    "@ne1410s/crypto": "^0.1.1",
+    "@ne1410s/crypto": "^0.1.2",
     "@ne1410s/http": "^0.1.0",
     "@ne1410s/text": "^0.1.0",
     "express": "^4.16.4"
