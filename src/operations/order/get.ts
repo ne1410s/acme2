@@ -43,6 +43,7 @@ export class GetOrderOperation extends JsonOperation<IOrderRequest, IOrderRespon
             orderId: requestData.orderId,
             status: json.status,
             orderUrl: this._url,
+            certificateUrl: json.certificate, // (once finalised)
             expires: json.expires,
             finaliseUrl: json.finalize,
             identifiers: json.identifiers,

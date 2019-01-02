@@ -5,8 +5,9 @@ export class GetCertOperation extends JsonOperation<IGetCertRequest, IGetCertRes
 
     private readonly CONTENT_TYPE_OPTS: Array<string> = [
         'application/pem-certificate-chain',
+        'applicaiton/pkcs7-mime',
         'application/pkix-cert',
-        'application/x-pkcs12'
+        'application/x-pkcs12',
     ];
     
     constructor (baseUrl: string) {

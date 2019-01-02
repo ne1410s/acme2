@@ -2,7 +2,11 @@
 const ne14 = require('../dist/services/acme2');
 
 const SUT = new ne14.Acme2Service('staging'),
-      CACHE = { token: '', aid: 0, keys: {}, oid: 0, authCodes: [], challengesList: {}, challengeDetail: {} };
+      CACHE = { token: '', aid: 0, keys: {}, oid: 0, authCodes: [], challengesList: {}, challengeDetail: {}, certificateUrl: '' },
+      TEST_DETAILS = {
+        emails: ['pgj646@gmail.com'],
+        domain: '*.mydomain.co.uk'
+      }
 
 describe('#acme e2e', () => {
 
@@ -18,7 +22,7 @@ describe('#acme e2e', () => {
 
     it('should create-account', async () => {
 
-        var params = { termsAgreed: true, emails: ['test@fake.biz'], token: CACHE.token },
+        var params = { termsAgreed: true, emails: TEST_DETAILS.emails, token: CACHE.token },
             result = await invokeOrLog('accounts', 'create', params),
             aid = result.accountId || 0;
 
@@ -64,7 +68,7 @@ describe('#acme e2e', () => {
 
     it('should create-order', async () => {
 
-        var params = { domains: ['temp.org'], accountId: CACHE.aid, keys: CACHE.keys, token: CACHE.token },
+        var params = { domains: [TEST_DETAILS.domain], accountId: CACHE.aid, keys: CACHE.keys, token: CACHE.token },
             result = await invokeOrLog('orders', 'upsert', params),
             oid = result.orderId || 0;
 
@@ -73,6 +77,14 @@ describe('#acme e2e', () => {
         CACHE.token = result.token;
         CACHE.oid = oid;
     });
+
+
+    // CACHE.aid = xxx;
+    // CACHE.oid = xxx;
+    // CACHE.keys = { 
+    //     xxx
+    // };
+
 
     it('should get-order', async () => {
 
@@ -85,7 +97,10 @@ describe('#acme e2e', () => {
         expect(result.finaliseUrl).to.not.be.empty;
         expect(authCodes.length).to.not.equal(0);
 
+        console.log(result);
+
         CACHE.authCodes = authCodes;
+        CACHE.certificateUrl = result.certificateUrl;
     });
 
     it('should list-challenges', async () => {
@@ -134,23 +149,29 @@ describe('#acme e2e', () => {
     it('should finalise-order', async () => {
         
         // e2e: not expecting success here
-        var params = { accountId: CACHE.aid, orderId: CACHE.oid, keys: CACHE.keys, token: CACHE.token, identifiers: [ CACHE.challengesList.identifier ] },
+        var params = { accountId: CACHE.aid, orderId: CACHE.oid, keys: CACHE.keys, token: CACHE.token, identifiers: [ { type: 'dns', value: TEST_DETAILS.domain } ] },
             result = await invokeOrLog('orders', 'finalise', params),
-            status = result.status || '';
+            status = result.status || '',
+            certificateUrl = result.certificateUrl || '';
+
+        console.log('\r\n\r\n--------------------------- CSR Private Key) ---------------------------\r\n', result.originalCsr.pkcs8);
 
         expect(status).to.not.be.empty;
+        expect(certificateUrl).to.not.be.empty;
 
         CACHE.token = result.token;
+        CACHE.certificateUrl = certificateUrl;
     });
 
     it('should download-order-cert', async () => {
         
         // e2e: not expecting success here
-        var params = { certificateUrl: '<certificate url goes here>' },
+        var params = { certificateUrl: CACHE.certificateUrl },
             result = await invokeOrLog('orders', 'getCert', params);
 
         expect(result.content || '').to.not.be.empty;
 
+        console.log(result);
     });
 
     it('should report final cache status', async () => {

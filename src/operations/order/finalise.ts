@@ -24,6 +24,10 @@ export class FinaliseOrderOperation extends AccountOperation<IFinaliseOrderReque
         if (requestData.identifiers.length == 0) {
             messages.push('At least one identifier is required');
         }
+
+        if (requestData.originalCsr != null) {
+            messages.push('Original csr must not be supplied manually');
+        }
                 
         if (messages.length !== 0) {
             throw new ValidationError('The request is invalid', requestData, messages);
@@ -36,10 +40,13 @@ export class FinaliseOrderOperation extends AccountOperation<IFinaliseOrderReque
     protected async toPayload(requestData: IFinaliseOrderRequest): Promise<IFinaliseOrderPayload> {
         
         const domains = requestData.identifiers.map(i => i.value),
-              csrObject = await Crypto.csr({ domains });
+              company = requestData.company,
+              department = requestData.department;
+
+        requestData.originalCsr = await Crypto.csr({ domains, company, department });
 
         return {
-            csr: csrObject.der
+            csr: requestData.originalCsr.der
         };
     }
 
@@ -49,7 +56,7 @@ export class FinaliseOrderOperation extends AccountOperation<IFinaliseOrderReque
 
         if (!response.ok) {
             throw new HttpResponseError(response.status, response.statusText, response.headers, responseText);
-        }      
+        }
 
         const json = JSON.parse(responseText);
 
@@ -57,6 +64,7 @@ export class FinaliseOrderOperation extends AccountOperation<IFinaliseOrderReque
             status: json.status,
             expires: json.expires,
             certificateUrl: json.certificate,
+            originalCsr: requestData.originalCsr,
             token: response.headers.get('replay-nonce')
         };
     }
@@ -81,6 +89,10 @@ export class FinaliseOrderOperation extends AccountOperation<IFinaliseOrderReque
 
         if (responseData.status != 'valid' && responseData.certificateUrl) {
             messages.push('Status is not valid - certificate url is not expected');
+        }
+
+        if (responseData.originalCsr == null) {
+            messages.push('Original csr is expected (to have been auto-generated)');
         }
 
         if (messages.length !== 0) {

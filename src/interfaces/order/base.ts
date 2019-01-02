@@ -10,6 +10,7 @@ export interface IOrderResponse {
     orderId: number;
     status: string;
     orderUrl: string;
+    certificateUrl?: string;
     expires: Date;
     identifiers: Array<IDomainIdentfier>;
     authCodes: Array<string>;
