@@ -28,6 +28,7 @@ export abstract class AccountOperation<TRequest extends IAccountRequest, TRespon
     }
 
     protected getAccountUrl(requestData: TRequest): string {
+        
         return `${this.baseUrl}/acct/${requestData.accountId}`;
     }
 

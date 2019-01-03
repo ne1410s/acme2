@@ -1,0 +1,4 @@
+{
+    "portNumber": 8081,
+    "dbConnection": "./dist/database/acme.db"
+}
