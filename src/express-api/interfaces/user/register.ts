@@ -5,4 +5,5 @@ export interface IRegisterRequest {
 
 export interface IRegisterResponse {
     userId: number;
+    token: string;
 }

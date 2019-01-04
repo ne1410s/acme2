@@ -1,19 +1,28 @@
 import * as express from "express";
+import * as cors from "cors";
+import * as bodyParser from "body-parser";
 import * as config from "./api.json"
 import { ExpressService } from "./express-api/services/express";
-import { DbUtils } from "./database/db-utils";
+import { DbContext } from "./database/dbContext";
 
-const expr_svc = new ExpressService();
+const db = new DbContext();
+const expr_svc = new ExpressService(db);
 const expr_api = express();
 
 const proc = (q: express.Request, r: express.Response, entity: string, operation: string) => {
     (expr_svc as any)[entity][operation].invoke({ ...q.body, ...q.query })
         .then((res: any) => r.json(res))
-        .catch((err: any) => r.json(err));
+        .catch((err: any) => {
+            err = err.cause || err;
+            r.json({message: err.toString(), detail: err.errors });
+        });
 };
 
-DbUtils.syncStructure().then(() => {
-    console.log('-------------\r\n-Database OK-\r\n-------------');
+// defer api startup til db init
+db.syncStructure().then(() => {
+
+    expr_api.use(cors());
+    expr_api.use(bodyParser.json());
 
     // User Operations
     expr_api.post('/user', (q, r) => proc(q, r, 'users', 'register'));
