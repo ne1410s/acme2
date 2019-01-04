@@ -2,6 +2,7 @@ import { OperationBase, ValidationError } from "@ne1410s/http";
 import { ILoginResponse, ILoginRequest } from "../../interfaces/user/login";
 import { DbContext } from "../../../database/dbContext";
 import { AuthUtils } from "../../utils/auth";
+import { AuthError } from "../../errors/auth";
 
 export class LoginOperation extends OperationBase<ILoginRequest, ILoginResponse> {
 
@@ -38,26 +39,19 @@ export class LoginOperation extends OperationBase<ILoginRequest, ILoginResponse>
 
     protected async invokeInternal(requestData: ILoginRequest): Promise<ILoginResponse> {
 
-        const messages: string[] = [];
-
         const result = await this.db.dbUser.findAll({
             where: { UserName: requestData.username }
         });
 
-        if (result.length !== 1) {
-            messages.push('401 (Dev: No such user exists)');
-        }
-        else { 
+        let denyAuth = result.length !== 1;
+        if (!denyAuth) { 
             const user = result[0] as any,
-                  testParams = { hash: user.PasswordHash, salt: user.PasswordSalt };
-
-            if (!await AuthUtils.testHash(requestData.password, testParams)) {
-                messages.push('401 (Dev: Bad pass)');
-            }
+            testParams = { hash: user.PasswordHash, salt: user.PasswordSalt };
+            denyAuth = !await AuthUtils.testHash(requestData.password, testParams);
         }
 
-        if (messages.length !== 0) {
-            throw new ValidationError('The request is invalid', requestData, messages);
+        if (denyAuth) {
+            throw new AuthError();
         }
 
         return {

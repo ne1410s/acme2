@@ -14,6 +14,7 @@ const proc = (q: express.Request, r: express.Response, entity: string, operation
         .then((res: any) => r.json(res))
         .catch((err: any) => {
             err = err.cause || err;
+            r.status(err.status || (err.errors ? 422 : 500));
             r.json({message: err.toString(), detail: err.errors });
         });
 };
