@@ -1,15 +1,15 @@
 import { OperationBase, ValidationError } from "@ne1410s/http";
-import { IRegisterRequest, IRegisterResponse } from "../../interfaces/user/register";
+import { IAuthEntryRequest, IAuthEntryResponse } from "../../interfaces/user/auth";
 import { DbContext } from "../../../database/dbContext";
 import { AuthUtils } from "../../utils/auth";
 
-export class RegisterOperation extends OperationBase<IRegisterRequest, IRegisterResponse> {
+export class RegisterOperation extends OperationBase<IAuthEntryRequest, IAuthEntryResponse> {
 
     constructor(private readonly db: DbContext) {
         super();
     }
 
-    validateRequest(requestData: IRegisterRequest): void {
+    validateRequest(requestData: IAuthEntryRequest): void {
         
         const messages: string[] = [];
 
@@ -32,11 +32,11 @@ export class RegisterOperation extends OperationBase<IRegisterRequest, IRegister
         }
     }
     
-    validateResponse(responseData: IRegisterResponse): void {
+    validateResponse(responseData: IAuthEntryResponse): void {
         //
     }
 
-    protected async invokeInternal(requestData: IRegisterRequest): Promise<IRegisterResponse> {
+    protected async invokeInternal(requestData: IAuthEntryRequest): Promise<IAuthEntryResponse> {
         
         const result = await this.db.dbUser.findAll({
             where: { UserName: requestData.username }
@@ -48,7 +48,7 @@ export class RegisterOperation extends OperationBase<IRegisterRequest, IRegister
 
         const hashResult = await AuthUtils.getHash(requestData.password);
 
-        const newRecord: any = await this.db.dbUser.create({
+        const newUser: any = await this.db.dbUser.create({
             UserID: 0,
             UserName: requestData.username,
             PasswordHash: hashResult.hash,
@@ -57,8 +57,7 @@ export class RegisterOperation extends OperationBase<IRegisterRequest, IRegister
         });
 
         return {
-            userId: newRecord.UserID,
-            token: await AuthUtils.getToken(newRecord.UserID)
+            token: await AuthUtils.getToken(newUser.UserName, newUser.PasswordSalt)
         };
     }
 

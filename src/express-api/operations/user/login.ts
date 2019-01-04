@@ -1,16 +1,16 @@
 import { OperationBase, ValidationError } from "@ne1410s/http";
-import { ILoginResponse, ILoginRequest } from "../../interfaces/user/login";
 import { DbContext } from "../../../database/dbContext";
 import { AuthUtils } from "../../utils/auth";
 import { AuthError } from "../../errors/auth";
+import { IAuthEntryResponse, IAuthEntryRequest } from "../../interfaces/user/auth";
 
-export class LoginOperation extends OperationBase<ILoginRequest, ILoginResponse> {
+export class LoginOperation extends OperationBase<IAuthEntryRequest, IAuthEntryResponse> {
 
     constructor(private readonly db: DbContext) {
         super();
     }
 
-    validateRequest(requestData: ILoginRequest): void {
+    validateRequest(requestData: IAuthEntryRequest): void {
        
         const messages: string[] = [];
 
@@ -33,21 +33,22 @@ export class LoginOperation extends OperationBase<ILoginRequest, ILoginResponse>
         }
     }
     
-    validateResponse(responseData: ILoginResponse): void {
+    validateResponse(responseData: IAuthEntryResponse): void {
         //
     }
 
-    protected async invokeInternal(requestData: ILoginRequest): Promise<ILoginResponse> {
+    protected async invokeInternal(requestData: IAuthEntryRequest): Promise<IAuthEntryResponse> {
 
         const result = await this.db.dbUser.findAll({
             where: { UserName: requestData.username }
         });
 
+        const user = result[0] as any;
+
         let denyAuth = result.length !== 1;
-        if (!denyAuth) { 
-            const user = result[0] as any,
-            testParams = { hash: user.PasswordHash, salt: user.PasswordSalt };
-            denyAuth = !await AuthUtils.testHash(requestData.password, testParams);
+        if (!denyAuth) {
+            const testParams = { hash: user.PasswordHash, salt: user.PasswordSalt };
+            denyAuth = !await AuthUtils.verifyHash(requestData.password, testParams);
         }
 
         if (denyAuth) {
@@ -55,7 +56,7 @@ export class LoginOperation extends OperationBase<ILoginRequest, ILoginResponse>
         }
 
         return {
-            token: await AuthUtils.getToken((result[0] as any).UserID)
+            token: await AuthUtils.getToken(user.UserName, user.PasswordSalt)
         };
     }
 
