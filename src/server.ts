@@ -1,15 +1,17 @@
 import * as express from "express";
 import * as cors from "cors";
 import * as bodyParser from "body-parser";
-import * as config from "./api.json"
+import * as apiConfig from "./api.json"
 import { ExpressService } from "./express-api/services/express";
 import { DbContext } from "./database/dbContext";
+import { AuthUtils } from "./express-api/utils/auth.js";
 
 const db = new DbContext();
 const expr_svc = new ExpressService(db);
 const expr_api = express();
 
 const proc = (q: express.Request, r: express.Response, entity: string, operation: string) => {
+    
     (expr_svc as any)[entity][operation].invoke({ ...q.body, ...q.query })
         .then((res: any) => r.json(res))
         .catch((err: any) => {
@@ -17,6 +19,28 @@ const proc = (q: express.Request, r: express.Response, entity: string, operation
             r.status(err.status || (err.errors ? 422 : 500));
             r.json({message: err.toString(), detail: err.errors });
         });
+};
+
+/**
+ * Secure process: requires a valid bearer token. 
+ */
+const sec_proc = (q: express.Request, r: express.Response, entity: string, operation: string) => {       
+    
+    db.dbConfig.findOne().then((config: any) => {
+        try {
+            const authHeader = q.header('authorization'),
+                  token = ((authHeader || '').match(/^[Bb]earer ([\w-]*\.[\w-]*\.[\w-]*)$/) || [])[1] || '',
+                  userId = AuthUtils.verifyToken(token, config.AppSecret);
+
+            q.body.authenticUserId = userId;
+            proc(q, r, entity, operation);
+        }
+        catch(err) {
+            console.error(err.toString());
+            r.status(401);
+            r.json({ message: 'Error: Access denied' })
+        }
+    });  
 };
 
 // defer api startup til db init
@@ -30,7 +54,8 @@ db.syncStructure().then(() => {
     expr_api.post('/login', (q, r) => proc(q, r, 'users', 'login'));
 
     // // Account Operations
-    // app.post('/account', (q, r) => proc(q, r, 'accounts', 'create'));
+    expr_api.post('/account', (q, r) => sec_proc(q, r, 'accounts', 'create'));
+
     // app.get('/account', (q, r) => proc(q, r, 'accounts', 'get'));
     // app.put('/account', (q, r) => proc(q, r, 'accounts', 'update'));
     // app.delete('/account', (q, r) => proc(q, r, 'accounts', 'delete'));
@@ -47,7 +72,7 @@ db.syncStructure().then(() => {
     // app.put('/challenge/fulfil', (q, r) => proc(q, r, 'challenges', 'fulfil'));
 
     // Start!
-    expr_api.listen(config.portNumber, () => {
-        console.log(`Listening on port ${config.portNumber}`);
+    expr_api.listen(apiConfig.portNumber, () => {
+        console.log(`Listening on port ${apiConfig.portNumber}`);
     });
 });

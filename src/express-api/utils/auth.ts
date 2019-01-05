@@ -1,5 +1,5 @@
 import { Crypto } from "@ne1410s/crypto";
-import { IHashResult } from "../interfaces/utils/auth";
+import { IHashResult } from "../interfaces/user/auth";
 import * as jwt from "jsonwebtoken";
 
 export abstract class AuthUtils {
@@ -17,31 +17,26 @@ export abstract class AuthUtils {
         return await Crypto.digest(test.salt + text) == test.hash;
     }
 
-    public static getToken(username: string, userSalt: string, minutes: number = 15): string {
+    public static getToken(userId: number, appSecret: string, minutes: number = 15): string {
         
         const payload = {
             aud: ['customer'],
             exp: Math.floor(Date.now() / 1000) + (60 * minutes),
             iat: Math.floor(Date.now() / 1000),
             iss: 'Acme Express',
-            sub: username,
+            sub: userId,
         };
 
-        return jwt.sign(payload, userSalt);
+        return jwt.sign(payload, appSecret);
     }
 
-    public static verifyToken(token: string, username: string, userSalt: string): boolean {
+    public static verifyToken(token: string, appSecret: string): number {
 
-        try { 
-            return !!jwt.verify(token, userSalt, {
-                audience: 'customer',
-                issuer: 'Acme Express',
-                subject: username,
-            });
-        }
-        catch (err) {
-            console.error(err);
-            return false;
-        }
+        const payload = jwt.verify(token, appSecret, {
+            audience: 'customer',
+            issuer: 'Acme Express',
+        }) as any;
+
+        return payload.sub;
     }
 }

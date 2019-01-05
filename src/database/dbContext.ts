@@ -1,30 +1,51 @@
+import { Crypto } from "@ne1410s/crypto";
 import * as Sequelize from "sequelize";
-import * as config from "../api.json";
+import * as apiConfig from "../api.json";
 
 export class DbContext {
 
+    public dbConfig: Sequelize.Model<{}, IDbConfigAttribs>;
     public dbUser: Sequelize.Model<{}, IDbUserAttribs>;
     public dbAccount: Sequelize.Model<{}, IDbAccountAttribs>;
     public dbOrder: Sequelize.Model<{}, IDbOrderAttribs>;
 
     public async syncStructure(): Promise<void> {
         
-        const orm = new Sequelize(`sqlite:${config.dbConnection}`);
+        const orm = new Sequelize(`sqlite:${apiConfig.dbConnection}`);
         
         // const orm = new Sequelize('AcmeDB', '', '', {
         //     dialect: 'sqlite',
         //     storage: config.dbConnection
         // });
         
-        this.dbUser = orm.define('User', this.userAttribs),
-        this.dbAccount = orm.define('Account', this.accountAttribs),
+        this.dbConfig = orm.define('Config', this.configAttribs);
+        this.dbUser = orm.define('User', this.userAttribs);
+        this.dbAccount = orm.define('Account', this.accountAttribs);
         this.dbOrder = orm.define('Order', this.orderAttribs);
 
         this.dbAccount.belongsTo(this.dbUser, { foreignKey: { name: 'UserID', allowNull: false } });
         this.dbOrder.belongsTo(this.dbAccount, { foreignKey: { name: 'AccountID', allowNull: false } });
 
         await orm.sync();
+
+        const config = await this.dbConfig.findOne() as any;
+        if (config == null) {
+            const appSecret = await Crypto.randomString();
+            await this.dbConfig.create({ ConfigID: 0, AppSecret: appSecret });
+        }
     }
+
+    private readonly configAttribs: Sequelize.DefineModelAttributes<IDbConfigAttribs> = {
+        ConfigID: {
+            type: Sequelize.INTEGER,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        AppSecret: {
+            type: Sequelize.STRING,
+            allowNull: false
+        }
+    };
 
     private readonly userAttribs: Sequelize.DefineModelAttributes<IDbUserAttribs> = {
         UserID: {
@@ -79,6 +100,11 @@ export class DbContext {
             allowNull: true,
         }
     };
+}
+
+export interface IDbConfigAttribs {
+    ConfigID: {},
+    AppSecret: {}
 }
 
 export interface IDbUserAttribs {

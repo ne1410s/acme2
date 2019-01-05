@@ -55,8 +55,10 @@ export class LoginOperation extends OperationBase<IAuthEntryRequest, IAuthEntryR
             throw new AuthError();
         }
 
+        const config = await this.db.dbConfig.findOne() as any;
+
         return {
-            token: await AuthUtils.getToken(user.UserName, user.PasswordSalt)
+            token: await AuthUtils.getToken(user.UserID, config.AppSecret)
         };
     }
 

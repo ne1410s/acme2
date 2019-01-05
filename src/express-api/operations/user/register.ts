@@ -56,8 +56,10 @@ export class RegisterOperation extends OperationBase<IAuthEntryRequest, IAuthEnt
             LastActivity: new Date()
         });
 
+        const config = await this.db.dbConfig.findOne() as any;
+
         return {
-            token: await AuthUtils.getToken(newUser.UserName, newUser.PasswordSalt)
+            token: await AuthUtils.getToken(newUser.UserID, config.AppSecret)
         };
     }
 

@@ -6,3 +6,12 @@ export interface IAuthEntryRequest {
 export interface IAuthEntryResponse {
     token: string;
 }
+
+export interface IHashResult {
+    hash: string;
+    salt: string;
+}
+
+export interface ISecureRequest {
+    authenticUserId: number;
+}
