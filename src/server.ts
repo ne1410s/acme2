@@ -55,6 +55,7 @@ db.syncStructure().then(() => {
 
     // // Account Operations
     expr_api.post('/account', (q, r) => sec_proc(q, r, 'accounts', 'create'));
+    expr_api.get('/account', (q, r) => sec_proc(q, r, 'accounts', 'list'));
 
     // app.get('/account', (q, r) => proc(q, r, 'accounts', 'get'));
     // app.put('/account', (q, r) => proc(q, r, 'accounts', 'update'));

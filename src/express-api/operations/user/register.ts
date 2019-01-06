@@ -1,5 +1,5 @@
 import { OperationBase, ValidationError } from "@ne1410s/http";
-import { IAuthEntryRequest, IAuthEntryResponse } from "../../interfaces/user/auth";
+import { IAuthEntryRequest, IAuthEntryResponse } from "../../interfaces/auth";
 import { DbContext } from "../../../database/db-context";
 import { AuthUtils } from "../../utils/auth";
 

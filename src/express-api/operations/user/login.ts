@@ -2,7 +2,7 @@ import { OperationBase, ValidationError } from "@ne1410s/http";
 import { DbContext } from "../../../database/db-context";
 import { AuthUtils } from "../../utils/auth";
 import { AuthError } from "../../errors/auth";
-import { IAuthEntryResponse, IAuthEntryRequest } from "../../interfaces/user/auth";
+import { IAuthEntryResponse, IAuthEntryRequest } from "../../interfaces/auth";
 
 export class LoginOperation extends OperationBase<IAuthEntryRequest, IAuthEntryResponse> {
 
