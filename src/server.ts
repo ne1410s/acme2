@@ -3,7 +3,7 @@ import * as cors from "cors";
 import * as bodyParser from "body-parser";
 import * as apiConfig from "./api.json"
 import { ExpressService } from "./express-api/services/express";
-import { DbContext } from "./database/dbContext";
+import { DbContext } from "./database/db-context";
 import { AuthUtils } from "./express-api/utils/auth.js";
 
 const db = new DbContext();

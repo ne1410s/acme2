@@ -1,6 +1,6 @@
 import { OperationBase, ValidationError } from "@ne1410s/http";
 import { IAuthEntryRequest, IAuthEntryResponse } from "../../interfaces/user/auth";
-import { DbContext } from "../../../database/dbContext";
+import { DbContext } from "../../../database/db-context";
 import { AuthUtils } from "../../utils/auth";
 
 export class RegisterOperation extends OperationBase<IAuthEntryRequest, IAuthEntryResponse> {

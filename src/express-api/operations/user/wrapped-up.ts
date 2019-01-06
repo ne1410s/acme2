@@ -1,6 +1,6 @@
 import { RegisterOperation } from "./register";
 import { LoginOperation } from "./login";
-import { DbContext } from "../../../database/dbContext";
+import { DbContext } from "../../../database/db-context";
 
 export class UserOperations {
 

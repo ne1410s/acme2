@@ -1,4 +1,4 @@
-import { DbContext } from "../../../database/dbContext";
+import { DbContext } from "../../../database/db-context";
 import { CreateAccountOperation } from "./create";
 
 export class AccountOperations {

@@ -12,12 +12,7 @@ export class DbContext {
     public async syncStructure(): Promise<void> {
         
         const orm = new Sequelize(`sqlite:${apiConfig.dbConnection}`);
-        
-        // const orm = new Sequelize('AcmeDB', '', '', {
-        //     dialect: 'sqlite',
-        //     storage: config.dbConnection
-        // });
-        
+
         this.dbConfig = orm.define('Config', this.configAttribs);
         this.dbUser = orm.define('User', this.userAttribs);
         this.dbAccount = orm.define('Account', this.accountAttribs);
@@ -39,7 +34,8 @@ export class DbContext {
         ConfigID: {
             type: Sequelize.INTEGER,
             primaryKey: true,
-            autoIncrement: true
+            autoIncrement: true,
+            allowNull: false
         },
         AppSecret: {
             type: Sequelize.STRING,
@@ -52,6 +48,7 @@ export class DbContext {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: true,
+            allowNull: false
         },
         UserName: {
             type: Sequelize.STRING(25),
@@ -78,12 +75,13 @@ export class DbContext {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: false,
+            allowNull: false
         },
         IsTest: {
             type: Sequelize.BOOLEAN,
             allowNull: false,
         },
-        PrivateKeyJWK: {
+        JWKPair: {
             type: Sequelize.STRING(2047),
             allowNull: true,
         }
@@ -94,6 +92,7 @@ export class DbContext {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: false,
+            allowNull: false
         },
         CertPrivateKeyDER: {
             type: Sequelize.STRING(2047),
@@ -118,7 +117,8 @@ export interface IDbUserAttribs {
 export interface IDbAccountAttribs {
     AccountID: {},
     IsTest: {},
-    PrivateKeyJWK: {}
+    JWKPair: {}
+    UserID?: {}
 }
 
 export interface IDbOrderAttribs {

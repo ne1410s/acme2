@@ -1,5 +1,5 @@
 import { UserOperations } from "../operations/user/wrapped-up";
-import { DbContext } from "../../database/dbContext";
+import { DbContext } from "../../database/db-context";
 import { AccountOperations } from "../operations/account/wrapped-up";
 
 export class ExpressService {
