@@ -31,11 +31,13 @@ export class CreateAccountOperation extends OperationBase<ICreateAccountRequest,
             JWKPair: JSON.stringify(svcResponse.keys)
         });
 
-        return { 
+        return {
+            accountId: svcResponse.accountId,
             created: svcResponse.created,
             status: svcResponse.status,
             emails: requestData.emails,
-            isTest: !!requestData.isTest
-        }
+            isTest: !!requestData.isTest,
+            orders: []
+        };
     }
 }

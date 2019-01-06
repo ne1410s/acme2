@@ -8,8 +8,10 @@ export interface ICreateAccountRequest extends ISecureRequest {
 }
 
 export interface IAccount {
+    accountId: number;
     created: Date;
     status: string;
     emails: Array<string>;
     isTest: boolean;
+    orders: Array<IOrder>;
 }
