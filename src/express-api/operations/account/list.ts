@@ -3,7 +3,7 @@ import { ISecureRequest } from "../../interfaces/auth";
 import { IAccount } from "../../interfaces/account";
 import { DbContext } from "../../../database/db-context";
 import { Acme2Service } from "../../../acme-core/services/acme2";
-import { IOrder } from "../../interfaces/order";
+import { IOrderMeta } from "../../interfaces/order";
 
 export class ListAccountsOperation extends OperationBase<ISecureRequest, Array<IAccount>> {
     
@@ -34,7 +34,7 @@ export class ListAccountsOperation extends OperationBase<ISecureRequest, Array<I
                 keys: JSON.parse(db_account.JWKPair)
             });
 
-            const orders = await this.getOrders(svc, db_account.AccountID);
+            const orders = await this.getOrderMetas(db_account.AccountID);
 
             retVal.push({
                 accountId: db_account.AccountID,
@@ -49,27 +49,19 @@ export class ListAccountsOperation extends OperationBase<ISecureRequest, Array<I
         return retVal;
     }
 
-    private async getOrders(svc: Acme2Service, accountId: number): Promise<Array<IOrder>> {
+    private async getOrderMetas(accountId: number): Promise<Array<IOrderMeta>> {
 
         const predicate = { where: { AccountID: accountId }},
               db_orders = await this.db.dbOrder.findAll(predicate);
 
         // TODO: Promise.all and map, etc...
-        const retVal = [] as Array<IOrder>;
+        const retVal = [] as Array<IOrderMeta>;
         for(let i = 0; i < db_orders.length; i++) {
 
-            const db_order = db_orders[i] as any,
-                  svc_order = await svc.orders.get.invoke({
-                accountId: accountId,
-                orderId: db_order.OrderID
-            });
-
+            const db_order = db_orders[i] as any;   
             retVal.push({
-                orderId: svc_order.orderId,
-                status: svc_order.status,
-                expires: svc_order.expires
-
-                // TODO: Challenge details!
+                orderId: db_order.OrderID,
+                domains: JSON.parse(db_order.Domains)
             });
         }
 

@@ -94,6 +94,10 @@ export class DbContext {
             autoIncrement: false,
             allowNull: false
         },
+        Domains: {
+            type: Sequelize.STRING(2047),
+            allowNull: false
+        },
         CertPrivateKeyDER: {
             type: Sequelize.STRING(2047),
             allowNull: true,
@@ -123,5 +127,7 @@ export interface IDbAccountAttribs {
 
 export interface IDbOrderAttribs {
     OrderID: {},
+    Domains: {},
     CertPrivateKeyDER: {}
+    AccountID?: {}
 }
