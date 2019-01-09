@@ -10,32 +10,8 @@ export class LoginOperation extends OperationBase<IAuthEntryRequest, IAuthEntryR
         super();
     }
 
-    validateRequest(requestData: IAuthEntryRequest): void {
-       
-        const messages: string[] = [];
-
-        if (!requestData.username) {
-            messages.push('Username is required');
-        }
-        else if (requestData.username.length < 6) {
-            messages.push('Username must be at least 6 characters');
-        }
-
-        if (!requestData.password) {
-            messages.push('Password is required');
-        }
-        else if (requestData.password.length < 6) {
-            messages.push('Password must be at least 6 characters')
-        }
-
-        if (messages.length !== 0) {
-            throw new ValidationError('The request is invalid', requestData, messages);
-        }
-    }
-    
-    validateResponse(responseData: IAuthEntryResponse): void {
-        //
-    }
+    validateRequest(requestData: IAuthEntryRequest): void {}
+    validateResponse(responseData: IAuthEntryResponse): void {}
 
     protected async invokeInternal(requestData: IAuthEntryRequest): Promise<IAuthEntryResponse> {
 
