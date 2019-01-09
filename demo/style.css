@@ -9,6 +9,16 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: opacity .3s;
+}
+
+.modal:not(.open) {
+    opacity: 0;
+    pointer-events: none;
+}
+
+modal a {
+    color: rgb(0, 85, 0);
 }
 
 .modal span {
@@ -61,8 +71,4 @@ input[type=button] {
 input[type=button]:hover {
     color: rgb(0, 85, 0);
     background: rgba(0, 85, 0, .2);
-}
-
-a {
-    color: rgb(0, 85, 0);
 }
