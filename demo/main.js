@@ -37,7 +37,12 @@
             throw text;
         }
 
-        return JSON.parse(text);
+        const json = JSON.parse(text);
+        if (secure === true) { 
+            console.log('Secure service call was successful:', json);
+        }
+
+        return json;
     }
 
     function obtain_login(fresh) {

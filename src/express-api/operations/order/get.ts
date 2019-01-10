@@ -15,14 +15,14 @@ export class GetOrderOperation extends OperationBase<IGetOrderRequest, IOrder> {
 
     protected async invokeInternal(requestData: IGetOrderRequest): Promise<IOrder> {
         
-        const db_account = await this.db.dbAccount.findById(requestData.accountId) as any;
+        const db_account = await this.db.dbAccount.findByPk(requestData.accountId) as any;
 
         if (!db_account || db_account.UserID !== requestData.authenticUserId) {
             console.error('No matching account found:', requestData);
             throw new AuthError();
         }
 
-        const db_order = await this.db.dbOrder.findById(requestData.orderId) as any;
+        const db_order = await this.db.dbOrder.findByPk(requestData.orderId) as any;
 
         if (!db_order) {
             console.error('No matching order found:', requestData);
