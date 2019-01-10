@@ -27,22 +27,21 @@
         }
 
         const response = await fetch(url, { method, headers, body }),
-              text = await response.text();
+              resultjson = await response.json();
 
         if (response.status === 401 && secure === true) {
             return obtain_login(true)
                 .then(() => svc(secure, path, method, json));
         }
         else if (!response.ok) {
-            throw text;
+            throw resultjson;
         }
 
-        const json = JSON.parse(text);
         if (secure === true) { 
-            console.log('Secure service call was successful:', json);
+            console.log('Secure service call was successful:', resultjson);
         }
 
-        return json;
+        return resultjson;
     }
 
     function obtain_login(fresh) {
@@ -109,16 +108,16 @@
     const logout = () => {
         wipe_token();
         qsa('.list').forEach(l => empty(l));
-        obtain_login();
+        obtain_login().then(list_accounts);
     }
 
     window.addEventListener('load', () => {
 
         document.querySelector('#logout').onclick = logout;
-        document.querySelector('#login').onclick = list_accounts;
-        document.querySelector('#register').onclick = () => obtain_registration().then(() => list_accounts());
+        document.querySelector('#login').onclick = () => obtain_login().then(list_accounts);
+        document.querySelector('#register').onclick = () => obtain_registration().then(list_accounts);
 
-        obtain_login().then(() => list_accounts());
+        obtain_login().then(list_accounts);
     });
 
 })(window);
