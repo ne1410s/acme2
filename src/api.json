@@ -1,4 +1,5 @@
 {
     "portNumber": 8081,
-    "dbConnection": "./dist/database/acme.db"
+    "dbConnection": "./dist/database/acme.db",
+    "dbLogging": false
 }

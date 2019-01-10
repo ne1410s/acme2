@@ -6,6 +6,12 @@
           load_token = () => sessionStorage.getItem('token'),
           wipe_token = () => sessionStorage.removeItem('token');
 
+    const qsa = (q, parent) => Array.from((parent || document).querySelectorAll(q)),
+          show_modal = (classname) => qsa('.modal')
+            .filter(m => !m.classList.remove('open'))
+            .filter(m => m.classList.contains(classname))
+            .filter(m => !m.classList.add('open'))[0];
+
     async function svc(secure, path, method, json) {
 
         const url = `${baseUrl}/${path}`,
@@ -19,9 +25,9 @@
         const response = await fetch(url, { method, headers, body }),
               text = await response.text();
 
-        if (response.status === 401) {
-            return show_login(secure, path, method, json);
-        }        
+        if (response.status === 401 && secure === true) {
+            return obtain_login(arguments);
+        }
         else if (!response.ok) {
             throw text;
         }
@@ -29,36 +35,42 @@
         return JSON.parse(text);
     }
 
-    function show_login(o_secure, o_path, o_method, o_json) {
-        Array.from(document.querySelectorAll('.modal.open:not(.login)'))
-             .forEach(m => m.classList.remove('open'));
-        const modal = document.querySelector('.modal.login');
-        modal.classList.add('open');
-        modal.querySelector('[type=button]').onclick = () => {
-            const username = modal.querySelector('[placeholder=username]').value,
-                  password = modal.querySelector('[placeholder=password]').value;
-            return svc(false, 'login', 'POST', { username, password })
-                .then(json => {
-                    console.log('new login!', json);
-                    save_token(json.token);
-                    modal.classList.remove('open');
-                    return svc(o_secure, o_path, o_method, o_json);
-                })
-                .catch(err => console.warn(err));
-        }
+    function obtain_login(args) {
+        
+        wipe_token();
+        const modal = show_modal('login');
+
+        return new Promise((resolve, reject) => {
+
+            modal.querySelector('[type=button]').onclick = () => {
+
+                const passctrl = modal.querySelector('[placeholder=password]'),
+                      username = modal.querySelector('[placeholder=username]').value,
+                      password = passctrl.value;
+
+                svc(false, 'login', 'POST', { username, password })
+                    .then(json => {
+                        passctrl.value = '';
+                        save_token(json.token);
+                        modal.classList.remove('open');
+                        return args && args[0] === true ? resolve(svc.apply(null, args)) : null;                   
+                    })
+                    .catch(err => console.warn(err));
+            }
+        });
     }
+
+    const list_accounts = () => svc(true, 'account', 'GET').then(accounts => { 
+        console.log('accounts', accounts);
+    });
 
     window.addEventListener('load', () => {
 
-        wipe_token();
+        document.querySelector('#logout').onclick = obtain_login;
+        document.querySelector('#login').onclick = list_accounts;
 
-        const accounts_result = svc(true, 'account', 'GET')
-            .then(json => console.log('accounts!', json))
-            .catch(err => console.warn('aww maaan', err));
+        list_accounts();
+
     });
-
-    
-
-
 
 })(window);
