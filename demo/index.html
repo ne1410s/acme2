@@ -12,9 +12,8 @@
         <a id="logout" href="javascript:void(0)">Logout</a>
     </header>
     <section id="accounts">
-        <h1>Accounts</h1>
+        <h1>Accounts <a id="add-account" href="javascript:void(0)">+</a></h1>
         <section class="list"></section>
-        <input type="button" value="+"/>
     </section>
         
     <div class="modal login">
@@ -28,9 +27,17 @@
     <div class="modal register">
         <div class="body">
             <input type="text" placeholder="username" spellcheck="false" autocomplete="false"/>
-            <input type="password" placeholder="password" />
+            <input type="password" placeholder="password"/>
             <input type="button" value="Register"/>
             <span><a id="login" href="javascript:void(0)">Have an account? Login here</a></span>
+        </div>
+    </div>
+    <div class="modal secure add-account">
+        <div class="body">
+            <textarea placeholder="emails" spellcheck="false"/>
+            <label for="agree-tos">Agree to terms?</label>
+            <input type="checkbox" id="agree-tos"/>
+            <input type="button" value="Create"/>
         </div>
     </div>
 </body>
