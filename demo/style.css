@@ -37,9 +37,8 @@ modal a {
     transition: transform ease-in-out .6s;
 }
 
-.modal.login > div {
-    max-width: 280px;
-}
+.modal.login > div { max-width: 280px; }
+.modal.register > div { max-width: 280px; }
 
 input, select, textarea {
     box-sizing: border-box;
