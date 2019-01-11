@@ -12,9 +12,10 @@ const expr_api = express();
 
 const proc = (q: express.Request, r: express.Response, entity: string, operation: string) => {
     
-    (expr_svc as any)[entity][operation].invoke({ ...q.body, ...q.query })
+    (expr_svc as any)[entity][operation].invoke({ ...q.body, ...q.query, ...q.params })
         .then((res: any) => r.json(res))
         .catch((err: any) => {
+            //console.error(err);
             err = err.cause || err;
             r.status(err.status || (err.errors ? 422 : 500));
             r.json({message: err.toString(), detail: err.errors });
@@ -31,12 +32,13 @@ const sec_proc = (q: express.Request, r: express.Response, entity: string, opera
             const authHeader = q.header('authorization'),
                   token = ((authHeader || '').match(/^[Bb]earer ([\w-]*\.[\w-]*\.[\w-]*)$/) || [])[1] || '',
                   userId = AuthUtils.verifyToken(token, config.AppSecret);
-
+                  
+            q.body = { ...q.body, ...q.query, ...q.params };
             q.body.authenticUserId = userId;
+
             proc(q, r, entity, operation);
         }
         catch(err) {
-            console.error(err.toString());
             r.status(401);
             r.json({ message: 'Error: Access denied' })
         }
@@ -56,6 +58,7 @@ db.syncStructure().then(() => {
     // // Account Operations
     expr_api.post('/account', (q, r) => sec_proc(q, r, 'accounts', 'create'));
     expr_api.get('/account', (q, r) => sec_proc(q, r, 'accounts', 'list'));
+    expr_api.delete('/account/:accountId', (q, r) => sec_proc(q, r, 'accounts', 'delete'));
 
     // Order Operations
     expr_api.get('/order', (q, r) => sec_proc(q, r, 'orders', 'get'));

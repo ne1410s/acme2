@@ -7,6 +7,10 @@ export interface ICreateAccountRequest extends ISecureRequest {
     isTest: boolean;
 }
 
+export interface IDeleteAccountRequest extends ISecureRequest {
+    accountId: number;
+}
+
 export interface IAccount {
     accountId: number;
     created: Date;

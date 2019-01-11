@@ -8,14 +8,28 @@
     <script src="main.js"></script>
 </head>
 <body>
-    <header>
-        <a id="logout" href="javascript:void(0)">Logout</a>
-    </header>
-    <section id="accounts">
-        <h1>Accounts <a id="add-account" href="javascript:void(0)">+</a></h1>
-        <section class="list"></section>
-    </section>
+    <section class="secure">
+
+        <header>
+            <a id="logout" href="javascript:void(0)">Logout</a>
+        </header>
         
+        <section id="accounts">
+            <h1>Accounts <a id="add-account" href="javascript:void(0)">+</a></h1>
+            <section class="list" data-loader="account"></section>
+        </section>
+
+        <div class="modal add-account">
+            <div class="body">
+                <textarea placeholder="emails" spellcheck="false"></textarea>
+                <label for="agree-tos">Agree to terms?</label>
+                <input type="checkbox" id="agree-tos"/>
+                <input type="button" value="Create"/>
+            </div>
+        </div>
+
+    </section>
+
     <div class="modal login">
         <div class="body">
             <input type="text" placeholder="username" spellcheck="false" autocomplete="false"/>
@@ -24,6 +38,7 @@
             <span><a id="register" href="javascript:void(0);">New to the site? Register here</a></span>
         </div>
     </div>
+
     <div class="modal register">
         <div class="body">
             <input type="text" placeholder="username" spellcheck="false" autocomplete="false"/>
@@ -32,13 +47,6 @@
             <span><a id="login" href="javascript:void(0)">Have an account? Login here</a></span>
         </div>
     </div>
-    <div class="modal secure add-account">
-        <div class="body">
-            <textarea placeholder="emails" spellcheck="false"/>
-            <label for="agree-tos">Agree to terms?</label>
-            <input type="checkbox" id="agree-tos"/>
-            <input type="button" value="Create"/>
-        </div>
-    </div>
+
 </body>
 </html>

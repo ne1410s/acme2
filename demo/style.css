@@ -2,6 +2,27 @@ body {
     font: 18px Calibri;
 }
 
+body .secure {
+    opacity: 0;
+}
+
+body.auth .secure {
+    transition: opacity .6s;
+    opacity: 1;
+}
+
+.loading {
+    background: url(loading.svg) no-repeat;
+    background-size: 50px 50px;
+    background-position: center center;
+    min-height: 50px;
+}
+
+.loading > * {
+    opacity: 0;
+    transition: opacity .3s;
+}
+
 .modal {
     position: fixed;
     top: 0; right: 0; bottom: 0; left: 0;
@@ -58,3 +79,11 @@ input[type=button] {
 .modal input:hover { border-color: rgba(0, 85, 0, .2); }
 .modal input[type=button] { color: rgb(255, 255, 255); background: rgb(0, 85, 0); }
 .modal input[type=button]:hover { color: rgb(0, 85, 0); background: rgba(0, 85, 0, .2); }
+
+.secure > .modal { background: rgba(201, 201, 201, .6); }
+.secure > .modal > div { border: 2px solid rgb(151, 0, 0); }
+.secure > .modal a { color: rgb(151, 0, 0); }
+.secure > .modal input:focus, .modal select:focus, .modal textarea:focus { border-color: rgb(151, 0, 0); }
+.secure > .modal input:hover { border-color: rgba(151, 0, 0, .2); }
+.secure > .modal input[type=button] { color: rgb(255, 255, 255); background: rgb(151, 0, 0); }
+.secure > .modal input[type=button]:hover { color: rgb(151, 0, 0); background: rgba(151, 0, 0, .2); }
