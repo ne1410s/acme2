@@ -11,12 +11,13 @@
           show_modal = (classname) => q2a('.modal')
             .filter(m => !m.classList.remove('open'))
             .filter(m => m.classList.contains(classname))
-            .filter(m => !m.classList.add('open'))[0];
+            .filter(m => !m.classList.add('open'))
+            .filter(m => !q2f('textarea, input', m).focus())[0];
 
     const empty = (elem) => { while (elem.firstChild) elem.removeChild(elem.firstChild); },
           remove = (elem) => { if (elem && elem.parentNode) elem.parentNode.removeChild(elem); },
           clear = (modal) => { 
-              q2a('input, select, textarea', modal).forEach(ctrl => ctrl.value = '');
+              q2a('input:not([type=button]), select, textarea', modal).forEach(ctrl => ctrl.value = '');
               q2a('checkbox, radio', modal).forEach(ctrl => ctrl.checked = false);
           };
 
@@ -145,12 +146,14 @@
         empty(target);
         accounts.forEach(acc => {
             const elem_account = document.createElement('div'),
-                  elem_emails = document.createElement('ul');
+                  elem_emails = document.createElement('span');
                   
-            // TODO...
+            elem_account.setAttribute('data-id', acc.accountId);
+            elem_account.setAttribute('data-status', acc.status);
+            elem_emails.textContent = acc.emails.join('; ');
 
-            elem.innerHTML = acc.accountId;
-            target.appendChild(elem);
+            elem_account.appendChild(elem_emails);
+            target.appendChild(elem_account);
         });
     });
 
