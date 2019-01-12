@@ -37,11 +37,19 @@ body.auth .secure {
     pointer-events: none;
 }
 
+.modal .errors {
+    color: red;
+    font-weight: bold;
+}
+
 .modal span {
     font-size: .7rem;
     width: 100%;
-    text-align: center;
     margin-top: .5rem;
+}
+
+.modal span:not(.errors) {
+    text-align: center;
 }
 
 .modal > div {

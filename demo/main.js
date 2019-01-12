@@ -6,20 +6,24 @@
           load_token = () => sessionStorage.getItem('token'),
           wipe_token = () => sessionStorage.removeItem('token');
 
-    const q2a = (q, parent) => Array.from((parent || document).querySelectorAll(q)),
+    const empty = (elem) => { while (elem.firstChild) elem.removeChild(elem.firstChild); },
+          remove = (elem) => { if (elem && elem.parentNode) elem.parentNode.removeChild(elem); },
+          q2a = (q, parent) => Array.from((parent || document).querySelectorAll(q)),
           q2f = (q, parent) => (parent || document).querySelector(q),
           show_modal = (classname) => q2a('.modal')
             .filter(m => !m.classList.remove('open'))
             .filter(m => m.classList.contains(classname))
-            .filter(m => !m.classList.add('open'))
-            .filter(m => !q2f('textarea, input', m).focus())[0];
+            .filter(m => {
+                empty(q2f('.errors', m));
+                m.classList.add('open');
+                return !q2f('textarea, input', m).focus();
+            })[0];
 
-    const empty = (elem) => { while (elem.firstChild) elem.removeChild(elem.firstChild); },
-          remove = (elem) => { if (elem && elem.parentNode) elem.parentNode.removeChild(elem); },
-          clear = (modal) => { 
-              q2a('input:not([type=button]), select, textarea', modal).forEach(ctrl => ctrl.value = '');
-              q2a('checkbox, radio', modal).forEach(ctrl => ctrl.checked = false);
-          };
+    const clear = (modal) => { 
+        q2a('input:not([type=button]), select, textarea', modal).forEach(ctrl => ctrl.value = '');
+        q2a('checkbox, radio', modal).forEach(ctrl => ctrl.checked = false);
+        empty(q2f('.errors', modal));
+    };
 
 
     async function svc(secure, path, method, json) {
@@ -69,24 +73,30 @@
                 return resolve();
             }
 
-            const modal = show_modal('login');
+            const modal = show_modal('login'),
+                  errors = q2f('.errors', modal);
 
             q2f('[type=button]', modal).onclick = () => {
+
+                empty(errors);
 
                 const password = q2f('[placeholder=password]', modal).value,
                       username = q2f('[placeholder=username]', modal).value;
 
                 svc(false, 'login', 'POST', { username, password })
                     .then(json => {
-                        save_token(json.token);
-                        
+                        save_token(json.token);    
                         modal.classList.remove('open');
                         q2f('body').classList.add('auth');
                         clear(modal);
-
                         return resolve();
                     })
-                    .catch(err => console.warn(err));
+                    .catch(err => {
+                        console.warn(err);
+                        errors.innerHTML = err.detail
+                            ? err.detail.join('<br>')
+                            : err.message || err;
+                    });
             }
         });
     }
@@ -95,9 +105,12 @@
 
         return new Promise(resolve => {
 
-            const modal = show_modal('register');
+            const modal = show_modal('register'),
+                  errors = q2f('.errors', modal);
 
             q2f('[type=button]', modal).onclick = () => {
+
+                empty(errors);
 
                 const password = q2f('[placeholder=password]', modal).value,
                       username = q2f('[placeholder=username]', modal).value;
@@ -112,7 +125,12 @@
 
                         return resolve();
                     })
-                    .catch(err => console.warn(err));
+                    .catch(err => {
+                        console.warn(err);
+                        errors.innerHTML = err.detail
+                            ? err.detail.join('<br>')
+                            : err.message || err;
+                    });
             }
         });
     }
@@ -121,9 +139,12 @@
 
         return new Promise(resolve => {
 
-            const modal = show_modal('add-account');
+            const modal = show_modal('add-account'),
+                  errors = q2f('.errors', modal);
 
             q2f('[type=button]', modal).onclick = () => {
+
+                empty(errors);
 
                 const tosAgreed = q2f('#agree-tos', modal).checked,
                       emails = q2f('[placeholder=emails]', modal).value
@@ -136,7 +157,12 @@
                         clear(modal);
                         return resolve();
                     })
-                    .catch(err => console.warn(err));
+                    .catch(err => {
+                        console.warn(err);
+                        errors.innerHTML = err.detail
+                            ? err.detail.join('<br>')
+                            : err.message || err;
+                    });
             }
         });
     }
@@ -170,8 +196,11 @@
 
     window.addEventListener('load', () => {
 
-        q2a('.secure > .modal').forEach(m => 
-            m.onclick = (event) => event.target.classList.remove('open'));
+        q2a('.secure > .modal').forEach(m =>
+            m.onclick = () => {
+                empty(q2f('.errors', m));
+                m.classList.remove('open');
+            });
         q2a('.secure > .modal > .body').forEach(m =>
             m.onclick = (event) => event.stopPropagation());
 
