@@ -1,15 +1,18 @@
 import { OperationBase, ValidationError } from "@ne1410s/http";
-import { IAuthEntryRequest, IAuthEntryResponse } from "../../interfaces/auth";
+import * as apiConfig from "../../../api.json"
+import { IRegisterRequest, IAuthEntryResponse } from "../../interfaces/auth";
 import { DbContext } from "../../../database/db-context";
 import { AuthUtils } from "../../utils/auth";
 
-export class RegisterOperation extends OperationBase<IAuthEntryRequest, IAuthEntryResponse> {
+export class RegisterOperation extends OperationBase<IRegisterRequest, IAuthEntryResponse> {
+
+    private readonly recaptchaUrl: string = 'https://www.google.com/recaptcha/api/siteverify'; 
 
     constructor(private readonly db: DbContext) {
         super();
     }
 
-    validateRequest(requestData: IAuthEntryRequest): void {
+    validateRequest(requestData: IRegisterRequest): void {
         
         const messages: string[] = [];
 
@@ -24,7 +27,7 @@ export class RegisterOperation extends OperationBase<IAuthEntryRequest, IAuthEnt
             messages.push('Password is required');
         }
         else if (requestData.password.length < 6) {
-            messages.push('Password must be at least 6 characters')
+            messages.push('Password must be at least 6 characters');
         }
 
         if (messages.length !== 0) {
@@ -36,8 +39,13 @@ export class RegisterOperation extends OperationBase<IAuthEntryRequest, IAuthEnt
         //
     }
 
-    protected async invokeInternal(requestData: IAuthEntryRequest): Promise<IAuthEntryResponse> {
+    protected async invokeInternal(requestData: IRegisterRequest): Promise<IAuthEntryResponse> {
         
+        const recaptchaOk = await this.validateRecaptcha(requestData.recaptcha);
+        if (!recaptchaOk) {
+            throw new Error('Data anomaly');
+        }
+
         const result = await this.db.dbUser.findAll({
             where: { UserName: requestData.username }
         });
@@ -63,4 +71,23 @@ export class RegisterOperation extends OperationBase<IAuthEntryRequest, IAuthEnt
         };
     }
 
+    private async validateRecaptcha(token: string): Promise<boolean> {
+        
+        const url = `${this.recaptchaUrl}?response=${token}&secret=${apiConfig.recaptchaSecret}`,
+              response = await fetch(url, { method: 'POST' }),
+              json = await response.json();
+
+        let isValid = true;
+
+        isValid = isValid && response.ok;
+        isValid = isValid && json.success === true;       
+        isValid = isValid && json.action === 'register';
+        isValid = isValid && json.score >= 0.7;
+
+        if (!isValid) {
+            console.warn('Recaptcha failed', json);
+        }
+
+        return isValid;
+    }
 }

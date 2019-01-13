@@ -1,6 +1,7 @@
 ((window) => {
 
-    const baseUrl = 'http://localhost:8081';
+    const baseUrl = 'http://localhost:8081',
+          recaptchaKey = '6LchaokUAAAAAMValneQDxXiiirpT-BSC4R7uWfy';
 
     const save_token = (token) => sessionStorage.setItem('token', token),
           load_token = () => sessionStorage.getItem('token'),
@@ -115,22 +116,26 @@
                 const password = q2f('[placeholder=password]', modal).value,
                       username = q2f('[placeholder=username]', modal).value;
 
-                svc(false, 'user', 'POST', { username, password })
-                    .then(json => {     
-                        save_token(json.token);
+                // obtain recaptcha token for server-side verification
+                grecaptcha.execute(recaptchaKey, {action: 'register'})
 
-                        modal.classList.remove('open');
-                        q2f('body').classList.add('auth');
-                        clear(modal);
+                    .then(recaptcha => svc(false, 'user', 'POST', { username, password, recaptcha })
+                        .then(json => {     
+                            save_token(json.token);
 
-                        return resolve();
-                    })
-                    .catch(err => {
-                        console.warn(err);
-                        errors.innerHTML = err.detail
-                            ? err.detail.join('<br>')
-                            : err.message || err;
-                    });
+                            modal.classList.remove('open');
+                            q2f('body').classList.add('auth');
+                            clear(modal);
+
+                            return resolve();
+                        })
+                        .catch(err => {
+                            console.warn(err);
+                            errors.innerHTML = err.detail
+                                ? err.detail.join('<br>')
+                                : err.message || err;
+                        })
+                    );
             }
         });
     }

@@ -3,6 +3,10 @@ export interface IAuthEntryRequest {
     password: string;
 }
 
+export interface IRegisterRequest extends IAuthEntryRequest {
+    recaptcha: string;
+}
+
 export interface IAuthEntryResponse {
     token: string;
 }

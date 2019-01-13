@@ -5,3 +5,4 @@ ES ACME v2 Wrapper
  - /dist
  - /package.json
  - /.npmrc
+ - /dist/api.json (Any SECRET changes)
