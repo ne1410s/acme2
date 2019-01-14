@@ -195,14 +195,22 @@
         empty(target);
         accounts.forEach(acc => {
             const elem_account = document.createElement('div'),
-                  elem_emails = document.createElement('span');
+                  elem_emails = document.createElement('span'),
+                  elem_orders = document.createElement('span'),
+                  elem_env = document.createElement('span');
                   
             elem_account.setAttribute('data-id', acc.accountId);
             elem_account.setAttribute('data-status', acc.status);
             if (acc.isTest) elem_account.classList.add('test');
-            elem_emails.textContent = acc.emails.join('; ');
+            elem_env.textContent = acc.isTest ? 'test' : 'live';
+            elem_emails.textContent = acc.emails[0];
+            const moreEmails = acc.emails.length - 1;
+            if (moreEmails > 0) elem_emails.textContent += ' + ' + moreEmails + ' more';
+            elem_orders.textContent = 'Orders: ' + acc.orders.length;
 
             elem_account.appendChild(elem_emails);
+            elem_account.appendChild(elem_orders);
+            elem_account.appendChild(elem_env);
             target.appendChild(elem_account);
         });
     });
