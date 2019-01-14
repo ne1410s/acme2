@@ -1,8 +1,14 @@
 # ne14.acme2
 ES ACME v2 Wrapper
 
-# For AWS hosting, the following are required:
- - /dist
+# AWS hosting
+## Zip up the following:
+ - /dist/
  - /package.json
  - /.npmrc
- - /dist/api.json (Any SECRET changes)
+ - /ui/
+
+## Amend Keys
+ - /dist/api.json
+ - /ui/index.html
+ - /ui/main.js

@@ -43,7 +43,7 @@ export class RegisterOperation extends OperationBase<IRegisterRequest, IAuthEntr
         
         const recaptchaOk = await this.validateRecaptcha(requestData.recaptcha);
         if (!recaptchaOk) {
-            throw new Error('Data anomaly');
+            throw new ValidationError('The request is invalid', requestData, ['Data anomaly']);
         }
 
         const result = await this.db.dbUser.findAll({
@@ -64,16 +64,14 @@ export class RegisterOperation extends OperationBase<IRegisterRequest, IAuthEntr
             LastActivity: new Date()
         });
 
-        const config = await this.db.dbConfig.findOne() as any;
-
         return {
-            token: await AuthUtils.getToken(newUser.UserID, config.AppSecret)
+            token: await AuthUtils.getToken(newUser.UserID, apiConfig.secretKeys.jwt)
         };
     }
 
     private async validateRecaptcha(token: string): Promise<boolean> {
         
-        const url = `${this.recaptchaUrl}?response=${token}&secret=${apiConfig.recaptchaSecret}`,
+        const url = `${this.recaptchaUrl}?response=${token}&secret=${apiConfig.secretKeys.recaptcha}`,
               response = await fetch(url, { method: 'POST' }),
               json = await response.json();
 

@@ -16,10 +16,13 @@ const proc = (q: express.Request, r: express.Response, entity: string, operation
     (expr_svc as any)[entity][operation].invoke({ ...q.body, ...q.query, ...q.params })
         .then((res: any) => r.json(res))
         .catch((err: any) => {
-            //console.error(err);
-            err = err.cause || err;
-            r.status(err.status || (err.errors ? 422 : 500));
-            r.json({message: err.toString(), detail: err.errors });
+            const error = err.cause || err,
+                  status = error.status || (error.errors ? 422 : 500),
+                  message = status === 500 ? 'A server error occurred' : error.toString();
+            r.status(status);
+            r.json({ message, detail: error.errors });
+
+            if (status === 500) console.error(err);
         });
 };
 
@@ -28,22 +31,20 @@ const proc = (q: express.Request, r: express.Response, entity: string, operation
  */
 const sec_proc = (q: express.Request, r: express.Response, entity: string, operation: string) => {       
     
-    db.dbConfig.findOne().then((config: any) => {
-        try {
-            const authHeader = q.header('authorization'),
-                  token = ((authHeader || '').match(/^[Bb]earer ([\w-]*\.[\w-]*\.[\w-]*)$/) || [])[1] || '',
-                  userId = AuthUtils.verifyToken(token, config.AppSecret);
-                  
-            q.body = { ...q.body, ...q.query, ...q.params };
-            q.body.authenticUserId = userId;
+    try {
+        const authHeader = q.header('authorization'),
+              token = ((authHeader || '').match(/^[Bb]earer ([\w-]*\.[\w-]*\.[\w-]*)$/) || [])[1] || '',
+              userId = AuthUtils.verifyToken(token, apiConfig.secretKeys.jwt);
+              
+        q.body = { ...q.body, ...q.query, ...q.params };
+        q.body.authenticUserId = userId;
 
-            proc(q, r, entity, operation);
-        }
-        catch(err) {
-            r.status(401);
-            r.json({ message: 'Error: Access denied' })
-        }
-    });  
+        proc(q, r, entity, operation);
+    }
+    catch(err) {
+        r.status(401);
+        r.json({ message: 'Error: Access denied' })
+    } 
 };
 
 // defer api startup til db init

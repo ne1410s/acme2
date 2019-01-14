@@ -1,10 +1,8 @@
-import { Crypto } from "@ne1410s/crypto";
 import * as Sequelize from "sequelize";
 import * as apiConfig from "../api.json";
 
 export class DbContext {
 
-    public dbConfig: Sequelize.Model<{}, IDbConfigAttribs>;
     public dbUser: Sequelize.Model<{}, IDbUserAttribs>;
     public dbAccount: Sequelize.Model<{}, IDbAccountAttribs>;
     public dbOrder: Sequelize.Model<{}, IDbOrderAttribs>;
@@ -16,7 +14,6 @@ export class DbContext {
             operatorsAliases: false
         });
 
-        this.dbConfig = orm.define('Config', this.configAttribs);
         this.dbUser = orm.define('User', this.userAttribs);
         this.dbAccount = orm.define('Account', this.accountAttribs);
         this.dbOrder = orm.define('Order', this.orderAttribs);
@@ -25,26 +22,7 @@ export class DbContext {
         this.dbOrder.belongsTo(this.dbAccount, { foreignKey: { name: 'AccountID', allowNull: false } });
 
         await orm.sync();
-
-        const config = await this.dbConfig.findOne() as any;
-        if (config == null) {
-            const appSecret = await Crypto.randomString();
-            await this.dbConfig.create({ ConfigID: 0, AppSecret: appSecret });
-        }
     }
-
-    private readonly configAttribs: Sequelize.DefineModelAttributes<IDbConfigAttribs> = {
-        ConfigID: {
-            type: Sequelize.INTEGER,
-            primaryKey: true,
-            autoIncrement: true,
-            allowNull: false
-        },
-        AppSecret: {
-            type: Sequelize.STRING,
-            allowNull: false
-        }
-    };
 
     private readonly userAttribs: Sequelize.DefineModelAttributes<IDbUserAttribs> = {
         UserID: {
@@ -106,11 +84,6 @@ export class DbContext {
             allowNull: true,
         }
     };
-}
-
-export interface IDbConfigAttribs {
-    ConfigID: {},
-    AppSecret: {}
 }
 
 export interface IDbUserAttribs {
