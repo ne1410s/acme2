@@ -39,7 +39,7 @@ export class ListAccountsOperation extends OperationBase<ISecureRequest, Array<I
             retVal.push({
                 accountId: db_account.AccountID,
                 created: svc_account.created,
-                emails: svc_account.contacts,
+                emails: svc_account.contacts.map(c => c.replace('mailto:', '')),
                 status: svc_account.status,
                 isTest: db_account.IsTest,
                 orders: orders

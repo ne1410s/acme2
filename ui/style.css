@@ -108,6 +108,12 @@ input[type=button] {
 .modal input[type=button] { color: rgb(255, 255, 255); background: rgb(0, 85, 0); }
 .modal input[type=button]:hover { color: rgb(0, 85, 0); background: rgba(0, 85, 0, .2); }
 
+.modal.login a { color: rgb(0, 110, 201); }
+.modal.login input:focus, .modal select:focus, .modal textarea:focus { border-color: rgb(0, 110, 201); }
+.modal.login input:hover { border-color: rgba(0, 110, 201, .2); }
+.modal.login input[type=button] { color: rgb(255, 255, 255); background: rgb(0, 110, 201); }
+.modal.login input[type=button]:hover { color: rgb(0, 110, 201); background: rgba(0, 110, 201, .2); }
+
 .secure > .modal { background: rgba(201, 201, 201, .6); }
 .secure > .modal > div { border: 2px solid rgb(151, 0, 0); }
 .secure > .modal a { color: rgb(151, 0, 0); }
