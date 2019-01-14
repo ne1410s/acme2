@@ -2,6 +2,7 @@ import * as express from "express";
 import * as cors from "cors";
 import * as bodyParser from "body-parser";
 import * as apiConfig from "./api.json"
+import * as path from "path";
 import { ExpressService } from "./express-api/services/express";
 import { DbContext } from "./database/db-context";
 import { AuthUtils } from "./express-api/utils/auth.js";
@@ -51,11 +52,17 @@ db.syncStructure().then(() => {
     expr_api.use(cors());
     expr_api.use(bodyParser.json());
 
+    // Static resources
+    expr_api.get('/style.css', (q, r) => r.sendFile(path.resolve(__dirname, '../ui/style.css')));
+    expr_api.get('/main.js', (q, r) => r.sendFile(path.resolve(__dirname, '../ui/main.js')));
+    expr_api.get('/loading.svg', (q, r) => r.sendFile(path.resolve(__dirname, '../ui/loading.svg')));
+    expr_api.get('/', (q, r) => r.sendFile(path.resolve(__dirname, '../ui/index.html')));
+
     // User Operations
     expr_api.post('/user', (q, r) => proc(q, r, 'users', 'register'));
     expr_api.post('/login', (q, r) => proc(q, r, 'users', 'login'));
 
-    // // Account Operations
+    // Account Operations
     expr_api.post('/account', (q, r) => sec_proc(q, r, 'accounts', 'create'));
     expr_api.get('/account', (q, r) => sec_proc(q, r, 'accounts', 'list'));
     expr_api.delete('/account/:accountId', (q, r) => sec_proc(q, r, 'accounts', 'delete'));
