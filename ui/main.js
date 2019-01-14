@@ -203,7 +203,7 @@
                   
             elem_account.setAttribute('data-id', acc.accountId);
             elem_account.setAttribute('data-status', acc.status);
-            if (acc.isTest) elem_account.setAttribute('data-test', '');
+            if (acc.isTest) elem_account.classList.add('test');
             elem_emails.textContent = acc.emails.join('; ');
 
             elem_account.appendChild(elem_emails);

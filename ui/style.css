@@ -93,9 +93,12 @@ input[type=button] {
     font-weight: bold;
 }
 
-#accounts > .list > [data-test] {
-    background-color: rgba(201, 201, 0, .4);
+#accounts > .list > div {
+    margin: 1rem;
 }
+#accounts > .list > div.test { background-color: rgba(201, 201, 0, .4); position: relative; }
+#accounts > .list > div.test:before { content: 'TEST'; position: absolute; right: .2rem; top: .1rem; font-size: .7rem; opacity: .5; }
+
 
 .modal { background: rgba(0, 0, 0, .85); }
 .modal > div { background: rgb(255, 255, 255); }
