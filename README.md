@@ -12,3 +12,5 @@ ES ACME v2 Wrapper
  - /dist/api.json
  - /ui/index.html
  - /ui/main.js
+
+[//]: # (See https://www.google.com/recaptcha/admin#list)
