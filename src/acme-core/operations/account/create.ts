@@ -19,6 +19,12 @@ export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRe
             messages.push('At least one email is required');
         }
 
+        requestData.emails.forEach(email => {
+            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+                messages.push('Email is invalid: ' + email);
+            }
+        });
+
         if (!requestData.termsAgreed) {
             messages.push('Terms agreement is required');
         }

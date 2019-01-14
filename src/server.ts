@@ -16,13 +16,22 @@ const proc = (q: express.Request, r: express.Response, entity: string, operation
     (expr_svc as any)[entity][operation].invoke({ ...q.body, ...q.query, ...q.params })
         .then((res: any) => r.json(res))
         .catch((err: any) => {
-            const error = err.cause || err,
-                  status = error.status || (error.errors ? 422 : 500),
-                  message = status === 500 ? 'A server error occurred' : error.toString();
-            r.status(status);
-            r.json({ message, detail: error.errors });
+            let cause = err;
+            do { cause = cause.cause }
+            while (cause.cause);
 
-            if (status === 500) console.error(err);
+            const status = cause.status || (cause.errors ? 422 : 500);
+            let message = cause.toString();
+
+            if (cause.body) { 
+                try { message = JSON.parse(cause.body).detail; }
+                catch(ex) { console.warn('Failed to get body detail', cause.body, ex); }
+            }
+
+            r.status(status);
+            r.json({ message, detail: cause.errors });
+
+            if (status === 500) console.error(cause);
         });
 };
 

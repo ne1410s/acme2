@@ -19,6 +19,12 @@ export class UpdateAccountOperation extends AccountOperation<IUpdateAccountReque
         if (requestData.emails.length == 0) {
             messages.push('At least one email is required');
         }
+
+        requestData.emails.forEach(email => {
+            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+                messages.push('Email is invalid:' + email);
+            }
+        });
         
         if (messages.length !== 0) {
             throw new ValidationError('The request is invalid', requestData, messages);
