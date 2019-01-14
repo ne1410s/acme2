@@ -9,6 +9,15 @@
 
     const empty = (elem) => { while (elem.firstChild) elem.removeChild(elem.firstChild); },
           remove = (elem) => { if (elem && elem.parentNode) elem.parentNode.removeChild(elem); },
+          toggle_enabled = (elem, enable) => {
+            if (enable === true) { 
+                elem.classList.remove('disabled');
+                elem.removeAttribute('disabled');
+            } else {
+                elem.classList.add('disabled');
+                elem.setAttribute('disabled', '');
+            }
+          },
           q2a = (q, parent) => Array.from((parent || document).querySelectorAll(q)),
           q2f = (q, parent) => (parent || document).querySelector(q),
           show_modal = (classname) => q2a('.modal')
@@ -77,9 +86,10 @@
             const modal = show_modal('login'),
                   errors = q2f('.errors', modal);
 
-            q2f('[type=button]', modal).onclick = () => {
+            q2f('[type=button]', modal).onclick = (event) => {
 
                 empty(errors);
+                toggle_enabled(event.target, false);
 
                 const password = q2f('[placeholder=password]', modal).value,
                       username = q2f('[placeholder=username]', modal).value;
@@ -97,6 +107,9 @@
                         errors.innerHTML = err.detail
                             ? err.detail.join('<br>')
                             : err.message || err;
+                    })
+                    .finally(err => {
+                        toggle_enabled(event.target, true);
                     });
             }
         });
@@ -109,9 +122,10 @@
             const modal = show_modal('register'),
                   errors = q2f('.errors', modal);
 
-            q2f('[type=button]', modal).onclick = () => {
+            q2f('[type=button]', modal).onclick = (event) => {
 
                 empty(errors);
+                toggle_enabled(event.target, false);
 
                 const password = q2f('[placeholder=password]', modal).value,
                       username = q2f('[placeholder=username]', modal).value;
@@ -135,6 +149,9 @@
                                 ? err.detail.join('<br>')
                                 : err.message || err;
                         })
+                        .finally(err => {
+                            toggle_enabled(event.target, true);
+                        })
                     );
             }
         });
@@ -147,16 +164,18 @@
             const modal = show_modal('add-account'),
                   errors = q2f('.errors', modal);
 
-            q2f('[type=button]', modal).onclick = () => {
+            q2f('[type=button]', modal).onclick = (event) => {
 
                 empty(errors);
+                toggle_enabled(event.target, false);
 
                 const tosAgreed = q2f('#agree-tos', modal).checked,
+                      isTest = q2f('#test-mode', modal).checked,
                       emails = q2f('[placeholder=emails]', modal).value
                         .split(/[\s,;]/g)
                         .filter(a => a.length !== 0);
                         
-                svc(true, 'account', 'POST', { emails, tosAgreed })
+                svc(true, 'account', 'POST', { emails, tosAgreed, isTest })
                     .then(json => {
                         modal.classList.remove('open');
                         clear(modal);
@@ -167,6 +186,9 @@
                         errors.innerHTML = err.detail
                             ? err.detail.join('<br>')
                             : err.message || err;
+                    })
+                    .finally(err => {
+                        toggle_enabled(event.target, true);
                     });
             }
         });
@@ -181,6 +203,7 @@
                   
             elem_account.setAttribute('data-id', acc.accountId);
             elem_account.setAttribute('data-status', acc.status);
+            if (acc.isTest) elem_account.setAttribute('data-test', '');
             elem_emails.textContent = acc.emails.join('; ');
 
             elem_account.appendChild(elem_emails);
@@ -201,11 +224,22 @@
 
     window.addEventListener('load', () => {
 
+        // return key submits modals
+        q2a('.modal [type=button]').forEach(ctrl => {
+            ctrl.closest('.modal').addEventListener('keypress', (event) => {
+                if (event.target.type !== 'textarea' && event.keyCode === 13) {
+                    ctrl.click();
+                }
+            });
+        });
+
+        // close secure modals on background click
         q2a('.secure > .modal').forEach(m =>
             m.onclick = () => {
                 empty(q2f('.errors', m));
                 m.classList.remove('open');
             });
+        // prevent secure modal body clicks from propagating
         q2a('.secure > .modal > .body').forEach(m =>
             m.onclick = (event) => event.stopPropagation());
 

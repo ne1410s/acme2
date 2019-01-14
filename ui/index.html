@@ -16,8 +16,8 @@
         </header>
         
         <section id="accounts">
-            <h1>Accounts <a id="add-account" href="javascript:void(0)">+</a></h1>
             <section class="list" data-loader="account"></section>
+            <a id="add-account" href="javascript:void(0)">Add Account...</a>
         </section>
 
         <div class="modal add-account">
@@ -25,6 +25,8 @@
                 <textarea placeholder="emails" spellcheck="false"></textarea>
                 <label for="agree-tos">Agree to terms?</label>
                 <input type="checkbox" id="agree-tos"/>
+                <label for="test-mode">Just a test?</label>
+                <input type="checkbox" id="test-mode"/>
                 <span class="errors"></span>
                 <input type="button" value="Create"/>
             </div>

@@ -23,18 +23,31 @@ body.auth .secure {
     transition: opacity .3s;
 }
 
+.disabled, [disabled] {
+    pointer-events: none!important;
+    background: rgb(201, 201, 201)!important;
+    color: transparent!important;
+    cursor: default!important;
+}
+
 .modal {
     position: fixed;
     top: 0; right: 0; bottom: 0; left: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    opacity: 0;
+    pointer-events: none;
     transition: opacity .3s;
 }
 
-.modal:not(.open) {
+.modal:not(.open) > .body {
     opacity: 0;
-    pointer-events: none;
+}
+
+.modal.open {
+    opacity: 1;
+    pointer-events: inherit;
 }
 
 .modal .errors {
@@ -78,6 +91,10 @@ input, select, textarea {
 input[type=button] {
     cursor: pointer;
     font-weight: bold;
+}
+
+#accounts > .list > [data-test] {
+    background-color: rgba(201, 201, 0, .4);
 }
 
 .modal { background: rgba(0, 0, 0, .85); }
