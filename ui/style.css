@@ -25,8 +25,7 @@ body.auth .secure {
 
 .disabled, [disabled] {
     pointer-events: none!important;
-    background: rgb(201, 201, 201)!important;
-    color: transparent!important;
+    opacity: .3!important;
     cursor: default!important;
 }
 
@@ -65,16 +64,17 @@ body.auth .secure {
     text-align: center;
 }
 
-.modal > div {
+.modal > .body {
     border-radius: 1rem;
     padding: 1rem;
     display: flex;
     flex-wrap: wrap;
     transition: transform ease-in-out .6s;
+    border: 2px solid transparent;
 }
 
-.modal.login > div { max-width: 280px; }
-.modal.register > div { max-width: 280px; }
+.modal.login > .body { max-width: 280px; }
+.modal.register > .body { max-width: 280px; }
 
 input, select, textarea {
     box-sizing: border-box;
@@ -84,7 +84,7 @@ input, select, textarea {
     border-radius: .25rem;
     padding: .5rem;
     outline: 0;
-    border: 2px solid transparent;
+    border: 1px solid transparent;
     transition: all .3s;
 }
 
@@ -101,23 +101,18 @@ input[type=button] {
 
 
 .modal { background: rgba(0, 0, 0, .85); }
-.modal > div { background: rgb(255, 255, 255); }
-.modal a { color: rgb(0, 85, 0); }
+.modal > .body { background: rgb(255, 255, 255); }
 .modal input:focus, .modal select:focus, .modal textarea:focus { border-color: rgb(0, 85, 0); }
-.modal input:hover { border-color: rgba(0, 85, 0, .2); }
-.modal input[type=button] { color: rgb(255, 255, 255); background: rgb(0, 85, 0); }
-.modal input[type=button]:hover { color: rgb(0, 85, 0); background: rgba(0, 85, 0, .2); }
+.modal input:hover, .modal select:hover, .modal textarea:hover { border-color: rgba(201, 201, 201, .6); }
+.modal input[type=button]:not(:hover) { color: rgb(255, 255, 255); background: rgb(0, 85, 0); }
+.modal input[type=button]:hover { background: rgba(201, 201, 201, .6); }
+.modal a, .modal input[type=button]:hover { color: rgb(0, 85, 0); }
 
-.modal.login a { color: rgb(0, 110, 201); }
-.modal.login input:focus, .modal select:focus, .modal textarea:focus { border-color: rgb(0, 110, 201); }
-.modal.login input:hover { border-color: rgba(0, 110, 201, .2); }
-.modal.login input[type=button] { color: rgb(255, 255, 255); background: rgb(0, 110, 201); }
-.modal.login input[type=button]:hover { color: rgb(0, 110, 201); background: rgba(0, 110, 201, .2); }
+.modal.login input:focus, .modal.login select:focus, .modal.login textarea:focus { border-color: rgb(0, 110, 201); }
+.modal.login input[type=button]:not(:hover) { color: rgb(255, 255, 255); background: rgb(0, 110, 201); }
+.modal.login a, .modal.login input[type=button]:hover { color: rgb(0, 110, 201); }
 
 .secure > .modal { background: rgba(201, 201, 201, .6); }
-.secure > .modal > div { border: 2px solid rgb(151, 0, 0); }
-.secure > .modal a { color: rgb(151, 0, 0); }
-.secure > .modal input:focus, .modal select:focus, .modal textarea:focus { border-color: rgb(151, 0, 0); }
-.secure > .modal input:hover { border-color: rgba(151, 0, 0, .2); }
-.secure > .modal input[type=button] { color: rgb(255, 255, 255); background: rgb(151, 0, 0); }
-.secure > .modal input[type=button]:hover { color: rgb(151, 0, 0); background: rgba(151, 0, 0, .2); }
+.secure > .modal > .body, .secure > .modal input:focus, .secure > .modal select:focus, .secure > .modal textarea:focus { border-color: rgb(151, 0, 0); }
+.secure > .modal input[type=button]:not(:hover) { color: rgb(255, 255, 255); background: rgb(151, 0, 0); }
+.secure > .modal a, .secure > .modal input[type=button]:hover { color: rgb(151, 0, 0); }

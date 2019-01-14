@@ -16,22 +16,21 @@ const proc = (q: express.Request, r: express.Response, entity: string, operation
     (expr_svc as any)[entity][operation].invoke({ ...q.body, ...q.query, ...q.params })
         .then((res: any) => r.json(res))
         .catch((err: any) => {
-            let cause = err;
-            do { cause = cause.cause }
-            while (cause.cause);
+            do { err = err.cause || err }
+            while (err.cause);
 
-            const status = cause.status || (cause.errors ? 422 : 500);
-            let message = cause.toString();
+            const status = err.status || (err.errors ? 422 : 500);
+            let message = err.toString();
 
-            if (cause.body) { 
-                try { message = JSON.parse(cause.body).detail; }
-                catch(ex) { console.warn('Failed to get body detail', cause.body, ex); }
+            if (err.body) { 
+                try { message = JSON.parse(err.body).detail; }
+                catch(ex) { console.warn('Failed to get body detail', err.body, ex); }
             }
 
             r.status(status);
-            r.json({ message, detail: cause.errors });
+            r.json({ message, detail: err.errors });
 
-            if (status === 500) console.error(cause);
+            if (status === 500) console.error(err);
         });
 };
 
@@ -66,6 +65,7 @@ db.syncStructure().then(() => {
     expr_api.get('/style.css', (q, r) => r.sendFile(path.resolve(__dirname, '../ui/style.css')));
     expr_api.get('/main.js', (q, r) => r.sendFile(path.resolve(__dirname, '../ui/main.js')));
     expr_api.get('/loading.svg', (q, r) => r.sendFile(path.resolve(__dirname, '../ui/loading.svg')));
+    expr_api.get('/favicon.ico', (q, r) => r.sendFile(path.resolve(__dirname, '../ui/favicon.ico')));
     expr_api.get('/', (q, r) => r.sendFile(path.resolve(__dirname, '../ui/index.html')));
 
     // User Operations

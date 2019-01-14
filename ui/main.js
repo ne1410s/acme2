@@ -9,15 +9,6 @@
 
     const empty = (elem) => { while (elem.firstChild) elem.removeChild(elem.firstChild); },
           remove = (elem) => { if (elem && elem.parentNode) elem.parentNode.removeChild(elem); },
-          toggle_enabled = (elem, enable) => {
-            if (enable === true) { 
-                elem.classList.remove('disabled');
-                elem.removeAttribute('disabled');
-            } else {
-                elem.classList.add('disabled');
-                elem.setAttribute('disabled', '');
-            }
-          },
           q2a = (q, parent) => Array.from((parent || document).querySelectorAll(q)),
           q2f = (q, parent) => (parent || document).querySelector(q),
           show_modal = (classname) => q2a('.modal')
@@ -31,10 +22,22 @@
 
     const clear = (modal) => { 
         q2a('input:not([type=button]), select, textarea', modal).forEach(ctrl => ctrl.value = '');
-        q2a('checkbox, radio', modal).forEach(ctrl => ctrl.checked = false);
+        q2a('[type=checkbox], [type=radio]', modal).forEach(ctrl => ctrl.checked = false);
         empty(q2f('.errors', modal));
     };
 
+    const set_enabled = (modal, enable) => {
+
+        q2a('input, select, textarea', modal).forEach(ctrl => {
+            if (enable === true) { 
+                ctrl.classList.remove('disabled');
+                ctrl.removeAttribute('disabled');
+            } else {
+                ctrl.classList.add('disabled');
+                ctrl.setAttribute('disabled', '');
+            }
+        });  
+    };
 
     async function svc(secure, path, method, json) {
 
@@ -86,10 +89,10 @@
             const modal = show_modal('login'),
                   errors = q2f('.errors', modal);
 
-            q2f('[type=button]', modal).onclick = (event) => {
+            q2f('[type=button]', modal).onclick = () => {
 
                 empty(errors);
-                toggle_enabled(event.target, false);
+                set_enabled(modal, false);
 
                 const password = q2f('[placeholder=password]', modal).value,
                       username = q2f('[placeholder=username]', modal).value;
@@ -108,9 +111,7 @@
                             ? err.detail.join('<br>')
                             : err.message || err;
                     })
-                    .finally(err => {
-                        toggle_enabled(event.target, true);
-                    });
+                    .finally(() => set_enabled(modal, true));
             }
         });
     }
@@ -122,17 +123,16 @@
             const modal = show_modal('register'),
                   errors = q2f('.errors', modal);
 
-            q2f('[type=button]', modal).onclick = (event) => {
+            q2f('[type=button]', modal).onclick = () => {
 
                 empty(errors);
-                toggle_enabled(event.target, false);
+                set_enabled(modal, false);
 
                 const password = q2f('[placeholder=password]', modal).value,
                       username = q2f('[placeholder=username]', modal).value;
 
                 // obtain recaptcha token for server-side verification
                 grecaptcha.execute(recaptchaKey, {action: 'register'})
-
                     .then(recaptcha => svc(false, 'user', 'POST', { username, password, recaptcha })
                         .then(json => {     
                             save_token(json.token);
@@ -149,9 +149,7 @@
                                 ? err.detail.join('<br>')
                                 : err.message || err;
                         })
-                        .finally(err => {
-                            toggle_enabled(event.target, true);
-                        })
+                        .finally(() => set_enabled(modal, true))
                     );
             }
         });
@@ -164,10 +162,10 @@
             const modal = show_modal('add-account'),
                   errors = q2f('.errors', modal);
 
-            q2f('[type=button]', modal).onclick = (event) => {
+            q2f('[type=button]', modal).onclick = () => {
 
                 empty(errors);
-                toggle_enabled(event.target, false);
+                set_enabled(modal, false);
 
                 const tosAgreed = q2f('#agree-tos', modal).checked,
                       isTest = q2f('#test-mode', modal).checked,
@@ -187,9 +185,7 @@
                             ? err.detail.join('<br>')
                             : err.message || err;
                     })
-                    .finally(err => {
-                        toggle_enabled(event.target, true);
-                    });
+                    .finally(() => set_enabled(modal, true));
             }
         });
     }
