@@ -131,6 +131,11 @@
                 const password = q2f('[placeholder=password]', modal).value,
                       username = q2f('[placeholder=username]', modal).value;
 
+                if (!window.grecaptcha) {
+                    errors.textContent = 'Registration error. Blame google :P';
+                    return set_enabled(modal, true);
+                }
+
                 // obtain recaptcha token for server-side verification
                 grecaptcha.execute(recaptchaKey, {action: 'register'})
                     .then(recaptcha => svc(false, 'user', 'POST', { username, password, recaptcha })
@@ -190,34 +195,91 @@
         });
     }
 
+    function obtain_add_order(accountId) {
+
+        return new Promise(resolve => {
+
+            const modal = show_modal('add-order'),
+                  errors = q2f('.errors', modal);
+
+            q2f('[type=button]', modal).onclick = () => {
+
+                empty(errors);
+                set_enabled(modal, false);
+
+                const domains = q2f('[placeholder=domains]', modal).value
+                        .split(/[\s,;]/g)
+                        .filter(a => a.length !== 0);
+                        
+                svc(true, 'order', 'POST', { accountId, domains })
+                    .then(json => {
+                        modal.classList.remove('open');
+                        clear(modal);
+                        return resolve();
+                    })
+                    .catch(err => {
+                        console.warn(err);
+                        errors.innerHTML = err.detail
+                            ? err.detail.join('<br>')
+                            : err.message || err;
+                    })
+                    .finally(() => set_enabled(modal, true));
+            }
+        });
+    }
+
     const list_accounts = () => svc(true, 'account', 'GET').then(accounts => { 
-        const target = q2a('#accounts > .list')[0];
+        const target = q2a('section.accounts > .list')[0];
         empty(target);
         accounts.forEach(acc => {
             const elem_account = document.createElement('div'),
-                  elem_emails = document.createElement('span'),
-                  elem_orders = document.createElement('span'),
-                  elem_env = document.createElement('span');
-                  
+                  elem_emails = document.createElement('div'),
+                  elem_orders = document.createElement('section'),
+                  elem_addOrder = document.createElement('a');
+
+            let iterelem_email,
+                iterelem_order,
+                iterelem_domain;
+
             elem_account.setAttribute('data-id', acc.accountId);
             elem_account.setAttribute('data-status', acc.status);
-            if (acc.isTest) elem_account.classList.add('test');
-            elem_env.textContent = acc.isTest ? 'test' : 'live';
-            elem_emails.textContent = acc.emails[0];
-            const moreEmails = acc.emails.length - 1;
-            if (moreEmails > 0) elem_emails.textContent += ' + ' + moreEmails + ' more';
-            elem_orders.textContent = 'Orders: ' + acc.orders.length;
+            elem_account.setAttribute('data-env', acc.isTest ? 'test' : 'live');
+
+            elem_orders.classList.add('orders');
+            elem_addOrder.classList.add('add-order');
+            elem_addOrder.setAttribute('href', 'javascript:void(0)');
+            elem_addOrder.textContent = 'Add Order...';
+            elem_addOrder.onclick = () => show_add_order(acc.accountId);
+                        
+            acc.emails.forEach(email => {
+                iterelem_email = document.createElement('span');
+                iterelem_email.textContent = email;
+                elem_emails.appendChild(iterelem_email);
+            });
+
+            acc.orders.forEach(order => {
+                iterelem_order = document.createElement('div');
+                iterelem_order.setAttribute('data-id', order.orderId);
+                elem_orders.appendChild(iterelem_order);
+
+                order.domains.forEach(domain => {
+                    iterelem_domain = document.createElement('span');
+                    iterelem_domain.textContent = domain;
+                    iterelem_order.appendChild(iterelem_domain);
+                });
+            });
 
             elem_account.appendChild(elem_emails);
             elem_account.appendChild(elem_orders);
-            elem_account.appendChild(elem_env);
+            elem_account.appendChild(elem_addOrder);
             target.appendChild(elem_account);
         });
     });
 
     const show_login = () => obtain_login().then(list_accounts),
           show_register = () => obtain_registration().then(list_accounts),
-          show_add_account = () => obtain_add_account().then(list_accounts);
+          show_add_account = () => obtain_add_account().then(list_accounts),
+          show_add_order = (accId) => obtain_add_order(accId).then(list_accounts);
 
     const logout = () => {
         wipe_token();

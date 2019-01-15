@@ -17,7 +17,7 @@ export class UpsertOrderOperation extends AccountOperation<IUpsertOrderRequest, 
         const messages: string[] = [];
 
         if (!requestData.domains || requestData.domains.length == 0) {
-            messages.push('At least one email is required');
+            messages.push('At least one domain is required');
         }
 
         if (requestData.startsOn || requestData.endsOn) {

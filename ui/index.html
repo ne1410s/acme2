@@ -1,11 +1,12 @@
 <!doctype html>
 <html>
 <head>
-    <link rel="stylesheet" href="style.css"/>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Acme Express</title>
-    <script src='https://www.google.com/recaptcha/api.js?render=6LchaokUAAAAAMValneQDxXiiirpT-BSC4R7uWfy'></script>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" href="style.css"/>
+    <script async src='https://www.google.com/recaptcha/api.js?render=6LchaokUAAAAAMValneQDxXiiirpT-BSC4R7uWfy'></script>
     <script src="main.js"></script>
 </head>
 <body>
@@ -15,9 +16,9 @@
             <a id="logout" href="javascript:void(0)">Logout</a>
         </header>
         
-        <section id="accounts">
-            <a id="add-account" href="javascript:void(0)">Add Account...</a>
+        <section class="accounts">
             <section class="list" data-loader="account"></section>
+            <a id="add-account" href="javascript:void(0)">Add Account...</a>
         </section>
 
         <div class="modal add-account">
@@ -25,6 +26,14 @@
                 <textarea placeholder="emails" spellcheck="false"></textarea>
                 <label>Agree to terms?<input type="checkbox" id="agree-tos"/></label>
                 <label>Just a test?<input type="checkbox" id="test-mode"/></label>
+                <span class="errors"></span>
+                <input type="button" value="Create"/>
+            </div>
+        </div>
+
+        <div class="modal add-order">
+            <div class="body">
+                <textarea placeholder="domains" spellcheck="false"></textarea>
                 <span class="errors"></span>
                 <input type="button" value="Create"/>
             </div>
