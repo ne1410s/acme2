@@ -232,25 +232,28 @@
         const listTarget = q2f('section.accounts');
         empty(listTarget);
         accounts.forEach(acc => {
+
             const elem_account = document.createElement('article'),
-                  elem_emails = document.createElement('div'),
+                  elem_accountTitle = document.createElement('h1'),
+                  elem_emails = document.createElement('section'),
                   elem_orders = document.createElement('section'),
-                  elem_orderTitle = document.createElement('h1'),
                   elem_addOrder = document.createElement('a');
 
             let iterelem_email,
                 iterelem_order,
+                iterelem_orderTitle,
+                iterelem_domains,
                 iterelem_domain;
 
             elem_account.setAttribute('data-id', acc.accountId);
+            elem_accountTitle.textContent = acc.accountId;
             elem_account.setAttribute('data-status', acc.status);
             elem_account.setAttribute('data-env', acc.isTest ? 'test' : 'live');
 
             elem_orders.classList.add('orders');
-            elem_orderTitle.textContent = 'Orders ';
             elem_addOrder.classList.add('add-order');
             elem_addOrder.setAttribute('href', 'javascript:void(0)');
-            elem_addOrder.textContent = '+';
+            elem_addOrder.textContent = 'Add order...';
             elem_addOrder.onclick = () => show_add_order(acc.accountId);
                         
             acc.emails.forEach(email => {
@@ -260,20 +263,27 @@
             });
 
             acc.orders.forEach(order => {
+
                 iterelem_order = document.createElement('article');
+                iterelem_orderTitle = document.createElement('h1');
+                iterelem_domains = document.createElement('section');
+
                 iterelem_order.setAttribute('data-id', order.orderId);
+                iterelem_orderTitle.textContent = order.orderId;
+                iterelem_order.appendChild(iterelem_orderTitle);
+                iterelem_order.appendChild(iterelem_domains);
                 elem_orders.appendChild(iterelem_order);
 
                 order.domains.forEach(domain => {
                     iterelem_domain = document.createElement('span');
                     iterelem_domain.textContent = domain;
-                    iterelem_order.appendChild(iterelem_domain);
+                    iterelem_domains.appendChild(iterelem_domain);
                 });
             });
 
+            elem_account.appendChild(elem_accountTitle);
             elem_account.appendChild(elem_emails);
-            elem_orderTitle.appendChild(elem_addOrder);
-            elem_account.appendChild(elem_orderTitle);
+            elem_orders.appendChild(elem_addOrder);
             elem_account.appendChild(elem_orders);
             listTarget.appendChild(elem_account);
         });
