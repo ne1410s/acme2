@@ -229,12 +229,13 @@
     }
 
     const list_accounts = () => svc(true, 'account', 'GET').then(accounts => { 
-        const target = q2a('section.accounts > .list')[0];
-        empty(target);
+        const listTarget = q2f('section.accounts');
+        empty(listTarget);
         accounts.forEach(acc => {
-            const elem_account = document.createElement('div'),
+            const elem_account = document.createElement('article'),
                   elem_emails = document.createElement('div'),
                   elem_orders = document.createElement('section'),
+                  elem_orderTitle = document.createElement('h1'),
                   elem_addOrder = document.createElement('a');
 
             let iterelem_email,
@@ -246,9 +247,10 @@
             elem_account.setAttribute('data-env', acc.isTest ? 'test' : 'live');
 
             elem_orders.classList.add('orders');
+            elem_orderTitle.textContent = 'Orders ';
             elem_addOrder.classList.add('add-order');
             elem_addOrder.setAttribute('href', 'javascript:void(0)');
-            elem_addOrder.textContent = 'Add Order...';
+            elem_addOrder.textContent = '+';
             elem_addOrder.onclick = () => show_add_order(acc.accountId);
                         
             acc.emails.forEach(email => {
@@ -258,7 +260,7 @@
             });
 
             acc.orders.forEach(order => {
-                iterelem_order = document.createElement('div');
+                iterelem_order = document.createElement('article');
                 iterelem_order.setAttribute('data-id', order.orderId);
                 elem_orders.appendChild(iterelem_order);
 
@@ -270,9 +272,10 @@
             });
 
             elem_account.appendChild(elem_emails);
+            elem_orderTitle.appendChild(elem_addOrder);
+            elem_account.appendChild(elem_orderTitle);
             elem_account.appendChild(elem_orders);
-            elem_account.appendChild(elem_addOrder);
-            target.appendChild(elem_account);
+            listTarget.appendChild(elem_account);
         });
     });
 
@@ -283,7 +286,7 @@
 
     const logout = () => {
         wipe_token();
-        q2a('.list').forEach(l => empty(l));
+        empty(q2f('section.accounts'));
         q2f('body').classList.remove('auth');
         show_login();
     }

@@ -11,6 +11,11 @@ body.auth .secure {
     opacity: 1;
 }
 
+h1 {
+    margin: .25rem 0 0;
+    color: rgb(84, 84, 84);
+}
+
 .loading {
     background: url(loading.svg) no-repeat;
     background-size: 50px 50px;
@@ -93,21 +98,19 @@ input[type=button] {
     font-weight: bold;
 }
 
-section > .list > div {
-    padding: .25rem .5rem;
-    margin: .25rem .25rem 0;
-}
-
-section.accounts > .list > div { color: rgb(151, 0, 0); }
-section.accounts > .list > div.test { opacity: .6; }
+section > article { border: 2px dashed transparent; margin: .25rem; padding: .25rem; }
+section.accounts > .test { opacity: .6; }
+section.accounts { color: rgb(151, 0, 0); }
+section.accounts > article { border-color: rgb(151, 0, 0); margin: .5rem 0; }
 section.orders { color: rgb(144, 144, 0); }
+section.orders > article { border-color: rgb(144, 144, 0); }
 
 .modal { background: rgba(0, 0, 0, .85); }
-.secure > .modal { background: rgba(201, 201, 201, .6); }
 .modal > .body { background: rgb(255, 255, 255); }
 .modal input[type=button]:hover { background: rgba(201, 201, 201, .6); }
 .modal input[type=button]:not(:hover) { color: rgb(255, 255, 255); }
 .modal input:hover, .modal select:hover, .modal textarea:hover { border-color: rgba(201, 201, 201, .6); }
+.secure > .modal { background: rgba(201, 201, 201, .6); }
 
 .modal.login input:focus, .modal.login select:focus, .modal.login textarea:focus { border-color: rgb(0, 110, 201); }
 .modal.login input[type=button]:not(:hover) { background: rgb(0, 110, 201); }
