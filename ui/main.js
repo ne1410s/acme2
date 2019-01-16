@@ -282,12 +282,24 @@
                 });
             });
 
+            if (acc.orders.length === 0) {
+                const elem_ordersEmpty = document.createElement('p');
+                elem_ordersEmpty.textContent = 'No orders found';
+                elem_orders.appendChild(elem_ordersEmpty);
+            }
+
             elem_account.appendChild(elem_accountTitle);
             elem_account.appendChild(elem_emails);
             elem_orders.appendChild(elem_addOrder);
             elem_account.appendChild(elem_orders);
             targetZone.appendChild(elem_account);
         });
+
+        if (accounts.length === 0) {
+            const elem_accountsEmpty = document.createElement('p');
+            elem_accountsEmpty.textContent = 'No accounts found';
+            targetZone.appendChild(elem_accountsEmpty);
+        }
 
         const elem_addAccount = document.createElement('a');
         elem_addAccount.setAttribute('id', 'add-account');

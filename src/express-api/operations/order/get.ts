@@ -1,19 +1,19 @@
 import { OperationBase } from "@ne1410s/http";
-import { IGetOrderRequest, IOrder } from "../../interfaces/order";
+import { IOrderRequest, IOrder } from "../../interfaces/order";
 import { DbContext } from "../../../database/db-context";
 import { AuthError } from "../../errors/auth";
 import { Acme2Service } from "../../../acme-core/services/acme2";
 
-export class GetOrderOperation extends OperationBase<IGetOrderRequest, IOrder> {
+export class GetOrderOperation extends OperationBase<IOrderRequest, IOrder> {
     
     constructor(private readonly db: DbContext) {
         super();
     }
     
-    validateRequest(requestData: IGetOrderRequest): void {}
+    validateRequest(requestData: IOrderRequest): void {}
     validateResponse(responseData: IOrder): void {}
 
-    protected async invokeInternal(requestData: IGetOrderRequest): Promise<IOrder> {
+    protected async invokeInternal(requestData: IOrderRequest): Promise<IOrder> {
         
         const db_account = await this.db.dbAccount.findByPk(requestData.accountId) as any;
 

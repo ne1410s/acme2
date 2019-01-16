@@ -5,7 +5,7 @@ export interface ICreateOrderRequest extends ISecureRequest {
     domains: Array<string>;
 }
 
-export interface IGetOrderRequest extends ISecureRequest {
+export interface IOrderRequest extends ISecureRequest {
     accountId: number;
     orderId: number;
 }

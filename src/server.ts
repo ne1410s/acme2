@@ -80,6 +80,7 @@ db.syncStructure().then(() => {
     // Order Operations
     expr_api.get('/order', (q, r) => sec_proc(q, r, 'orders', 'get'));
     expr_api.post('/order', (q, r) => sec_proc(q, r, 'orders', 'create'));
+    expr_api.delete('/order', (q, r) => sec_proc(q, r, 'orders', 'delete'));
     // app.put('/order/finalise', (q, r) => proc(q, r, 'orders', 'finalise'));
     // app.get('/order/cert', (q, r) => proc(q, r, 'orders', 'getcert'));
 
