@@ -17,7 +17,7 @@ export abstract class AuthUtils {
         return await Crypto.digest(test.salt + text) == test.hash;
     }
 
-    public static getToken(userId: number, appSecret: string, minutes: number = 15): string {
+    public static getToken(userId: number, appSecret: string, minutes: number): string {
         
         const payload = {
             aud: ['customer'],

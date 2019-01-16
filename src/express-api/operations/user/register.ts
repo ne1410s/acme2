@@ -65,7 +65,7 @@ export class RegisterOperation extends OperationBase<IRegisterRequest, IAuthEntr
         });
 
         return {
-            token: await AuthUtils.getToken(newUser.UserID, apiConfig.secretKeys.jwt)
+            token: await AuthUtils.getToken(newUser.UserID, apiConfig.secretKeys.jwt, apiConfig.tokenMinutes)
         };
     }
 

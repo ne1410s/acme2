@@ -12,7 +12,10 @@
           q2a = (q, parent) => Array.from((parent || document).querySelectorAll(q)),
           q2f = (q, parent) => (parent || document).querySelector(q),
           show_modal = (classname) => q2a('.modal')
-            .filter(m => !m.classList.remove('open'))
+            .filter(m => {
+                if (m.parentElement instanceof HTMLBodyElement) m.classList.remove('open');
+                return true;
+            })
             .filter(m => m.classList.contains(classname))
             .filter(m => {
                 empty(q2f('.errors', m));
@@ -141,11 +144,9 @@
                     .then(recaptcha => svc(false, 'user', 'POST', { username, password, recaptcha })
                         .then(json => {     
                             save_token(json.token);
-
                             modal.classList.remove('open');
                             q2f('body').classList.add('auth');
                             clear(modal);
-
                             return resolve();
                         })
                         .catch(err => {
