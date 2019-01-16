@@ -220,7 +220,7 @@
                     .catch(err => {
                         console.warn(err);
                         errors.innerHTML = err.detail
-                            ? err.detail.join('<br>')
+                            ? err.detail.map(d => d.message || d).join('<br>')
                             : err.message || err;
                     })
                     .finally(() => set_enabled(modal, true));
@@ -229,8 +229,8 @@
     }
 
     const list_accounts = () => svc(true, 'account', 'GET').then(accounts => { 
-        const listTarget = q2f('section.accounts');
-        empty(listTarget);
+        const targetZone = q2f('.accounts.zone');
+        empty(targetZone);
         accounts.forEach(acc => {
 
             const elem_account = document.createElement('article'),
@@ -250,10 +250,10 @@
             elem_account.setAttribute('data-status', acc.status);
             elem_account.setAttribute('data-env', acc.isTest ? 'test' : 'live');
 
-            elem_orders.classList.add('orders');
+            elem_orders.classList.add('orders', 'zone');
             elem_addOrder.classList.add('add-order');
             elem_addOrder.setAttribute('href', 'javascript:void(0)');
-            elem_addOrder.textContent = 'Add order...';
+            elem_addOrder.textContent = '+';
             elem_addOrder.onclick = () => show_add_order(acc.accountId);
                         
             acc.emails.forEach(email => {
@@ -285,8 +285,15 @@
             elem_account.appendChild(elem_emails);
             elem_orders.appendChild(elem_addOrder);
             elem_account.appendChild(elem_orders);
-            listTarget.appendChild(elem_account);
+            targetZone.appendChild(elem_account);
         });
+
+        const elem_addAccount = document.createElement('a');
+        elem_addAccount.setAttribute('id', 'add-account');
+        elem_addAccount.setAttribute('href', 'javascript:void(0)');
+        elem_addAccount.textContent = '+';
+        elem_addAccount.onclick = show_add_account;
+        targetZone.appendChild(elem_addAccount);
     });
 
     const show_login = () => obtain_login().then(list_accounts),
@@ -296,7 +303,7 @@
 
     const logout = () => {
         wipe_token();
-        empty(q2f('section.accounts'));
+        empty(q2f('.accounts.zone'));
         q2f('body').classList.remove('auth');
         show_login();
     }
@@ -325,7 +332,6 @@
         q2f('#logout').onclick = logout;
         q2f('#login').onclick = show_login;
         q2f('#register').onclick = show_register;
-        q2f('#add-account').onclick = show_add_account;
 
         show_login();
     });
