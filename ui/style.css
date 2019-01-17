@@ -148,9 +148,9 @@ section > span {
 .modal.register input[type=button]:not(:hover) { background: rgb(0, 85, 0); }
 .modal.register a, .modal.register input[type=button]:hover { color: rgb(0, 85, 0); }
 
-.modal.add-account input:focus, .modal.add-account select:focus, .modal.add-account textarea:focus, .modal.add-account > .body { border-color: rgb(151, 0, 0); }
-.modal.add-account input[type=button]:not(:hover) { background: rgb(151, 0, 0); }
-.modal.add-account a, .modal.add-account input[type=button]:hover { color: rgb(151, 0, 0); }
+.modal.edit-account input:focus, .modal.edit-account select:focus, .modal.edit-account textarea:focus, .modal.edit-account > .body { border-color: rgb(151, 0, 0); }
+.modal.edit-account input[type=button]:not(:hover) { background: rgb(151, 0, 0); }
+.modal.edit-account a, .modal.edit-account input[type=button]:hover { color: rgb(151, 0, 0); }
 
 .modal.add-order input:focus, .modal.add-order select:focus, .modal.add-order textarea:focus, .modal.add-order > .body { border-color: rgb(144, 144, 0); }
 .modal.add-order input[type=button]:not(:hover) { background: rgb(144, 144, 0); }

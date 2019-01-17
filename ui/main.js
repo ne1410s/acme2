@@ -156,25 +156,31 @@
         });
     }
 
-    function obtain_add_account() {
+    function obtain_edit_account(existing) {
 
         return new Promise(resolve => {
 
-            const modal = show_modal('add-account'),
-                  errors = q2f('.errors', modal);
+            const modal = show_modal('edit-account'),
+                  $errors = q2f('.errors', modal),
+                  $tosAgreed = q2f('#agree-tos', modal),
+                  $isTest = q2f('#test-mode', modal),
+                  $emails = q2f('[placeholder=emails]', modal);
+
+            if (typeof existing === 'object' && existing.emails) {
+                $tosAgreed.c
+                ....
+            }
 
             q2f('[type=button]', modal).onclick = () => {
 
                 empty(errors);
                 set_enabled(modal, false);
 
-                const tosAgreed = q2f('#agree-tos', modal).checked,
-                      isTest = q2f('#test-mode', modal).checked,
-                      emails = q2f('[placeholder=emails]', modal).value
+                const emails = $emails.value
                         .split(/[\s,;]/g)
                         .filter(a => a.length !== 0);
                         
-                svc(true, 'account', 'POST', { emails, tosAgreed, isTest })
+                svc(true, 'account', 'POST', { emails, tosAgreed: $tosAgreed.checked, isTest: $isTest.checked })
                     .then(json => {
                         modal.classList.remove('open');
                         clear(modal);
@@ -327,10 +333,10 @@
                 }
 
                 const elem_addAccount = document.createElement('a');
-                elem_addAccount.setAttribute('id', 'add-account');
+                elem_addAccount.setAttribute('id', 'edit-account');
                 elem_addAccount.setAttribute('href', 'javascript:void(0)');
                 elem_addAccount.textContent = '+';
-                elem_addAccount.onclick = show_add_account;
+                elem_addAccount.onclick = show_edit_account;
                 targetZone.appendChild(elem_addAccount);
             })
             .finally(() => {
@@ -340,7 +346,7 @@
 
     const show_login = () => obtain_login().then(list_accounts),
           show_register = () => obtain_registration().then(list_accounts),
-          show_add_account = () => obtain_add_account().then(list_accounts),
+          show_edit_account = () => obtain_edit_account().then(list_accounts),
           show_add_order = (accId) => obtain_add_order(accId).then(list_accounts);
 
     const logout = () => {
