@@ -12,7 +12,10 @@ body.auth .secure {
 }
 
 h1 {
-    margin: .25rem 0 0;
+    margin: .125rem;
+    display: inline-block;
+    background: rgb(255, 255, 255);
+    padding: 0 .25rem;
 }
 
 .loading {
@@ -97,26 +100,38 @@ input[type=button] {
     font-weight: bold;
 }
 
-.zone > article { border: 2px dashed transparent; margin: .25rem .125rem; padding: .25rem; position: relative; }
-.zone > article > .delete { position: absolute; top: 0; right: .3rem; color: red; cursor: pointer; font-weight: bold; font-size: 1.2rem; }
-.zone > a { display: inline-block; color: rgb(255, 255, 255); text-decoration: none; padding: .25rem .6rem; margin: .125rem; }
-.zone > p { margin: 0 .125rem .25rem; }
 .accounts.zone { color: rgb(151, 0, 0); }
 .accounts.zone > article { border-color: rgb(151, 0, 0); margin: .5rem .125rem .25rem; }
+.accounts.zone > article:hover { background: rgb(151, 0, 0); }
 .accounts.zone > article[data-env=test] { opacity: .6; }
 .accounts.zone > a { background: rgb(151, 0, 0); }
-.orders.zone { color: rgb(144, 144, 0); }
-.orders.zone > article { border-color: rgb(144, 144, 0); }
+.orders.zone { color: rgb(144, 144, 0); background: rgb(255, 255, 255); display: flex; flex-wrap: wrap; }
+.orders.zone > article { border-color: rgb(144, 144, 0); flex-grow: 1; cursor: pointer; transition: background-color .3s; }
+.orders.zone > article:hover { background: rgb(144, 144, 0); }
 .orders.zone > a { background: rgb(144, 144, 0); }
-section > span { 
+section > span {
+    background: rgb(255, 255, 255);
     border: 1px solid rgb(84, 84, 84);
+    border-color: inherit;
     padding: .125rem .25rem;
-    margin: .25rem .25rem .25rem .125rem;
+    margin: 0 .125rem;
     display: inline-block;
-    max-width: 100%;
-    box-sizing: border-box;
     overflow-x: hidden;
  }
+.zone > article { border: 2px dashed transparent; margin: .25rem; padding: .25rem; position: relative; }
+.zone > p { margin: 0 .125rem .25rem; }
+.zone > a { color: rgb(255, 255, 255); text-decoration: none; padding: .25rem .6rem; margin: .25rem; display: flex; align-items: center; justify-content: center; max-width: .65rem; }
+.zone > article > .delete:hover { color: rgb(255, 255, 255); background: rgb(151, 0, 0); }
+.zone > article > .delete { 
+    position: absolute; 
+    top: 0; right: .3rem; 
+    color: red; background: rgb(255, 255, 255);
+    border-radius: 100%;
+    width: 1rem; height: 1rem;
+    display: flex; justify-content: center; align-items: center;
+    line-height: 1;
+    cursor: pointer; font-weight: bold; font-size: 1.2rem;
+}
 
 .modal { background: rgba(0, 0, 0, .85); }
 .modal > .body { background: rgb(255, 255, 255); }
