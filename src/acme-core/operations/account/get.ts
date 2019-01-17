@@ -23,23 +23,29 @@ export class GetAccountOperation extends AccountOperation<IAccountRequest, IAcco
 
     async deserialise(response: Response, requestData: IAccountRequest): Promise<IAccountResponse> {
         
-        const responseText = await response.text();
+        const responseText = await response.text(),
+              retVal = {} as IAccountResponse;
 
-        if (!response.ok) {
+        if (response.ok) {
+            const json = JSON.parse(responseText);
+            retVal.status = json.status;
+            retVal.created = new Date(json.createdAt);
+            retVal.initialIp = json.initialIp;
+            retVal.link = response.headers.get('link');
+            retVal.accountUrl = this._url;
+            retVal.token = response.headers.get('replay-nonce');
+            retVal.contacts = json.contact;
+        }
+        else if (response.status === 403 && responseText.indexOf('deactivated') !== -1) {
+            retVal.status = 'deactivated';
+            retVal.accountUrl = this._url;
+            retVal.token = response.headers.get('replay-nonce');
+        }
+        else {
             throw new HttpResponseError(response.status, response.statusText, response.headers, responseText);
         }
         
-        const json = JSON.parse(responseText);
-
-        return {
-            status: json.status,
-            created: new Date(json.createdAt),
-            initialIp: json.initialIp,
-            link: response.headers.get('link'),
-            accountUrl: this._url,
-            token: response.headers.get('replay-nonce'),
-            contacts: json.contact
-        };
+        return retVal;
     }
     
     validateResponse(responseData: IAccountResponse): void {

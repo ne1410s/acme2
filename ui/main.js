@@ -52,13 +52,8 @@
             headers['authorization'] = `Bearer ${load_token()}`;
         }
 
-        const loaders = q2a('[data-loader=' + path + ']');
-        loaders.forEach(l => l.classList.add('loading'))
-
         const response = await fetch(url, { method, headers, body }),
               resultjson = await response.json();
-
-        loaders.forEach(l => l.classList.remove('loading'))
 
         if (response.status === 401 && secure === true) {
             q2f('body').classList.remove('auth');
@@ -229,85 +224,119 @@
         });
     }
 
-    const list_accounts = () => svc(true, 'account', 'GET').then(accounts => { 
+    const list_accounts = () => {
+
         const targetZone = q2f('.accounts.zone');
-        empty(targetZone);
-        accounts.forEach(acc => {
+        targetZone.classList.add('loading');
 
-            const elem_account = document.createElement('article'),
-                  elem_accountTitle = document.createElement('h1'),
-                  elem_emails = document.createElement('section'),
-                  elem_orders = document.createElement('section'),
-                  elem_addOrder = document.createElement('a');
+        svc(true, 'account', 'GET')
+            .then(accounts => {
+    
+                empty(targetZone);
+                accounts.forEach(acc => {
 
-            let iterelem_email,
-                iterelem_order,
-                iterelem_orderTitle,
-                iterelem_domains,
-                iterelem_domain;
+                    const elem_account = document.createElement('article'),
+                        elem_accountTitle = document.createElement('h1'),
+                        elem_accountDelete = document.createElement('span'),
+                        elem_emails = document.createElement('section'),
+                        elem_orders = document.createElement('section'),
+                        elem_addOrder = document.createElement('a');
 
-            elem_account.setAttribute('data-id', acc.accountId);
-            elem_accountTitle.textContent = acc.accountId;
-            elem_account.setAttribute('data-status', acc.status);
-            elem_account.setAttribute('data-env', acc.isTest ? 'test' : 'live');
+                    let iterelem_email,
+                        iterelem_order,
+                        iterelem_orderTitle,
+                        iterelem_domains,
+                        iterelem_domain;
 
-            elem_orders.classList.add('orders', 'zone');
-            elem_addOrder.classList.add('add-order');
-            elem_addOrder.setAttribute('href', 'javascript:void(0)');
-            elem_addOrder.textContent = '+';
-            elem_addOrder.onclick = () => show_add_order(acc.accountId);
-                        
-            acc.emails.forEach(email => {
-                iterelem_email = document.createElement('span');
-                iterelem_email.textContent = email;
-                elem_emails.appendChild(iterelem_email);
-            });
+                    elem_accountTitle.textContent = acc.accountId;
+                    elem_accountDelete.innerHTML = '&times;';
+                    elem_accountDelete.classList.add('delete');
+                    elem_accountDelete.onclick = () => {
+                        if (confirm('You are about to permanently delete the account and all associated orders. This action cannot be undone. Continue?')) {
+                            elem_account.classList.add('loading');
+                            svc(true, `account/${acc.accountId}`, 'DELETE')
+                                .then(list_accounts)
+                                .catch((err) => alert(err))
+                                .finally(() => elem_account.classList.remove('loading'));
+                        }
+                    }
 
-            acc.orders.forEach(order => {
+                    elem_account.setAttribute('data-status', acc.status);
+                    elem_account.setAttribute('data-env', acc.isTest ? 'test' : 'live');
 
-                iterelem_order = document.createElement('article');
-                iterelem_orderTitle = document.createElement('h1');
-                iterelem_domains = document.createElement('section');
+                    elem_orders.classList.add('orders', 'zone');
+                    elem_addOrder.classList.add('add-order');
+                    elem_addOrder.setAttribute('href', 'javascript:void(0)');
+                    elem_addOrder.textContent = '+';
+                    elem_addOrder.onclick = () => show_add_order(acc.accountId);
+                                
+                    acc.emails.forEach(email => {
+                        iterelem_email = document.createElement('span');
+                        iterelem_email.textContent = email;
+                        elem_emails.appendChild(iterelem_email);
+                    });
 
-                iterelem_order.setAttribute('data-id', order.orderId);
-                iterelem_orderTitle.textContent = order.orderId;
-                iterelem_order.appendChild(iterelem_orderTitle);
-                iterelem_order.appendChild(iterelem_domains);
-                elem_orders.appendChild(iterelem_order);
+                    acc.orders.forEach(order => {
 
-                order.domains.forEach(domain => {
-                    iterelem_domain = document.createElement('span');
-                    iterelem_domain.textContent = domain;
-                    iterelem_domains.appendChild(iterelem_domain);
+                        iterelem_order = document.createElement('article');
+                        iterelem_orderTitle = document.createElement('h1');
+                        iterelem_orderDelete = document.createElement('span');
+                        iterelem_domains = document.createElement('section');
+
+                        iterelem_orderTitle.textContent = order.orderId;
+                        iterelem_orderDelete.innerHTML = '&times;';
+                        iterelem_orderDelete.classList.add('delete');
+                        iterelem_orderDelete.onclick = () => {
+                            iterelem_order.classList.add('loading');
+                            svc(true, `order/${acc.accountId}/${order.orderId}`, 'DELETE')
+                                .then(list_accounts)
+                                .catch((err) => alert(err))
+                                .finally(() => iterelem_order.classList.remove('loading'));
+                        }
+
+                        iterelem_order.appendChild(iterelem_orderTitle);
+                        iterelem_order.appendChild(iterelem_orderDelete);
+                        iterelem_order.appendChild(iterelem_domains);
+                        elem_orders.appendChild(iterelem_order);
+
+                        order.domains.forEach(domain => {
+                            iterelem_domain = document.createElement('span');
+                            iterelem_domain.textContent = domain;
+                            iterelem_domains.appendChild(iterelem_domain);
+                        });
+                    });
+
+                    if (acc.orders.length === 0) {
+                        const elem_ordersEmpty = document.createElement('p');
+                        elem_ordersEmpty.textContent = 'No orders found';
+                        elem_orders.appendChild(elem_ordersEmpty);
+                    }
+
+                    elem_account.appendChild(elem_accountTitle);
+                    elem_account.appendChild(elem_accountDelete);
+                    elem_account.appendChild(elem_emails);
+                    elem_orders.appendChild(elem_addOrder);
+                    elem_account.appendChild(elem_orders);
+                    targetZone.appendChild(elem_account);
                 });
-            });
 
-            if (acc.orders.length === 0) {
-                const elem_ordersEmpty = document.createElement('p');
-                elem_ordersEmpty.textContent = 'No orders found';
-                elem_orders.appendChild(elem_ordersEmpty);
-            }
+                if (accounts.length === 0) {
+                    const elem_accountsEmpty = document.createElement('p');
+                    elem_accountsEmpty.textContent = 'No accounts found';
+                    targetZone.appendChild(elem_accountsEmpty);
+                }
 
-            elem_account.appendChild(elem_accountTitle);
-            elem_account.appendChild(elem_emails);
-            elem_orders.appendChild(elem_addOrder);
-            elem_account.appendChild(elem_orders);
-            targetZone.appendChild(elem_account);
-        });
-
-        if (accounts.length === 0) {
-            const elem_accountsEmpty = document.createElement('p');
-            elem_accountsEmpty.textContent = 'No accounts found';
-            targetZone.appendChild(elem_accountsEmpty);
-        }
-
-        const elem_addAccount = document.createElement('a');
-        elem_addAccount.setAttribute('id', 'add-account');
-        elem_addAccount.setAttribute('href', 'javascript:void(0)');
-        elem_addAccount.textContent = '+';
-        elem_addAccount.onclick = show_add_account;
-        targetZone.appendChild(elem_addAccount);
-    });
+                const elem_addAccount = document.createElement('a');
+                elem_addAccount.setAttribute('id', 'add-account');
+                elem_addAccount.setAttribute('href', 'javascript:void(0)');
+                elem_addAccount.textContent = '+';
+                elem_addAccount.onclick = show_add_account;
+                targetZone.appendChild(elem_addAccount);
+            })
+            .finally(() => {
+                targetZone.classList.remove('loading');
+            })
+    }
 
     const show_login = () => obtain_login().then(list_accounts),
           show_register = () => obtain_registration().then(list_accounts),

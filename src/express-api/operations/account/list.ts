@@ -34,16 +34,22 @@ export class ListAccountsOperation extends OperationBase<ISecureRequest, Array<I
                 keys: JSON.parse(db_account.JWKPair)
             });
 
-            const orders = await this.getOrderMetas(db_account.AccountID);
-
-            retVal.push({
-                accountId: db_account.AccountID,
-                created: svc_account.created,
-                emails: svc_account.contacts.map(c => c.replace('mailto:', '')),
-                status: svc_account.status,
-                isTest: db_account.IsTest,
-                orders: orders
-            });
+            if (svc_account.status === 'valid') {
+                const orders = await this.getOrderMetas(db_account.AccountID);
+                retVal.push({
+                    accountId: db_account.AccountID,
+                    created: svc_account.created,
+                    emails: svc_account.contacts.map(c => c.replace('mailto:', '')),
+                    status: svc_account.status,
+                    isTest: db_account.IsTest,
+                    orders: orders
+                });
+            }
+            else if (svc_account.status === 'deactivated') {
+                await this.db.dbOrder.destroy({ where: { AccountID: db_account.AccountID } });
+                await this.db.dbAccount.destroy({ where: { AccountID: db_account.AccountID } });
+                console.log(`Account ${db_account.AccountID} is deactivated. All references have now been removed`);
+            }
         }
         
         return retVal;

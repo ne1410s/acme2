@@ -32,9 +32,8 @@ export class DeleteAccountOperation extends OperationBase<IDeleteAccountRequest,
              keys: JSON.parse(db_account.JWKPair)
         });
 
-        await this.db.dbAccount.destroy({
-            where: { AccountID: requestData.accountId }
-        });
+        await this.db.dbOrder.destroy({ where: { AccountID: requestData.accountId } });
+        await this.db.dbAccount.destroy({ where: { AccountID: requestData.accountId } });
 
         return Promise.resolve({});
     }

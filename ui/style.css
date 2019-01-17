@@ -97,7 +97,8 @@ input[type=button] {
     font-weight: bold;
 }
 
-.zone > article { border: 2px dashed transparent; margin: .25rem .125rem; padding: .25rem; }
+.zone > article { border: 2px dashed transparent; margin: .25rem .125rem; padding: .25rem; position: relative; }
+.zone > article > .delete { position: absolute; top: 0; right: .3rem; color: red; cursor: pointer; font-weight: bold; font-size: 1.2rem; }
 .zone > a { display: inline-block; color: rgb(255, 255, 255); text-decoration: none; padding: .25rem .6rem; margin: .125rem; }
 .zone > p { margin: 0 .125rem .25rem; }
 .accounts.zone { color: rgb(151, 0, 0); }
