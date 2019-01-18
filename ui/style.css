@@ -134,6 +134,7 @@ section > span {
 }
 
 .modal { background: rgba(0, 0, 0, .85); }
+.modal:not([data-update]) .if-update { display: none; }
 .modal > .body { background: rgb(255, 255, 255); }
 .modal input[type=button]:hover { background: rgba(201, 201, 201, .6); }
 .modal input[type=button]:not(:hover) { color: rgb(255, 255, 255); }

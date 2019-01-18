@@ -156,6 +156,23 @@
         });
     }
 
+
+/*
+
+elem_accountDelete.onclick = (event) => {
+                        event.stopPropagation();
+                        if (confirm('You are about to permanently delete the account and all associated orders. This action cannot be undone. Continue?')) {
+                            elem_account.classList.add('loading');
+                            svc(true, `account/${acc.accountId}`, 'DELETE')
+                                .then(list_accounts)
+                                .catch((err) => alert(err))
+                                .finally(() => elem_account.classList.remove('loading'));
+                        }
+                    }
+
+*/
+    ...
+
     function obtain_edit_account(existing) {
 
         return new Promise(resolve => {
@@ -168,7 +185,9 @@
                   isUpdating = existing && existing.accountId,
                   accountId = isUpdating ? existing.accountId : null;
 
+            modal.removeAttribute('data-update');
             if (isUpdating) {
+                modal.setAttribute('data-update', '');
                 chkTosAgreed.checked = existing.accountId;
                 chkTosAgreed.disabled = true;
                 chkIsTest.checked = existing.isTest;
@@ -249,7 +268,6 @@
 
                     const elem_account = document.createElement('article'),
                         elem_accountTitle = document.createElement('h1'),
-                        elem_accountDelete = document.createElement('span'),
                         elem_emails = document.createElement('section'),
                         elem_orders = document.createElement('section'),
                         elem_addOrder = document.createElement('a');
@@ -261,19 +279,6 @@
                         iterelem_domain;
 
                     elem_accountTitle.textContent = acc.accountId;
-                    elem_accountDelete.innerHTML = '&times;';
-                    elem_accountDelete.classList.add('delete');
-                    elem_accountDelete.onclick = (event) => {
-                        event.stopPropagation();
-                        if (confirm('You are about to permanently delete the account and all associated orders. This action cannot be undone. Continue?')) {
-                            elem_account.classList.add('loading');
-                            svc(true, `account/${acc.accountId}`, 'DELETE')
-                                .then(list_accounts)
-                                .catch((err) => alert(err))
-                                .finally(() => elem_account.classList.remove('loading'));
-                        }
-                    }
-
                     elem_account.setAttribute('data-status', acc.status);
                     elem_account.setAttribute('data-env', acc.isTest ? 'test' : 'live');
                     elem_account.onclick = (event) => {
@@ -337,7 +342,6 @@
                     }
 
                     elem_account.appendChild(elem_accountTitle);
-                    elem_account.appendChild(elem_accountDelete);
                     elem_account.appendChild(elem_emails);
                     elem_orders.appendChild(elem_addOrder);
                     elem_account.appendChild(elem_orders);
