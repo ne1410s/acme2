@@ -76,6 +76,7 @@ db.syncStructure().then(() => {
     expr_api.post('/account', (q, r) => sec_proc(q, r, 'accounts', 'create'));
     expr_api.get('/account', (q, r) => sec_proc(q, r, 'accounts', 'list'));
     expr_api.delete('/account/:accountId', (q, r) => sec_proc(q, r, 'accounts', 'delete'));
+    expr_api.put('/account', (q, r) => sec_proc(q, r, 'accounts', 'update'));
 
     // Order Operations
     expr_api.get('/order', (q, r) => sec_proc(q, r, 'orders', 'get'));

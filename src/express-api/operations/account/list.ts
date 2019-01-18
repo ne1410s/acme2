@@ -25,11 +25,11 @@ export class ListAccountsOperation extends OperationBase<ISecureRequest, Array<I
 
             const db_account = db_accounts[i] as any,
                   env = db_account.IsTest ? 'staging' : 'production',
-                  svc = new Acme2Service(env as any);
-            
-            const tokenResponse = await svc.tokens.get.invoke(),
-                  svc_account = await svc.accounts.get.invoke({
-                token: tokenResponse.token,
+                  svc = new Acme2Service(env as any),
+                  token_response = await svc.tokens.get.invoke();
+
+            const svc_account = await svc.accounts.get.invoke({
+                token: token_response.token,
                 accountId: db_account.AccountID,
                 keys: JSON.parse(db_account.JWKPair)
             });

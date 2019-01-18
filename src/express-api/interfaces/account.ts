@@ -7,6 +7,12 @@ export interface ICreateAccountRequest extends ISecureRequest {
     isTest: boolean;
 }
 
+export interface IUpdateAccountRequest extends ISecureRequest {
+    accountId: number;
+    isTest: boolean;
+    emails: Array<string>;
+}
+
 export interface IDeleteAccountRequest extends ISecureRequest {
     accountId: number;
 }

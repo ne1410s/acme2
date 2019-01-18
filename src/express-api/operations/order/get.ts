@@ -1,7 +1,6 @@
-import { OperationBase } from "@ne1410s/http";
+import { OperationBase, ValidationError } from "@ne1410s/http";
 import { IOrderRequest, IOrder } from "../../interfaces/order";
 import { DbContext } from "../../../database/db-context";
-import { AuthError } from "../../errors/auth";
 import { Acme2Service } from "../../../acme-core/services/acme2";
 
 export class GetOrderOperation extends OperationBase<IOrderRequest, IOrder> {
@@ -19,14 +18,14 @@ export class GetOrderOperation extends OperationBase<IOrderRequest, IOrder> {
 
         if (!db_account || db_account.UserID !== requestData.authenticUserId) {
             console.error('No matching account found:', requestData);
-            throw new AuthError();
+            throw new ValidationError('An error occurred', {}, ['Data inconsistency']);
         }
 
         const db_order = await this.db.dbOrder.findByPk(requestData.orderId) as any;
 
         if (!db_order) {
             console.error('No matching order found:', requestData);
-            throw new AuthError();
+            throw new ValidationError('An error occurred', {}, ['Data inconsistency']);
         }
 
         const env = db_account.IsTest ? 'staging' : 'production' as any,

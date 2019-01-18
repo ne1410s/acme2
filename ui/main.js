@@ -161,34 +161,40 @@
         return new Promise(resolve => {
 
             const modal = show_modal('edit-account'),
-                  $errors = q2f('.errors', modal),
-                  $tosAgreed = q2f('#agree-tos', modal),
-                  $isTest = q2f('#test-mode', modal),
-                  $emails = q2f('[placeholder=emails]', modal);
+                  txtErrors = q2f('.errors', modal),
+                  chkTosAgreed = q2f('#agree-tos', modal),
+                  chkIsTest = q2f('#test-mode', modal),
+                  txtEmails = q2f('[placeholder=emails]', modal),
+                  isUpdating = existing && existing.accountId,
+                  accountId = isUpdating ? existing.accountId : null;
 
-            if (typeof existing === 'object' && existing.emails) {
-                $tosAgreed.c
-                ....
+            if (isUpdating) {
+                chkTosAgreed.checked = existing.accountId;
+                chkTosAgreed.disabled = true;
+                chkIsTest.checked = existing.isTest;
+                chkIsTest.disabled = true;
+                txtEmails.value = existing.emails.join('\r\n');
             }
 
             q2f('[type=button]', modal).onclick = () => {
 
-                empty(errors);
+                empty(txtErrors);
                 set_enabled(modal, false);
 
-                const emails = $emails.value
+                const svc_verb = isUpdating ? 'PUT' : 'POST',
+                      emails = txtEmails.value
                         .split(/[\s,;]/g)
                         .filter(a => a.length !== 0);
-                        
-                svc(true, 'account', 'POST', { emails, tosAgreed: $tosAgreed.checked, isTest: $isTest.checked })
+                   
+                svc(true, 'account', svc_verb, { accountId, emails, tosAgreed: chkTosAgreed.checked, isTest: chkIsTest.checked })
                     .then(json => {
                         modal.classList.remove('open');
                         clear(modal);
-                        return resolve();
+                        return resolve(json);
                     })
                     .catch(err => {
                         console.warn(err);
-                        errors.innerHTML = err.detail
+                        txtErrors.innerHTML = err.detail
                             ? err.detail.join('<br>')
                             : err.message || err;
                     })
@@ -257,7 +263,8 @@
                     elem_accountTitle.textContent = acc.accountId;
                     elem_accountDelete.innerHTML = '&times;';
                     elem_accountDelete.classList.add('delete');
-                    elem_accountDelete.onclick = () => {
+                    elem_accountDelete.onclick = (event) => {
+                        event.stopPropagation();
                         if (confirm('You are about to permanently delete the account and all associated orders. This action cannot be undone. Continue?')) {
                             elem_account.classList.add('loading');
                             svc(true, `account/${acc.accountId}`, 'DELETE')
@@ -269,8 +276,19 @@
 
                     elem_account.setAttribute('data-status', acc.status);
                     elem_account.setAttribute('data-env', acc.isTest ? 'test' : 'live');
+                    elem_account.onclick = (event) => {
+                        obtain_edit_account(acc).then(json => {
+                            empty(elem_emails);
+                            json.emails.forEach(email => {
+                                iterelem_email = document.createElement('span');
+                                iterelem_email.textContent = email;
+                                elem_emails.appendChild(iterelem_email);
+                            });
+                        });
+                    }
 
                     elem_orders.classList.add('orders', 'zone');
+                    elem_orders.onclick = (event) => { event.stopPropagation(); }
                     elem_addOrder.classList.add('add-order');
                     elem_addOrder.setAttribute('href', 'javascript:void(0)');
                     elem_addOrder.textContent = '+';
@@ -346,7 +364,7 @@
 
     const show_login = () => obtain_login().then(list_accounts),
           show_register = () => obtain_registration().then(list_accounts),
-          show_edit_account = () => obtain_edit_account().then(list_accounts),
+          show_edit_account = (existing) => obtain_edit_account(existing).then(list_accounts),
           show_add_order = (accId) => obtain_add_order(accId).then(list_accounts);
 
     const logout = () => {

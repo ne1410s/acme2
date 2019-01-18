@@ -1,7 +1,6 @@
-import { OperationBase } from "@ne1410s/http";
+import { OperationBase, ValidationError } from "@ne1410s/http";
 import { IDeleteAccountRequest } from "../../interfaces/account";
 import { DbContext } from "../../../database/db-context";
-import { AuthError } from "../../errors/auth";
 import { Acme2Service } from "../../../acme-core/services/acme2";
 
 export class DeleteAccountOperation extends OperationBase<IDeleteAccountRequest, {}> {
@@ -19,7 +18,7 @@ export class DeleteAccountOperation extends OperationBase<IDeleteAccountRequest,
 
         if (!db_account || db_account.UserID !== requestData.authenticUserId) {
             console.error('No matching account found:', requestData);
-            throw new AuthError();
+            throw new ValidationError('An error occurred', {}, ['Data inconsistency']);
         }
 
         const env = db_account.IsTest ? 'staging' : 'production' as any,

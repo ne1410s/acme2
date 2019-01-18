@@ -15,27 +15,27 @@ export class CreateAccountOperation extends OperationBase<ICreateAccountRequest,
     protected async invokeInternal(requestData: ICreateAccountRequest): Promise<IAccount> {
         
         const env = requestData.isTest ? 'staging' : 'production',
-              svc = new Acme2Service(env as any);
+              svc = new Acme2Service(env as any),
+              tokenResponse = await svc.tokens.get.invoke();
 
-        const tokenResponse = await svc.tokens.get.invoke(),
-              svcResponse = await svc.accounts.create.invoke({
+        const svc_account = await svc.accounts.create.invoke({
             token: tokenResponse.token,
             emails: requestData.emails,
             termsAgreed: requestData.tosAgreed
         });
 
         await this.db.dbAccount.create({
-            AccountID: svcResponse.accountId,
+            AccountID: svc_account.accountId,
             UserID: requestData.authenticUserId,
             IsTest: !!requestData.isTest,
-            JWKPair: JSON.stringify(svcResponse.keys)
+            JWKPair: JSON.stringify(svc_account.keys)
         });
 
         return {
-            accountId: svcResponse.accountId,
-            created: svcResponse.created,
-            status: svcResponse.status,
-            emails: requestData.emails,
+            accountId: svc_account.accountId,
+            created: svc_account.created,
+            status: svc_account.status,
+            emails: svc_account.contacts.map(c => c.replace('mailto:', '')),
             isTest: !!requestData.isTest,
             orders: []
         };
