@@ -170,13 +170,13 @@
                   accountId = isUpdating ? existing.accountId : null;
 
             clear(modal);
+            chkTosAgreed.disabled = isUpdating;
+            chkIsTest.disabled = isUpdating;
             btnDelete.classList.add('hide');
 
             if (isUpdating) {
                 chkTosAgreed.checked = existing.accountId;
-                chkTosAgreed.disabled = true;
                 chkIsTest.checked = existing.isTest;
-                chkIsTest.disabled = true;
                 txtEmails.value = existing.emails.join('\r\n');
                 btnDelete.classList.remove('hide');
                 btnDelete.onclick = (event) => {
