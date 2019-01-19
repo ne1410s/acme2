@@ -156,23 +156,6 @@
         });
     }
 
-
-/*
-
-elem_accountDelete.onclick = (event) => {
-                        event.stopPropagation();
-                        if (confirm('You are about to permanently delete the account and all associated orders. This action cannot be undone. Continue?')) {
-                            elem_account.classList.add('loading');
-                            svc(true, `account/${acc.accountId}`, 'DELETE')
-                                .then(list_accounts)
-                                .catch((err) => alert(err))
-                                .finally(() => elem_account.classList.remove('loading'));
-                        }
-                    }
-
-*/
-    ...
-
     function obtain_edit_account(existing) {
 
         return new Promise(resolve => {
@@ -182,17 +165,31 @@ elem_accountDelete.onclick = (event) => {
                   chkTosAgreed = q2f('#agree-tos', modal),
                   chkIsTest = q2f('#test-mode', modal),
                   txtEmails = q2f('[placeholder=emails]', modal),
+                  btnDelete = q2f('#delete-account', modal),
                   isUpdating = existing && existing.accountId,
                   accountId = isUpdating ? existing.accountId : null;
 
-            modal.removeAttribute('data-update');
+            btnDelete.classList.add('hide');
             if (isUpdating) {
-                modal.setAttribute('data-update', '');
                 chkTosAgreed.checked = existing.accountId;
                 chkTosAgreed.disabled = true;
                 chkIsTest.checked = existing.isTest;
                 chkIsTest.disabled = true;
                 txtEmails.value = existing.emails.join('\r\n');
+                btnDelete.classList.remove('hide');
+                btnDelete.onclick = (event) => {
+                    event.stopPropagation();
+                    if (confirm('You are about to permanently delete the account and all associated orders. This action cannot be undone. Continue?')) {
+                        svc(true, `account/${acc.accountId}`, 'DELETE')
+                            .then(resolve)
+                            .catch(err => {
+                                console.warn(err);
+                                txtErrors.innerHTML = err.detail
+                                    ? err.detail.join('<br>')
+                                    : err.message || err;
+                                });
+                    }
+                }
             }
 
             q2f('[type=button]', modal).onclick = () => {
