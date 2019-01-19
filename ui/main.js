@@ -169,7 +169,9 @@
                   isUpdating = existing && existing.accountId,
                   accountId = isUpdating ? existing.accountId : null;
 
+            clear(modal);
             btnDelete.classList.add('hide');
+
             if (isUpdating) {
                 chkTosAgreed.checked = existing.accountId;
                 chkTosAgreed.disabled = true;
@@ -180,8 +182,11 @@
                 btnDelete.onclick = (event) => {
                     event.stopPropagation();
                     if (confirm('You are about to permanently delete the account and all associated orders. This action cannot be undone. Continue?')) {
-                        svc(true, `account/${acc.accountId}`, 'DELETE')
-                            .then(resolve)
+                        svc(true, `account/${existing.accountId}`, 'DELETE')
+                            .then(() => {
+                                modal.classList.remove('open');
+                                list_accounts();
+                            })
                             .catch(err => {
                                 console.warn(err);
                                 txtErrors.innerHTML = err.detail
@@ -205,7 +210,6 @@
                 svc(true, 'account', svc_verb, { accountId, emails, tosAgreed: chkTosAgreed.checked, isTest: chkIsTest.checked })
                     .then(json => {
                         modal.classList.remove('open');
-                        clear(modal);
                         return resolve(json);
                     })
                     .catch(err => {
@@ -226,6 +230,7 @@
             const modal = show_modal('add-order'),
                   errors = q2f('.errors', modal);
 
+            clear(modal);
             q2f('[type=button]', modal).onclick = () => {
 
                 empty(errors);
@@ -238,8 +243,7 @@
                 svc(true, 'order', 'POST', { accountId, domains })
                     .then(json => {
                         modal.classList.remove('open');
-                        clear(modal);
-                        return resolve();
+                        return resolve(json);
                     })
                     .catch(err => {
                         console.warn(err);
@@ -281,6 +285,7 @@
                     elem_account.onclick = (event) => {
                         obtain_edit_account(acc).then(json => {
                             empty(elem_emails);
+                            acc.emails = json.emails;
                             json.emails.forEach(email => {
                                 iterelem_email = document.createElement('span');
                                 iterelem_email.textContent = email;
