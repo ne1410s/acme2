@@ -6,7 +6,6 @@ export interface ICreateOrderRequest extends ISecureRequest {
 }
 
 export interface IOrderRequest extends ISecureRequest {
-    accountId: number;
     orderId: number;
 }
 

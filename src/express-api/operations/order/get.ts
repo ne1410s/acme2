@@ -14,23 +14,22 @@ export class GetOrderOperation extends OperationBase<IOrderRequest, IOrder> {
 
     protected async invokeInternal(requestData: IOrderRequest): Promise<IOrder> {
         
-        const db_account = await this.db.dbAccount.findByPk(requestData.accountId) as any;
-
-        if (!db_account || db_account.UserID !== requestData.authenticUserId) {
-            console.error('No matching account found:', requestData);
-            throw new ValidationError('An error occurred', {}, ['Data inconsistency']);
-        }
-
-        const db_order = await this.db.dbOrder.findByPk(requestData.orderId) as any;
+        const db_order = await this.db.dbOrder.findOne({
+            where: { OrderID: requestData.orderId },
+            include: [{
+                model: this.db.dbAccount,
+                where: { UserID: requestData.authenticUserId }
+            }]
+        }) as any;
 
         if (!db_order) {
             console.error('No matching order found:', requestData);
             throw new ValidationError('An error occurred', {}, ['Data inconsistency']);
         }
 
-        const env = db_account.IsTest ? 'staging' : 'production' as any,
+        const env = db_order.Account.IsTest ? 'staging' : 'production' as any,
               svc = new Acme2Service(env),
-              svc_order = await svc.orders.get.invoke({ accountId: requestData.accountId, orderId: requestData.orderId });
+              svc_order = await svc.orders.get.invoke({ accountId: db_order.AccountID, orderId: requestData.orderId });
 
         return {
             orderId: db_order.OrderID,

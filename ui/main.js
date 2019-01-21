@@ -319,9 +319,9 @@
                         iterelem_orderDelete.classList.add('delete');
                         iterelem_orderDelete.onclick = () => {
                             iterelem_order.classList.add('loading');
-                            svc(true, `order/${acc.accountId}/${order.orderId}`, 'DELETE')
+                            svc(true, `order/${order.orderId}`, 'DELETE')
                                 .then(list_accounts)
-                                .catch((err) => alert(err))
+                                .catch((err) => console.error(err))
                                 .finally(() => iterelem_order.classList.remove('loading'));
                         }
 

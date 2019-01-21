@@ -13,16 +13,15 @@ export class DeleteOrderOperation extends OperationBase<IOrderRequest, {}> {
 
     protected async invokeInternal(requestData: IOrderRequest): Promise<{}> {
         
-        const db_account = await this.db.dbAccount.findByPk(requestData.accountId) as any;
+        const db_order = await this.db.dbOrder.findOne({
+            where: { OrderID: requestData.orderId },
+            include: [{
+                model: this.db.dbAccount,
+                where: { UserID: requestData.authenticUserId }
+            }]
+        }) as any;
 
-        if (!db_account || db_account.UserID !== requestData.authenticUserId) {
-            console.error('No matching account found:', requestData);
-            throw new ValidationError('An error occurred', {}, ['Data inconsistency']);
-        }
-
-        const db_order = await this.db.dbOrder.findByPk(requestData.orderId) as any;
-
-        if (!db_order || db_order.AccountID != requestData.accountId) {
+        if (!db_order) {
             console.error('No matching order found:', requestData);
             throw new ValidationError('An error occurred', {}, ['Data inconsistency']);
         }
