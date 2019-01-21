@@ -72,8 +72,11 @@ export class ListAccountsOperation extends OperationBase<ISecureRequest, Array<I
             retVal.push({
                 orderId: orderId,
                 domains: JSON.parse(db_order.Domains),
+                expires: svc_order.expires,
                 status: svc_order.status,
-                expires: svc_order.expires
+                certificateUrl: svc_order.certificateUrl,
+                finaliseUrl: svc_order.finaliseUrl,
+                challengeCodes: svc_order.authCodes
             });
         }
 

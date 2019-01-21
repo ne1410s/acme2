@@ -14,4 +14,7 @@ export interface IOrder {
     domains: Array<string>;
     status: string;
     expires: Date;
+    challengeCodes: Array<string>;
+    certificateUrl?: string;
+    finaliseUrl: string;
 }

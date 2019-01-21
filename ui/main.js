@@ -273,13 +273,12 @@
             let iter_option;
             existing.domains.forEach((domain, i) => {
                 iter_option = document.createElement('option');
-                iter_option.value = domain;
+                iter_option.value = existing.challengeCodes[i];
                 iter_option.textContent = domain;
                 cmbDomains.appendChild(iter_option);
             });
 
-            cmbDomains.value = existing.domains[0];
-            cmbDomains.disabled = existing.domains.length === 1;
+            cmbDomains.value = existing.challengeCodes[0];
         });
     }
 
