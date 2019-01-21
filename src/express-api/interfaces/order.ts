@@ -9,12 +9,9 @@ export interface IOrderRequest extends ISecureRequest {
     orderId: number;
 }
 
-export interface IOrderMeta {
+export interface IOrder {
     orderId: number;
     domains: Array<string>;
-}
-
-export interface IOrder extends IOrderMeta {
     status: string;
     expires: Date;
 }

@@ -1,5 +1,5 @@
 import { ISecureRequest } from "./auth";
-import { IOrderMeta } from "./order";
+import { IOrder } from "./order";
 
 export interface ICreateAccountRequest extends ISecureRequest {
     emails: Array<string>;
@@ -23,5 +23,5 @@ export interface IAccount {
     status: string;
     emails: Array<string>;
     isTest: boolean;
-    orders: Array<IOrderMeta>;
+    orders: Array<IOrder>;
 }

@@ -39,9 +39,17 @@
 
         <div class="modal order edit-order">
             <div class="body">
-                <textarea placeholder="domains" spellcheck="false"></textarea>
+                <select class="domain"></select>
                 <span class="errors"></span>
-                <input type="button" value="Save Order"/>
+                <div class="pending status">
+                    <p>Pending</p>
+                </div>
+                <div class="ready status">
+                    <p>Ready</p>
+                </div>
+                <div class="valid status">
+                    <p>Valid</p>
+                </div>
             </div>
         </div>
 

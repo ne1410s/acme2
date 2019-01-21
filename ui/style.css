@@ -135,6 +135,12 @@ section > span {
     cursor: pointer; font-weight: bold; font-size: 1.2rem;
 }
 
+.modal .status { display: none; }
+.modal[data-status=pending] .pending.status { display: initial; }
+.modal[data-status=valid] .valid.status { display: initial; }
+.modal[data-status=ready] .ready.status { display: initial; }
+.modal[data-status=invalid] .invalid.status { display: initial; }
+
 .modal { background: rgba(0, 0, 0, .85); }
 .modal > .body { background: rgb(255, 255, 255); }
 .modal input[type=button]:hover { background: rgba(201, 201, 201, .6); }

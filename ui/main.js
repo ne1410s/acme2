@@ -20,7 +20,9 @@
             .filter(m => {
                 empty(q2f('.errors', m));
                 m.classList.add('open');
-                return !q2f('textarea, input', m).focus();
+                const firstInput = q2f('textarea, input', m);
+                if (firstInput) firstInput.focus();
+                return true;
             })[0];
 
     const clear = (modal) => { 
@@ -256,43 +258,28 @@
         });
     }
 
-    function obtain_edit_order(orderMeta) {
+    function obtain_edit_order(existing) {
 
         return new Promise(resolve => {
 
             const modal = show_modal('edit-order'),
-                  body = q2f('.body', modal),
-                  txtDomains = q2f('[placeholder=domains]', modal),
+                  cmbDomains = q2f('select.domain', modal),
                   errors = q2f('.errors', modal);
-
+      
             clear(modal);
-            empty(errors);
-            set_enabled(modal, false);
+            empty(cmbDomains);
+            modal.setAttribute('data-status', existing.status);
 
-            txtDomains.value = orderMeta.domains.join('\r\n');
-            body.classList.add('loading');
+            let iter_option;
+            existing.domains.forEach((domain, i) => {
+                iter_option = document.createElement('option');
+                iter_option.value = domain;
+                iter_option.textContent = domain;
+                cmbDomains.appendChild(iter_option);
+            });
 
-            svc(true, `order/${orderMeta.orderId}`, 'GET')
-                .then(orderFull => {
-
-                    console.log('Received full order details!', orderMeta, '=>', orderFull);
-                    set_enabled(modal, true);
-
-                    q2f('[type=button]', modal).onclick = () => {
-
-                        empty(errors);
-                        set_enabled(modal, false);
-        
-                        // send submission...
-                    }
-                })
-                .catch(err => {
-                    console.warn(err);
-                    errors.innerHTML = err.detail
-                            ? err.detail.map(d => d.message || d).join('<br>')
-                            : err.message || err;
-                })
-                .finally(() =>  body.classList.remove('loading'));
+            cmbDomains.value = existing.domains[0];
+            cmbDomains.disabled = existing.domains.length === 1;
         });
     }
 
@@ -365,8 +352,9 @@
                                 .finally(() => iterelem_order.classList.remove('loading'));
                         }
 
+                        iterelem_order.setAttribute('data-status', order.status);
                         iterelem_order.onclick = (event) => {
-                            obtain_edit_order(order).then(xyz => console.log('TODO!!! xyz', xyz));
+                            obtain_edit_order(order).then(() => console.log('handle order modal resolve...'));
                         }
 
                         iterelem_order.appendChild(iterelem_orderTitle);
