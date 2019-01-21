@@ -1,18 +1,18 @@
 import { OperationBase, ValidationError } from "@ne1410s/http";
-import { IUpdateAccountRequest, IAccount } from "../../interfaces/account";
+import { IUpdateAccountRequest, IAccountMeta } from "../../interfaces/account";
 import { DbContext } from "../../../database/db-context";
 import { Acme2Service } from "../../../acme-core/services/acme2";
 
-export class UpdateAccountOperation extends OperationBase<IUpdateAccountRequest, IAccount> {
+export class UpdateAccountOperation extends OperationBase<IUpdateAccountRequest, IAccountMeta> {
 
     constructor(private readonly db: DbContext) {
         super();
     }
 
     validateRequest(requestData: IUpdateAccountRequest): void {}
-    validateResponse(responseData: IAccount): void {}
+    validateResponse(responseData: IAccountMeta): void {}
 
-    protected async invokeInternal(requestData: IUpdateAccountRequest): Promise<IAccount> {
+    protected async invokeInternal(requestData: IUpdateAccountRequest): Promise<IAccountMeta> {
         
         const db_account = await this.db.dbAccount.findByPk(requestData.accountId) as any;
 
@@ -32,13 +32,15 @@ export class UpdateAccountOperation extends OperationBase<IUpdateAccountRequest,
             keys: JSON.parse(db_account.JWKPair)
         });
 
+        const outEmails = svc_account.contacts.map(c => c.replace('mailto:', ''));
+
+        db_account.Emails = JSON.stringify(outEmails);
+        await this.db.dbAccount.update(db_account);
+
         return {
             accountId: requestData.accountId,
             isTest: db_account.IsTest,
-            status: svc_account.status,
-            emails: svc_account.contacts.map(c => c.replace('mailto:', '')),
-            created: svc_account.created,
-            // leave orders undefined in this service
-        } as IAccount;
+            emails: outEmails,
+        } as IAccountMeta;
     }
 }

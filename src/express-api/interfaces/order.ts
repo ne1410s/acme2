@@ -10,11 +10,17 @@ export interface IOrderRequest extends ISecureRequest {
     orderId: number;
 }
 
-export interface IOrder {
+export interface IOrderMeta {
     orderId: number;
-    status: string;
-    expires: Date;
-    domainClaims: Array<IDomainClaim>;
-    certificateUrl?: string;
-    finaliseUrl: string;
+    domains: Array<string>;
 }
+
+// TODO: Replenish
+// export interface IOrder {
+//     orderId: number;
+//     status: string;
+//     expires: Date;
+//     domainClaims: Array<IDomainClaim>;
+//     certificateUrl?: string;
+//     finaliseUrl: string;
+// }

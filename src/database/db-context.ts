@@ -19,7 +19,10 @@ export class DbContext {
         this.dbOrder = orm.define('Order', this.orderAttribs);
 
         this.dbAccount.belongsTo(this.dbUser, { foreignKey: { name: 'UserID', allowNull: false } });
+        this.dbUser.hasMany(this.dbAccount, { foreignKey: { name: 'UserID' } });        
+        
         this.dbOrder.belongsTo(this.dbAccount, { foreignKey: { name: 'AccountID', allowNull: false } });
+        this.dbAccount.hasMany(this.dbOrder, { foreignKey: { name: 'AccountID' } });
 
         await orm.sync();
     }
@@ -65,6 +68,10 @@ export class DbContext {
         JWKPair: {
             type: Sequelize.STRING(2047),
             allowNull: true,
+        },
+        Emails: {
+            type: Sequelize.STRING(2047),
+            allowNull: false
         }
     };
 
@@ -97,7 +104,8 @@ export interface IDbUserAttribs {
 export interface IDbAccountAttribs {
     AccountID: {},
     IsTest: {},
-    JWKPair: {}
+    JWKPair: {},
+    Emails: {},
     UserID?: {}
 }
 

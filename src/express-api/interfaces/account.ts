@@ -1,5 +1,5 @@
 import { ISecureRequest } from "./auth";
-import { IOrder } from "./order";
+import { IOrderMeta } from "./order";
 
 export interface ICreateAccountRequest extends ISecureRequest {
     emails: Array<string>;
@@ -17,11 +17,19 @@ export interface IDeleteAccountRequest extends ISecureRequest {
     accountId: number;
 }
 
-export interface IAccount {
+export interface IAccountMeta {
     accountId: number;
-    created: Date;
-    status: string;
     emails: Array<string>;
     isTest: boolean;
-    orders: Array<IOrder>;
+    orders: Array<IOrderMeta>;
 }
+
+// TODO: Replenish
+// export interface IAccount {
+//     accountId: number;
+//     created: Date;
+//     status: string;
+//     emails: Array<string>;
+//     isTest: boolean;
+//     orders: Array<IOrder>;
+// }

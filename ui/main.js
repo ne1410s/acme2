@@ -289,7 +289,7 @@
 
         svc(true, 'account', 'GET')
             .then(accounts => {
-    
+
                 empty(targetZone);
                 accounts.forEach(acc => {
 
