@@ -156,7 +156,7 @@
         });
     }
 
-    function obtain_edit_account(existing) {
+    function obtain_add_edit_account(existing) {
 
         return new Promise(resolve => {
 
@@ -256,6 +256,46 @@
         });
     }
 
+    function obtain_edit_order(orderMeta) {
+
+        return new Promise(resolve => {
+
+            const modal = show_modal('edit-order'),
+                  body = q2f('.body', modal),
+                  txtDomains = q2f('[placeholder=domains]', modal),
+                  errors = q2f('.errors', modal);
+
+            clear(modal);
+            empty(errors);
+            set_enabled(modal, false);
+
+            txtDomains.value = orderMeta.domains.join('\r\n');
+            body.classList.add('loading');
+
+            svc(true, `order/${orderMeta.orderId}`, 'GET')
+                .then(orderFull => {
+
+                    console.log('Received full order details!', orderMeta, '=>', orderFull);
+                    set_enabled(modal, true);
+
+                    q2f('[type=button]', modal).onclick = () => {
+
+                        empty(errors);
+                        set_enabled(modal, false);
+        
+                        // send submission...
+                    }
+                })
+                .catch(err => {
+                    console.warn(err);
+                    errors.innerHTML = err.detail
+                            ? err.detail.map(d => d.message || d).join('<br>')
+                            : err.message || err;
+                })
+                .finally(() =>  body.classList.remove('loading'));
+        });
+    }
+
     const list_accounts = () => {
 
         const targetZone = q2f('.accounts.zone');
@@ -283,7 +323,7 @@
                     elem_account.setAttribute('data-status', acc.status);
                     elem_account.setAttribute('data-env', acc.isTest ? 'test' : 'live');
                     elem_account.onclick = (event) => {
-                        obtain_edit_account(acc).then(json => {
+                        obtain_add_edit_account(acc).then(json => {
                             empty(elem_emails);
                             acc.emails = json.emails;
                             json.emails.forEach(email => {
@@ -325,6 +365,10 @@
                                 .finally(() => iterelem_order.classList.remove('loading'));
                         }
 
+                        iterelem_order.onclick = (event) => {
+                            obtain_edit_order(order).then(xyz => console.log('TODO!!! xyz', xyz));
+                        }
+
                         iterelem_order.appendChild(iterelem_orderTitle);
                         iterelem_order.appendChild(iterelem_orderDelete);
                         iterelem_order.appendChild(iterelem_domains);
@@ -360,7 +404,7 @@
                 elem_addAccount.setAttribute('id', 'edit-account');
                 elem_addAccount.setAttribute('href', 'javascript:void(0)');
                 elem_addAccount.textContent = '+';
-                elem_addAccount.onclick = show_edit_account;
+                elem_addAccount.onclick = show_add_edit_account;
                 targetZone.appendChild(elem_addAccount);
             })
             .finally(() => {
@@ -370,7 +414,7 @@
 
     const show_login = () => obtain_login().then(list_accounts),
           show_register = () => obtain_registration().then(list_accounts),
-          show_edit_account = (existing) => obtain_edit_account(existing).then(list_accounts),
+          show_add_edit_account = (existing) => obtain_add_edit_account(existing).then(list_accounts),
           show_add_order = (accId) => obtain_add_order(accId).then(list_accounts);
 
     const logout = () => {

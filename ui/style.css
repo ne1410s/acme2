@@ -150,10 +150,10 @@ section > span {
 .modal.register input[type=button]:not(:hover) { background: rgb(0, 85, 0); }
 .modal.register a, .modal.register input[type=button]:hover { color: rgb(0, 85, 0); }
 
-.modal.edit-account input:focus, .modal.edit-account select:focus, .modal.edit-account textarea:focus, .modal.edit-account > .body { border-color: rgb(151, 0, 0); }
-.modal.edit-account input[type=button]:not(:hover) { background: rgb(151, 0, 0); }
-.modal.edit-account a, .modal.edit-account input[type=button]:hover { color: rgb(151, 0, 0); }
+.modal.account input:focus, .modal.account select:focus, .modal.account textarea:focus, .modal.account > .body { border-color: rgb(151, 0, 0); }
+.modal.account input[type=button]:not(:hover) { background: rgb(151, 0, 0); }
+.modal.account a, .modal.account input[type=button]:hover { color: rgb(151, 0, 0); }
 
-.modal.add-order input:focus, .modal.add-order select:focus, .modal.add-order textarea:focus, .modal.add-order > .body { border-color: rgb(144, 144, 0); }
-.modal.add-order input[type=button]:not(:hover) { background: rgb(144, 144, 0); }
-.modal.add-order a, .modal.add-order input[type=button]:hover { color: rgb(144, 144, 0); }
+.modal.order input:focus, .modal.order select:focus, .modal.order textarea:focus, .modal.order > .body { border-color: rgb(144, 144, 0); }
+.modal.order input[type=button]:not(:hover) { background: rgb(144, 144, 0); }
+.modal.order a, .modal.order input[type=button]:hover { color: rgb(144, 144, 0); }
