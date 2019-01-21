@@ -41,12 +41,8 @@ export class CreateOrderOperation extends OperationBase<ICreateOrderRequest, IOr
 
         return {
             orderId: svc_order.orderId,
-            domains: requestData.domains,
             expires: svc_order.expires,
             status: svc_order.status,
-            certificateUrl: svc_order.certificateUrl,
-            finaliseUrl: svc_order.finaliseUrl,
-            challengeCodes: svc_order.authCodes
-        };
+        } as IOrder;
     }
 }

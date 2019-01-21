@@ -1,4 +1,5 @@
 import { ISecureRequest } from "./auth";
+import { IDomainClaim } from "./challenge";
 
 export interface ICreateOrderRequest extends ISecureRequest {
     accountId: number;
@@ -11,10 +12,9 @@ export interface IOrderRequest extends ISecureRequest {
 
 export interface IOrder {
     orderId: number;
-    domains: Array<string>;
     status: string;
     expires: Date;
-    challengeCodes: Array<string>;
+    domainClaims: Array<IDomainClaim>;
     certificateUrl?: string;
     finaliseUrl: string;
 }
