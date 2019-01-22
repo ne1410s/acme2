@@ -15,12 +15,11 @@ export interface IOrderMeta {
     domains: Array<string>;
 }
 
-// TODO: Replenish
-// export interface IOrder {
-//     orderId: number;
-//     status: string;
-//     expires: Date;
-//     domainClaims: Array<IDomainClaim>;
-//     certificateUrl?: string;
-//     finaliseUrl: string;
-// }
+export interface IOrder {
+    orderId: number;
+    status: string;
+    expires: Date;
+    domainClaims: Array<IDomainClaim>;
+    certificateUrl?: string;
+    finaliseUrl: string;
+}

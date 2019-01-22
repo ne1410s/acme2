@@ -258,27 +258,53 @@
         });
     }
 
-    function obtain_edit_order(existing) {
+    function obtain_edit_order(orderMeta) {
 
         return new Promise(resolve => {
 
             const modal = show_modal('edit-order'),
+                  body = q2f('.body', modal),
                   cmbDomains = q2f('select.domain', modal),
                   errors = q2f('.errors', modal);
-      
-            clear(modal);
-            empty(cmbDomains);
-            modal.setAttribute('data-status', existing.status);
 
+            body.classList.add('loading');
+            clear(modal);
+
+            // reset domains drop down
+            empty(cmbDomains);
             let iter_option;
-            existing.domains.forEach((domain, i) => {
+            orderMeta.domains.forEach((domain, i) => {
                 iter_option = document.createElement('option');
-                iter_option.value = existing.challengeCodes[i];
+                iter_option.value = domain;
                 iter_option.textContent = domain;
                 cmbDomains.appendChild(iter_option);
             });
+            cmbDomains.value = orderMeta.domains[0];
 
-            cmbDomains.value = existing.challengeCodes[0];
+            svc(true, `order/${orderMeta.orderId}`, 'GET')
+                .then(order => {
+                    
+                    const domainChange = (event) => {
+                        const sel = event.target.value,
+                              domainClaim = order.domainClaims.filter(dc => dc.domain === sel)[0];
+                        console.log('NOW RENDER DOMAIN CLAIM:', domainClaim);
+                    };
+
+                    cmbDomains.onchange = domainChange;
+                    domainChange({ target: cmbDomains });
+                })
+                .catch(err => {
+                    console.warn(err);
+                    errors.innerHTML = err.detail
+                        ? err.detail.map(d => d.message || d).join('<br>')
+                        : err.message || err;
+                })
+                .finally(() => {
+                    body.classList.remove('loading');
+                })
+
+
+            modal.setAttribute('data-status', orderMeta.status);
         });
     }
 
