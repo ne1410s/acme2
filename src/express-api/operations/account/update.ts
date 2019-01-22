@@ -34,8 +34,10 @@ export class UpdateAccountOperation extends OperationBase<IUpdateAccountRequest,
 
         const outEmails = svc_account.contacts.map(c => c.replace('mailto:', ''));
 
-        db_account.Emails = JSON.stringify(outEmails);
-        await this.db.dbAccount.update(db_account);
+        await this.db.dbAccount.update(
+            { Emails: JSON.stringify(outEmails) },
+            { where: { AccountID: db_account.AccountID }
+        });
 
         return {
             accountId: requestData.accountId,

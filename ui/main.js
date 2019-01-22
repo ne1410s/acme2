@@ -263,12 +263,12 @@
         return new Promise(resolve => {
 
             const modal = show_modal('edit-order'),
-                  body = q2f('.body', modal),
                   cmbDomains = q2f('select.domain', modal),
                   errors = q2f('.errors', modal);
 
-            body.classList.add('loading');
             clear(modal);
+            empty(errors);
+            errors.classList.add('loading');
 
             // reset domains drop down
             empty(cmbDomains);
@@ -300,7 +300,7 @@
                         : err.message || err;
                 })
                 .finally(() => {
-                    body.classList.remove('loading');
+                    errors.classList.remove('loading');
                 })
 
 
@@ -369,7 +369,8 @@
                         iterelem_orderTitle.textContent = order.orderId;
                         iterelem_orderDelete.innerHTML = '&times;';
                         iterelem_orderDelete.classList.add('delete');
-                        iterelem_orderDelete.onclick = () => {
+                        iterelem_orderDelete.onclick = (event) => {
+                            event.stopPropagation();
                             iterelem_order.classList.add('loading');
                             svc(true, `order/${order.orderId}`, 'DELETE')
                                 .then(list_accounts)

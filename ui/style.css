@@ -21,14 +21,13 @@ h1 {
 .hide { display: none; }
 
 .loading {
-    background: url(loading.svg) no-repeat;
-    background-size: 50px 50px;
-    background-position: center center;
-    min-height: 50px;
+    background: url(loading.svg) no-repeat center center!important;
+    background-size: 42px 42px!important;
+    min-height: 42px!important;
 }
 
 .loading > * {
-    opacity: 0;
+    opacity: .2;
     transition: opacity .3s;
 }
 
