@@ -1,3 +1,5 @@
+import { ISecureRequest } from "./auth";
+
 export interface IChallenge {
     challengeId: number;
     keyAuth: string;
@@ -13,4 +15,12 @@ export interface IDomainClaim {
     domain: string;
     wildcard: boolean;
     challenges: Array<IChallenge>;
+}
+
+export interface ISubmitChallengeRequest extends ISecureRequest {
+
+}
+
+export interface ISubmitChallengeResponse {
+
 }

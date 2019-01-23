@@ -85,10 +85,8 @@ db.syncStructure().then(() => {
     // app.put('/order/:orderId/finalise', (q, r) => proc(q, r, 'orders', 'finalise'));
     // app.get('/order/:orderId/cert', (q, r) => proc(q, r, 'orders', 'getcert'));
 
-    // // Challenge Operations
-    // app.get('/challenge', (q, r) => proc(q, r, 'challenges', 'list'));
-    // app.get('/challenge/detail', (q, r) => proc(q, r, 'challenges', 'detail'));
-    // app.put('/challenge/fulfil', (q, r) => proc(q, r, 'challenges', 'fulfil'));
+    // Challenge Operations
+    expr_api.post('/challenge/:challengeId', (q, r) => proc(q, r, 'challenges', 'submit'));
 
     // Start!
     expr_api.listen(apiConfig.portNumber, () => {
