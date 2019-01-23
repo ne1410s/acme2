@@ -39,17 +39,34 @@
 
         <div class="modal order edit-order">
             <div class="body">
-                <select class="domain"></select>
-                <span class="errors"></span>
                 <div class="pending status">
-                    <p>Pending</p>
+                    <h1>Order Pending</h1>
+                    <select class="domain"></select>
+                    <div class="pending sub-status">
+                        <p>domain: pending</p>
+                        <p>show challenge data</p>
+                        <a id="submit-challenge" href="javascript:void(0)">Submit Challenge</a>
+                    </div>
+                    <div class="ready sub-status">
+                        <p>domain: ready</p>
+                    </div>
+                    <div class="valid sub-status">
+                        <p>domain: valid</p>
+                    </div>
                 </div>
                 <div class="ready status">
-                    <p>Ready</p>
+                    <h1>Order Ready</h1>
+                    <p>finalise order</p>
                 </div>
                 <div class="valid status">
-                    <p>Valid</p>
+                    <h1>Order Valid</h1>
+                    <p>download cert</p>
                 </div>
+                <div class="invalid status">
+                    <h1>Order Invalid</h1>
+                    <p>renew order</p>
+                </div>
+                <span class="errors"></span>
             </div>
         </div>
 

@@ -27,7 +27,7 @@ h1 {
 }
 
 .loading > * {
-    opacity: .2;
+    opacity: .5;
     transition: opacity .3s;
 }
 
@@ -83,6 +83,7 @@ h1 {
 
 .modal.login > .body { max-width: 280px; }
 .modal.register > .body { max-width: 280px; }
+.modal.edit-order > .body { min-width: 280px; }
 
 input, select, textarea {
     box-sizing: border-box;
@@ -135,10 +136,15 @@ section > span {
 }
 
 .modal .status { display: none; }
+.modal .sub-status { display: none; }
 .modal[data-status=pending] .pending.status { display: initial; }
 .modal[data-status=valid] .valid.status { display: initial; }
 .modal[data-status=ready] .ready.status { display: initial; }
 .modal[data-status=invalid] .invalid.status { display: initial; }
+.modal[data-sub-status=pending] .pending.sub-status { display: initial; }
+.modal[data-sub-status=valid] .valid.sub-status { display: initial; }
+.modal[data-sub-status=ready] .ready.sub-status { display: initial; }
+.modal[data-sub-status=invalid] .invalid.sub-status { display: initial; }
 
 .modal { background: rgba(0, 0, 0, .85); }
 .modal > .body { background: rgb(255, 255, 255); }

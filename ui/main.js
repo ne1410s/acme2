@@ -264,11 +264,14 @@
 
             const modal = show_modal('edit-order'),
                   cmbDomains = q2f('select.domain', modal),
+                  submitChallenge = q2f('#submit-challenge', modal),
                   errors = q2f('.errors', modal);
 
-            clear(modal);
             empty(errors);
-            errors.classList.add('loading');
+            clear(modal);
+            modal.removeAttribute('data-status');
+            modal.removeAttribute('data-sub-status');
+            modal.classList.add('loading');
 
             // reset domains drop down
             empty(cmbDomains);
@@ -284,12 +287,22 @@
             svc(true, `order/${orderMeta.orderId}`, 'GET')
                 .then(order => {
                     
-                    const domainChange = (event) => {
-                        const sel = event.target.value,
-                              domainClaim = order.domainClaims.filter(dc => dc.domain === sel)[0];
-                        console.log('NOW RENDER DOMAIN CLAIM:', domainClaim);
-                    };
+                    // Received order data
+                    modal.setAttribute('data-status', order.status);
 
+                    const domainChange = (event) => {
+                        const domainName = event.target.value,
+                              domainClaim = order.domainClaims.filter(dc => {
+                                const iter_name = dc.wildcard ? `*.${dc.domain}` : dc.domain;
+                                return iter_name === domainName;
+                              })[0];
+                        
+                        // Received domain data
+                        modal.setAttribute('data-sub-status', domainClaim.status);
+                        submitChallenge.onclick = () => {
+                            console.log('submit', domainClaim);
+                        };
+                    };
                     cmbDomains.onchange = domainChange;
                     domainChange({ target: cmbDomains });
                 })
@@ -300,11 +313,8 @@
                         : err.message || err;
                 })
                 .finally(() => {
-                    errors.classList.remove('loading');
+                    modal.classList.remove('loading');
                 })
-
-
-            modal.setAttribute('data-status', orderMeta.status);
         });
     }
 
@@ -332,7 +342,6 @@
                         iterelem_domain;
 
                     elem_accountTitle.textContent = acc.accountId;
-                    elem_account.setAttribute('data-status', acc.status);
                     elem_account.setAttribute('data-env', acc.isTest ? 'test' : 'live');
                     elem_account.onclick = (event) => {
                         obtain_add_edit_account(acc).then(json => {
@@ -378,7 +387,6 @@
                                 .finally(() => iterelem_order.classList.remove('loading'));
                         }
 
-                        iterelem_order.setAttribute('data-status', order.status);
                         iterelem_order.onclick = (event) => {
                             obtain_edit_order(order).then(() => console.log('handle order modal resolve...'));
                         }
