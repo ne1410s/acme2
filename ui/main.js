@@ -276,7 +276,7 @@
             // reset domains drop down
             empty(cmbDomains);
             let iter_option;
-            orderMeta.domains.forEach((domain, i) => {
+            orderMeta.domains.forEach(domain => {
                 iter_option = document.createElement('option');
                 iter_option.value = domain;
                 iter_option.textContent = domain;
@@ -299,8 +299,43 @@
                         
                         // Received domain data
                         modal.setAttribute('data-sub-status', domainClaim.status);
+
+                        empty(errors);
+                        const cmbChallenges = q2f('select.challenge', modal);
+                        
+                        // reset domains drop down
+                        empty(cmbChallenges);
+                        let iter_chall;
+                        domainClaim.challenges.forEach(c => {
+                            iter_chall = document.createElement('option');
+                            iter_chall.value = c.type;
+                            iter_chall.textContent = c.type;
+                            iter_chall.setAttribute('data-challenge-id', c.challengeId);
+                            iter_chall.setAttribute('data-order-id', order.orderId);
+                            iter_chall.setAttribute('data-key-auth', c.keyAuth);
+                            iter_chall.setAttribute('data-auth-code', c.authCode);
+                            cmbChallenges.appendChild(iter_chall);
+                        });
+                        cmbChallenges.value = domainClaim.challenges[0].type;
+
                         submitChallenge.onclick = () => {
-                            console.log('submit', domainClaim);
+                            const dataset = cmbChallenges.selectedOptions[0].dataset;
+                                //   subData = {
+                                //     challengeId: dataset.challengeId,
+                                //     orderId: dataset.orderId,
+                                //     keyAuth: dataset.keyAuth,
+                                //     authCode: dataset.authCode
+                                //   };
+
+                            console.log('submitting...', dataset);
+                            svc(true, 'challenge', 'POST', dataset)
+                                .then(json => console.log(json))
+                                .catch(err => {
+                                    console.warn(err);
+                                    errors.innerHTML = err.detail
+                                        ? err.detail.map(d => d.message || d).join('<br>')
+                                        : err.message || err;
+                                });
                         };
                     };
                     cmbDomains.onchange = domainChange;

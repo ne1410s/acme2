@@ -39,7 +39,7 @@ export class GetOrderOperation extends OperationBase<IOrderRequest, IOrder> {
         const domainClaims = [] as Array<IDomainClaim>;
         for (let i = 0; i < svc_order.authCodes.length; i++) {
             const authCode = svc_order.authCodes[i],
-                  claim = await this.getDomainClaim(svc, keys.publicJwk, authCode);
+                  claim = await this.getDomainClaim(svc, requestData.orderId, keys.publicJwk, authCode);
             domainClaims.push(claim);
         }
 
@@ -53,7 +53,7 @@ export class GetOrderOperation extends OperationBase<IOrderRequest, IOrder> {
         };
     }
 
-    private async getDomainClaim(svc: Acme2Service, publicJwk: JsonWebKey, authCode: string): Promise<IDomainClaim> {
+    private async getDomainClaim(svc: Acme2Service, orderId: number, publicJwk: JsonWebKey, authCode: string): Promise<IDomainClaim> {
 
         const svc_challenge = await svc.challenges.list.invoke({ authCode }),
               svc_details = await svc.challenges.detail.invoke({ listResponse: svc_challenge, publicJwk });
@@ -67,6 +67,8 @@ export class GetOrderOperation extends OperationBase<IOrderRequest, IOrder> {
                 .filter(d => d.fulfilmentData.implemented)
                 .map(d => ({
                     challengeId: d.challengeId,
+                    orderId,
+                    authCode: d.authCode,
                     keyAuth: d.fulfilmentData.keyAuth,
                     type: d.type,
                     status: d.status,

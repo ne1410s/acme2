@@ -82,11 +82,11 @@ db.syncStructure().then(() => {
     expr_api.get('/order/:orderId', (q, r) => sec_proc(q, r, 'orders', 'get'));
     expr_api.post('/order', (q, r) => sec_proc(q, r, 'orders', 'create'));
     expr_api.delete('/order/:orderId', (q, r) => sec_proc(q, r, 'orders', 'delete'));
-    // app.put('/order/:orderId/finalise', (q, r) => proc(q, r, 'orders', 'finalise'));
-    // app.get('/order/:orderId/cert', (q, r) => proc(q, r, 'orders', 'getcert'));
+    // app.put('/order/:orderId/finalise', (q, r) => sec_proc(q, r, 'orders', 'finalise'));
+    // app.get('/order/:orderId/cert', (q, r) => sec_proc(q, r, 'orders', 'getcert'));
 
     // Challenge Operations
-    expr_api.post('/challenge/:challengeId', (q, r) => proc(q, r, 'challenges', 'submit'));
+    expr_api.post('/challenge', (q, r) => sec_proc(q, r, 'challenges', 'submit'));
 
     // Start!
     expr_api.listen(apiConfig.portNumber, () => {
