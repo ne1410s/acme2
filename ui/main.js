@@ -296,19 +296,15 @@
                         svc(true, `order/${order.orderId}`, 'DELETE')
                             .then(() => {
 
-
-                                let obj = orderMeta;
-                                console.log(obj);
-
-
-                                svc(true, 'order', 'POST', obj)
-                                    .then((json) => {
-                                        console.log(json);
-                                        obtain_edit_order(orderMeta);
+                                svc(true, 'order', 'POST', { accountId: orderMeta.accountId, domains: orderMeta.domains })
+                                    .then(json => { 
+                                        resolve(json);
+                                        orderMeta.orderId = json.orderId;
+                                        obtain_edit_order(orderMeta).then(list_accounts);
                                     })
-                                    .catch((err) => console.error(err))
+                                    .catch(err => console.error(err))
                             })
-                            .catch((err) => console.error(err))
+                            .catch(err => console.error(err))
                     }
 
                     const domainChange = (event) => {
@@ -345,7 +341,7 @@
                             svc(true, 'challenge', 'POST', dataset)
                                 .then(json => {
                                     console.log(json);
-                                    obtain_edit_order(orderMeta);
+                                    obtain_edit_order(orderMeta).then(list_accounts);
                                 })
                                 .catch(err => {
                                     console.warn(err);
@@ -441,7 +437,7 @@
                         }
 
                         iterelem_order.onclick = (event) => {
-                            obtain_edit_order(order).then(() => console.log('handle order modal resolve...'));
+                            obtain_edit_order(order).then(list_accounts);
                         }
 
                         iterelem_order.appendChild(iterelem_orderTitle);
