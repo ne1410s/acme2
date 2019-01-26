@@ -293,9 +293,9 @@
                     const renewOrder = q2f('#renew-order', modal);
                     renewOrder.onclick = () => {
 
+                        modal.classList.add('loading');
                         svc(true, `order/${order.orderId}`, 'DELETE')
                             .then(() => {
-
                                 svc(true, 'order', 'POST', { accountId: orderMeta.accountId, domains: orderMeta.domains })
                                     .then(json => { 
                                         resolve(json);
@@ -303,8 +303,12 @@
                                         obtain_edit_order(orderMeta).then(list_accounts);
                                     })
                                     .catch(err => console.error(err))
+                                    .finally(() => modal.classList.remove('loading'))
                             })
-                            .catch(err => console.error(err))
+                            .catch(err => {
+                                modal.classList.remove('loading');
+                                console.error(err);
+                            });
                     }
 
                     const domainChange = (event) => {
