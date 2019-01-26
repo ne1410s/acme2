@@ -65,6 +65,10 @@ article > h1 {
     font-weight: bold;
 }
 
+.modal .errors:empty {
+    display: none;
+}
+
 .modal span {
     font-size: .7rem;
     width: 100%;
@@ -82,11 +86,13 @@ article > h1 {
     flex-wrap: wrap;
     transition: transform ease-in-out .6s;
     border: 2px solid transparent;
+    min-height: 4rem;
 }
 
 .modal.login > .body { max-width: 280px; }
 .modal.register > .body { max-width: 280px; }
 .modal.edit-order > .body { min-width: 280px; }
+.modal > .body > div { width: 100%; }
 
 input, select, textarea {
     box-sizing: border-box;
