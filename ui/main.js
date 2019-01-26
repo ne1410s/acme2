@@ -290,6 +290,27 @@
                     // Received order data
                     modal.setAttribute('data-status', order.status);
 
+                    const renewOrder = q2f('#renew-order', modal);
+                    renewOrder.onclick = () => {
+
+                        svc(true, `order/${order.orderId}`, 'DELETE')
+                            .then(() => {
+
+
+                                let obj = orderMeta;
+                                console.log(obj);
+
+
+                                svc(true, 'order', 'POST', obj)
+                                    .then((json) => {
+                                        console.log(json);
+                                        obtain_edit_order(orderMeta);
+                                    })
+                                    .catch((err) => console.error(err))
+                            })
+                            .catch((err) => console.error(err))
+                    }
+
                     const domainChange = (event) => {
                         const domainName = event.target.value,
                               domainClaim = order.domainClaims.filter(dc => {
@@ -319,23 +340,20 @@
                         cmbChallenges.value = domainClaim.challenges[0].type;
 
                         submitChallenge.onclick = () => {
+                            modal.classList.add('loading');
                             const dataset = cmbChallenges.selectedOptions[0].dataset;
-                                //   subData = {
-                                //     challengeId: dataset.challengeId,
-                                //     orderId: dataset.orderId,
-                                //     keyAuth: dataset.keyAuth,
-                                //     authCode: dataset.authCode
-                                //   };
-
-                            console.log('submitting...', dataset);
                             svc(true, 'challenge', 'POST', dataset)
-                                .then(json => console.log(json))
+                                .then(json => {
+                                    console.log(json);
+                                    obtain_edit_order(orderMeta);
+                                })
                                 .catch(err => {
                                     console.warn(err);
                                     errors.innerHTML = err.detail
                                         ? err.detail.map(d => d.message || d).join('<br>')
                                         : err.message || err;
-                                });
+                                })
+                                .finally(() => modal.classList.remove('loading'));
                         };
                     };
                     cmbDomains.onchange = domainChange;

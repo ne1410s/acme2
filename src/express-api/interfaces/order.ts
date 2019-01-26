@@ -12,6 +12,7 @@ export interface IOrderRequest extends ISecureRequest {
 
 export interface IOrderMeta {
     orderId: number;
+    accountId: number;
     domains: Array<string>;
 }
 

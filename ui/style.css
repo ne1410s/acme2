@@ -13,9 +13,12 @@ body.auth .secure {
 
 h1 {
     margin: .125rem;
-    display: inline-block;
+}
+
+article > h1 {
     background: rgb(255, 255, 255);
     padding: 0 .25rem;
+    display: inline-block;
 }
 
 .hide { display: none; }

@@ -25,6 +25,7 @@ export class ListAccountsOperation extends OperationBase<ISecureRequest, Array<I
             isTest: acc.IsTest,
             orders: acc.Orders.map((ord: any) => ({
                 orderId: ord.OrderID,
+                accountId: ord.AccountID,
                 domains: JSON.parse(ord.Domains)
             }))
         }));
