@@ -265,6 +265,7 @@
             const modal = show_modal('edit-order'),
                   cmbDomains = q2f('select.domain', modal),
                   submitChallenge = q2f('#submit-challenge', modal),
+                  materials = q2f('.materials', modal),
                   errors = q2f('.errors', modal);
 
             empty(errors);
@@ -309,7 +310,7 @@
                                 modal.classList.remove('loading');
                                 console.error(err);
                             });
-                    }
+                    };
 
                     const domainChange = (event) => {
                         const domainName = event.target.value,
@@ -338,6 +339,18 @@
                             cmbChallenges.appendChild(iter_chall);
                         });
                         cmbChallenges.value = domainClaim.challenges[0].type;
+
+                        const challengeChange = (event) => {
+                            const challengeType = event.target.value,
+                                  challenge = domainClaim.challenges.filter(c => c.type === challengeType);
+
+                            empty(errors);
+                            empty(materials);
+
+                            console.log('wootie-o', challenge);
+                        };
+                        cmbChallenges.onchange = challengeChange;
+                        challengeChange({ target: cmbChallenges });
 
                         submitChallenge.onclick = () => {
                             modal.classList.add('loading');

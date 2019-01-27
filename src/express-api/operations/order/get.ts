@@ -65,6 +65,7 @@ export class GetOrderOperation extends OperationBase<IOrderRequest, IOrder> {
             expires: svc_challenge.expires,
             challenges: svc_details.detail
                 .filter(d => d.fulfilmentData.implemented)
+                .sort((d1, d2) => d1.type > d2.type ? 1 : d2.type > d1.type ? -1 : 0)
                 .map(d => ({
                     challengeId: d.challengeId,
                     orderId,
