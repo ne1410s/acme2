@@ -36,7 +36,7 @@ article > h1 {
 
 .disabled, [disabled] {
     pointer-events: none!important;
-    opacity: .3!important;
+    opacity: .7!important;
     cursor: default!important;
 }
 
@@ -92,6 +92,8 @@ article > h1 {
 .modal.login > .body { max-width: 280px; }
 .modal.register > .body { max-width: 280px; }
 .modal.edit-order > .body { min-width: 280px; }
+.modal.edit-order .challenge-desc { font-weight: bold; font-size: .85rem; }
+.modal.edit-order .materials { font-size: .7rem; }
 .modal > .body > div { width: 100%; }
 
 input, select, textarea {

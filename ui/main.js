@@ -266,6 +266,7 @@
                   cmbDomains = q2f('select.domain', modal),
                   submitChallenge = q2f('#submit-challenge', modal),
                   materials = q2f('.materials', modal),
+                  challengeDesc = q2f('.challenge-desc', modal),
                   errors = q2f('.errors', modal);
 
             empty(errors);
@@ -284,6 +285,7 @@
                 cmbDomains.appendChild(iter_option);
             });
             cmbDomains.value = orderMeta.domains[0];
+            cmbDomains.disabled = orderMeta.domains.length <= 1;
 
             svc(true, `order/${orderMeta.orderId}`, 'GET')
                 .then(order => {
@@ -296,6 +298,27 @@
 
                         modal.classList.add('loading');
                         svc(true, `order/${order.orderId}`, 'DELETE')
+                            .then(() => {
+                                svc(true, 'order', 'POST', { accountId: orderMeta.accountId, domains: orderMeta.domains })
+                                    .then(json => { 
+                                        resolve(json);
+                                        orderMeta.orderId = json.orderId;
+                                        obtain_edit_order(orderMeta).then(list_accounts);
+                                    })
+                                    .catch(err => console.error(err))
+                                    .finally(() => modal.classList.remove('loading'))
+                            })
+                            .catch(err => {
+                                modal.classList.remove('loading');
+                                console.error(err);
+                            });
+                    };
+
+                    const finaliseOrder = q2f('#finalise-order', modal);
+                    finaliseOrder.onclick = () => {
+
+                        modal.classList.add('loading');
+                        svc(true, `order/${order.orderId}/finalise`, 'POST')
                             .then(() => {
                                 svc(true, 'order', 'POST', { accountId: orderMeta.accountId, domains: orderMeta.domains })
                                     .then(json => { 
@@ -339,13 +362,50 @@
                             cmbChallenges.appendChild(iter_chall);
                         });
                         cmbChallenges.value = domainClaim.challenges[0].type;
+                        cmbChallenges.disabled = domainClaim.challenges.length <= 1;
 
                         const challengeChange = (event) => {
                             const challengeType = event.target.value,
-                                  challenge = domainClaim.challenges.filter(c => c.type === challengeType);
+                                  challenge = domainClaim.challenges.filter(c => c.type === challengeType)[0];
 
                             empty(errors);
                             empty(materials);
+                            
+                            switch (challengeType) {
+                                case 'dns-01':
+                                    const dnsMat1 = document.createElement('li'),
+                                          dnsMat2 = document.createElement('li'),
+                                          dnsMat3 = document.createElement('li');
+
+                                    challengeDesc.innerHTML = 'This challenges requires you to add a record in DNS';
+                                    dnsMat1.innerHTML = 'Record type: TXT';
+                                    dnsMat2.innerHTML = 'Name: ' + challenge.title;
+                                    dnsMat3.innerHTML = 'Value: ' + challenge.content;
+
+                                    materials.appendChild(dnsMat1);
+                                    materials.appendChild(dnsMat2);
+                                    materials.appendChild(dnsMat3);
+                                    break;
+
+                                case 'http-01':
+                                    const httpMat1 = document.createElement('li'),
+                                          httpMat2 = document.createElement('li'),
+                                          httpMat3 = document.createElement('li'),
+                                          url = `http://acme-challenge.${domainClaim.domain}/${challenge.title}`;
+
+                                    challengeDesc.innerHTML = 'This challenge requires you to serve text over HTTP';
+                                    httpMat1.innerHTML = 'Url: <a href="' + url + '">here</a>';
+                                    httpMat2.innerHTML = 'Content: <a href="#">download</a>';
+                                    httpMat3.innerHTML = 'Test: <a href="#">here</a> (optional)';
+
+                                    materials.appendChild(httpMat1);
+                                    materials.appendChild(httpMat2);
+                                    materials.appendChild(httpMat3);
+                                    break;
+                                default:
+                                    errors.innerHTML = 'Unsupported challenge type: ' + challengeType;
+                                    break;
+                            }
 
                             console.log('wootie-o', challenge);
                         };
