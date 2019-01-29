@@ -10,6 +10,11 @@ export interface IOrderRequest extends ISecureRequest {
     orderId: number;
 }
 
+export interface IFinaliseOrderRequest extends IOrderRequest {
+    company?: string;
+    department?: string;
+}
+
 export interface IOrderMeta {
     orderId: number;
     accountId: number;

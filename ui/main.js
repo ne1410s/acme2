@@ -318,7 +318,10 @@
                     finaliseOrder.onclick = () => {
 
                         modal.classList.add('loading');
-                        svc(true, `order/${order.orderId}/finalise`, 'POST')
+                        const company = q2f('input[placeholder=company]', modal).value.trim() || null,
+                              department = q2f('input[placeholder=department]', modal).value.trim() || null;
+
+                        svc(true, `order/${order.orderId}/finalise`, 'PUT', { company, department })
                             .then(() => {
                                 svc(true, 'order', 'POST', { accountId: orderMeta.accountId, domains: orderMeta.domains })
                                     .then(json => { 
