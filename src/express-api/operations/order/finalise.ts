@@ -49,7 +49,7 @@ export class FinaliseOrderOperation extends OperationBase<IFinaliseOrderRequest,
         } 
         
         await this.db.dbOrder.update(
-            { CertPrivateKeyDER: svc_response.originalCsr.der },
+            { CertPkcs8_Base64: svc_response.originalCsr.pkcs8_b64 },
             { where: { OrderID: db_order.OrderID }
         });
 

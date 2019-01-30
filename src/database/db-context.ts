@@ -86,7 +86,7 @@ export class DbContext {
             type: Sequelize.STRING(2047),
             allowNull: false
         },
-        CertPrivateKeyDER: {
+        CertPkcs8_Base64: {
             type: Sequelize.STRING(2047),
             allowNull: true,
         }
@@ -112,6 +112,6 @@ export interface IDbAccountAttribs {
 export interface IDbOrderAttribs {
     OrderID: {},
     Domains: {},
-    CertPrivateKeyDER: {}
+    CertPkcs8_Base64: {}
     AccountID?: {}
 }

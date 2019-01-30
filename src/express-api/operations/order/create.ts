@@ -36,7 +36,7 @@ export class CreateOrderOperation extends OperationBase<ICreateOrderRequest, IOr
             AccountID: requestData.accountId,
             OrderID: svc_order.orderId,
             Domains: JSON.stringify(requestData.domains),
-            CertPrivateKeyDER: null
+            CertPkcs8_Base64: null
         });
 
         return {

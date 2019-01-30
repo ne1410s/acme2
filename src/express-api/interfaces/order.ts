@@ -17,10 +17,13 @@ export interface IFinaliseOrderRequest extends IOrderRequest {
 
 export interface ICertRequest extends IOrderRequest {
     certCode: string;
+    certType: string;
+    password: string;
 }
 
 export interface ICertResponse {
-    pem: string;
+    contentType: string;
+    base64: string;
 }
 
 export interface IOrderMeta {

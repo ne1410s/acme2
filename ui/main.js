@@ -314,30 +314,38 @@
                                 const company = q2f('input[placeholder=company]', modal).value.trim() || null,
                                     department = q2f('input[placeholder=department]', modal).value.trim() || null;
                                 svc(true, `order/${order.orderId}/finalise`, 'PUT', { company, department })
-                                    .then(() => {
-                                        svc(true, 'order', 'POST', { accountId: orderMeta.accountId, domains: orderMeta.domains })
-                                            .then(json => { 
-                                                resolve(json);
-                                                orderMeta.orderId = json.orderId;
-                                                obtain_edit_order(orderMeta).then(list_accounts);
-                                            })
-                                            .catch(err => console.error(err))
-                                            .finally(() => modal.classList.remove('loading'))
-                                    })
-                                    .catch(err => {
-                                        modal.classList.remove('loading');
-                                        console.error(err);
-                                    });
+                                    .then(() => obtain_edit_order(orderMeta).then(list_accounts))
+                                    .catch(err => console.error(err))
+                                    .finally(() => modal.classList.remove('loading'));
                             };
                             break;
 
                         case 'valid':
+                            const downloader = q2f('.downloader', modal),
+                                  cmbCertTypes = q2f('select.cert-type', modal),
+                                  certTypeChange = (event) => modal.setAttribute('data-cert-type', event.target.value);
+
+                            cmbCertTypes.onchange = certTypeChange;
+                            cmbCertTypes.value = cmbCertTypes.options[0].value;
+                            certTypeChange({ target: cmbCertTypes });
+
                             const downloadCert = q2f('#download-cert', modal);
                             downloadCert.onclick = () => {
+                                
                                 modal.classList.add('loading');
-                                svc(true, `order/${order.orderId}/cert/${order.certCode}`, 'GET')
+                                const certType = cmbCertTypes.value;
+                                let getCertUrl = `order/${order.orderId}/cert/${order.certCode}/${certType}`;
+
+                                if (certType === 'p12') {
+                                    const password = q2f('input[placeholder="password"]', modal).value;
+                                    if (password) getCertUrl += ('/' + encodeURIComponent(password));
+                                }
+                                
+                                svc(true, getCertUrl, 'GET')
                                     .then(json => {
-                                        console.log('Cert obtained!', json);
+                                        downloader.setAttribute('download', `cert.${certType}`);
+                                        downloader.setAttribute('href', `data:${json.contentType};charset=utf-8;base64,${json.base64}`);
+                                        downloader.click();
                                     })
                                     .catch(err => console.error(err))
                                     .finally(() => modal.classList.remove('loading'));

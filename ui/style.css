@@ -51,13 +51,17 @@ article > h1 {
     transition: opacity .3s;
 }
 
+.modal.open {
+    opacity: 1;
+    pointer-events: inherit;
+}
+
 .modal:not(.open) > .body {
     opacity: 0;
 }
 
-.modal.open {
-    opacity: 1;
-    pointer-events: inherit;
+.modal.loading {
+    pointer-events: none!important;
 }
 
 .modal .errors {
@@ -92,6 +96,7 @@ article > h1 {
 .modal.login > .body { max-width: 280px; }
 .modal.register > .body { max-width: 280px; }
 .modal.edit-order > .body { min-width: 280px; }
+.modal.edit-order[data-status=valid] > .body { max-width: 280px; }
 .modal.edit-order .challenge-desc { font-weight: bold; font-size: .85rem; }
 .modal.edit-order .materials { font-size: .7rem; }
 .modal > .body > div { width: 100%; }
@@ -156,6 +161,9 @@ section > span {
 .modal[data-sub-status=valid] .valid.sub-status { display: initial; }
 .modal[data-sub-status=ready] .ready.sub-status { display: initial; }
 .modal[data-sub-status=invalid] .invalid.sub-status { display: initial; }
+.modal[data-cert-type] div.cert-type { display: none; }
+.modal[data-cert-type=pem] div.cert-type.pem { display: initial; }
+.modal[data-cert-type=p12] div.cert-type.p12 { display: initial; }
 
 .modal { background: rgba(0, 0, 0, .85); }
 .modal > .body { background: rgb(255, 255, 255); }

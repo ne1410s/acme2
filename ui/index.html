@@ -67,7 +67,15 @@
                 <div class="valid status">
                     <h1>Order Valid</h1>
                     <p class="expires"></p>
+                    <select class="cert-type">
+                        <option value="pem">pem format</option>
+                        <option value="p12">p12 format</option>
+                    </select>
+                    <div class="p12 cert-type">
+                        <input type="password" placeholder="password"/>
+                    </div>
                     <input type="button" id="download-cert" value="Download Certificate"/>
+                    <a class="hide downloader"></a>
                 </div>
                 <div class="invalid status">
                     <h1>Order Invalid</h1>
