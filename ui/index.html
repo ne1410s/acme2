@@ -41,6 +41,7 @@
             <div class="body">
                 <div class="pending status">
                     <h1>Order Pending</h1>
+                    <p class="expires"></p>
                     <select class="domain"></select>
                     <div class="pending sub-status">
                         <p>This domain is pending</p>
@@ -58,13 +59,15 @@
                 </div>
                 <div class="ready status">
                     <h1>Order Ready</h1>
+                    <p class="expires"></p>
                     <input type="text" placeholder="company"/>
                     <input type="text" placeholder="department"/>
                     <input type="button" id="finalise-order" value="Finalise Order"/>
                 </div>
                 <div class="valid status">
                     <h1>Order Valid</h1>
-                    <p>download cert</p>
+                    <p class="expires"></p>
+                    <input type="button" id="download-cert" value="Download Certificate"/>
                 </div>
                 <div class="invalid status">
                     <h1>Order Invalid</h1>

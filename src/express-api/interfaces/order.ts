@@ -15,6 +15,14 @@ export interface IFinaliseOrderRequest extends IOrderRequest {
     department?: string;
 }
 
+export interface ICertRequest extends IOrderRequest {
+    certCode: string;
+}
+
+export interface ICertResponse {
+    pem: string;
+}
+
 export interface IOrderMeta {
     orderId: number;
     accountId: number;
@@ -26,6 +34,5 @@ export interface IOrder {
     status: string;
     expires: Date;
     domainClaims: Array<IDomainClaim>;
-    certificateUrl?: string;
-    finaliseUrl: string;
+    certCode?: string;
 }

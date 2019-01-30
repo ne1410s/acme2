@@ -83,7 +83,7 @@ db.syncStructure().then(() => {
     expr_api.post('/order', (q, r) => sec_proc(q, r, 'orders', 'create'));
     expr_api.delete('/order/:orderId', (q, r) => sec_proc(q, r, 'orders', 'delete'));
     expr_api.put('/order/:orderId/finalise', (q, r) => sec_proc(q, r, 'orders', 'finalise'));
-    // expr_api.get('/order/:orderId/cert', (q, r) => sec_proc(q, r, 'orders', 'getcert'));
+    expr_api.get('/order/:orderId/cert/:certCode', (q, r) => sec_proc(q, r, 'orders', 'cert'));
 
     // Challenge Operations
     expr_api.post('/challenge', (q, r) => sec_proc(q, r, 'challenges', 'submit'));

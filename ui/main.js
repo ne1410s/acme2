@@ -275,165 +275,185 @@
             modal.removeAttribute('data-sub-status');
             modal.classList.add('loading');
 
-            // reset domains drop down
-            empty(cmbDomains);
-            let iter_option;
-            orderMeta.domains.forEach(domain => {
-                iter_option = document.createElement('option');
-                iter_option.value = domain;
-                iter_option.textContent = domain;
-                cmbDomains.appendChild(iter_option);
-            });
-            cmbDomains.value = orderMeta.domains[0];
-            cmbDomains.disabled = orderMeta.domains.length <= 1;
-
             svc(true, `order/${orderMeta.orderId}`, 'GET')
                 .then(order => {
                     
                     // Received order data
                     modal.setAttribute('data-status', order.status);
+                    const expiresFmt = new Date(order.expires).toLocaleDateString();
+                    q2a('.expires', modal).forEach(d => d.textContent = 'Expires ' + expiresFmt);
 
-                    const renewOrder = q2f('#renew-order', modal);
-                    renewOrder.onclick = () => {
+                    switch (order.status) {
 
-                        modal.classList.add('loading');
-                        svc(true, `order/${order.orderId}`, 'DELETE')
-                            .then(() => {
-                                svc(true, 'order', 'POST', { accountId: orderMeta.accountId, domains: orderMeta.domains })
-                                    .then(json => { 
-                                        resolve(json);
-                                        orderMeta.orderId = json.orderId;
-                                        obtain_edit_order(orderMeta).then(list_accounts);
+                        case 'invalid':
+                            const renewOrder = q2f('#renew-order', modal);
+                            renewOrder.onclick = () => {
+                                modal.classList.add('loading');
+                                svc(true, `order/${order.orderId}`, 'DELETE')
+                                    .then(() => {
+                                        svc(true, 'order', 'POST', { accountId: orderMeta.accountId, domains: orderMeta.domains })
+                                            .then(json => { 
+                                                resolve(json);
+                                                orderMeta.orderId = json.orderId;
+                                                obtain_edit_order(orderMeta).then(list_accounts);
+                                            })
+                                            .catch(err => console.error(err))
+                                            .finally(() => modal.classList.remove('loading'))
+                                    })
+                                    .catch(err => {
+                                        modal.classList.remove('loading');
+                                        console.error(err);
+                                    });
+                            };
+                            break;
+
+                        case 'ready':
+                            const finaliseOrder = q2f('#finalise-order', modal);
+                            finaliseOrder.onclick = () => {       
+                                modal.classList.add('loading');
+                                const company = q2f('input[placeholder=company]', modal).value.trim() || null,
+                                    department = q2f('input[placeholder=department]', modal).value.trim() || null;
+                                svc(true, `order/${order.orderId}/finalise`, 'PUT', { company, department })
+                                    .then(() => {
+                                        svc(true, 'order', 'POST', { accountId: orderMeta.accountId, domains: orderMeta.domains })
+                                            .then(json => { 
+                                                resolve(json);
+                                                orderMeta.orderId = json.orderId;
+                                                obtain_edit_order(orderMeta).then(list_accounts);
+                                            })
+                                            .catch(err => console.error(err))
+                                            .finally(() => modal.classList.remove('loading'))
+                                    })
+                                    .catch(err => {
+                                        modal.classList.remove('loading');
+                                        console.error(err);
+                                    });
+                            };
+                            break;
+
+                        case 'valid':
+                            const downloadCert = q2f('#download-cert', modal);
+                            downloadCert.onclick = () => {
+                                modal.classList.add('loading');
+                                svc(true, `order/${order.orderId}/cert/${order.certCode}`, 'GET')
+                                    .then(json => {
+                                        console.log('Cert obtained!', json);
                                     })
                                     .catch(err => console.error(err))
-                                    .finally(() => modal.classList.remove('loading'))
-                            })
-                            .catch(err => {
-                                modal.classList.remove('loading');
-                                console.error(err);
+                                    .finally(() => modal.classList.remove('loading'));
+                            };
+                            break;
+
+                        case 'pending':
+                            // reset domains drop down
+                            empty(cmbDomains);
+                            let iter_option;
+                            orderMeta.domains.forEach(domain => {
+                                iter_option = document.createElement('option');
+                                iter_option.value = domain;
+                                iter_option.textContent = domain;
+                                cmbDomains.appendChild(iter_option);
                             });
-                    };
-
-                    const finaliseOrder = q2f('#finalise-order', modal);
-                    finaliseOrder.onclick = () => {
-
-                        modal.classList.add('loading');
-                        const company = q2f('input[placeholder=company]', modal).value.trim() || null,
-                              department = q2f('input[placeholder=department]', modal).value.trim() || null;
-
-                        svc(true, `order/${order.orderId}/finalise`, 'PUT', { company, department })
-                            .then(() => {
-                                svc(true, 'order', 'POST', { accountId: orderMeta.accountId, domains: orderMeta.domains })
-                                    .then(json => { 
-                                        resolve(json);
-                                        orderMeta.orderId = json.orderId;
-                                        obtain_edit_order(orderMeta).then(list_accounts);
-                                    })
-                                    .catch(err => console.error(err))
-                                    .finally(() => modal.classList.remove('loading'))
-                            })
-                            .catch(err => {
-                                modal.classList.remove('loading');
-                                console.error(err);
-                            });
-                    };
-
-                    const domainChange = (event) => {
-                        const domainName = event.target.value,
-                              domainClaim = order.domainClaims.filter(dc => {
-                                const iter_name = dc.wildcard ? `*.${dc.domain}` : dc.domain;
-                                return iter_name === domainName;
-                              })[0];
-                        
-                        // Received domain data
-                        modal.setAttribute('data-sub-status', domainClaim.status);
-
-                        empty(errors);
-                        const cmbChallenges = q2f('select.challenge', modal);
-                        
-                        // reset domains drop down
-                        empty(cmbChallenges);
-                        let iter_chall;
-                        domainClaim.challenges.forEach(c => {
-                            iter_chall = document.createElement('option');
-                            iter_chall.value = c.type;
-                            iter_chall.textContent = c.type;
-                            iter_chall.setAttribute('data-challenge-id', c.challengeId);
-                            iter_chall.setAttribute('data-order-id', order.orderId);
-                            iter_chall.setAttribute('data-key-auth', c.keyAuth);
-                            iter_chall.setAttribute('data-auth-code', c.authCode);
-                            cmbChallenges.appendChild(iter_chall);
-                        });
-                        cmbChallenges.value = domainClaim.challenges[0].type;
-                        cmbChallenges.disabled = domainClaim.challenges.length <= 1;
-
-                        const challengeChange = (event) => {
-                            const challengeType = event.target.value,
-                                  challenge = domainClaim.challenges.filter(c => c.type === challengeType)[0];
-
-                            empty(errors);
-                            empty(materials);
+                            cmbDomains.value = orderMeta.domains[0];
+                            cmbDomains.disabled = orderMeta.domains.length <= 1;
                             
-                            switch (challengeType) {
-                                case 'dns-01':
-                                    const dnsMat1 = document.createElement('li'),
-                                          dnsMat2 = document.createElement('li'),
-                                          dnsMat3 = document.createElement('li');
+                            const domainChange = (event) => {
+                                const domainName = event.target.value,
+                                      domainClaim = order.domainClaims.filter(dc => {
+                                        const iter_name = dc.wildcard ? `*.${dc.domain}` : dc.domain;
+                                        return iter_name === domainName;
+                                      })[0];
+                                
+                                // Received domain data
+                                modal.setAttribute('data-sub-status', domainClaim.status);
+        
+                                empty(errors);
+                                const cmbChallenges = q2f('select.challenge', modal);
+                                
+                                // reset domains drop down
+                                empty(cmbChallenges);
+                                let iter_chall;
+                                domainClaim.challenges.forEach(c => {
+                                    iter_chall = document.createElement('option');
+                                    iter_chall.value = c.type;
+                                    iter_chall.textContent = c.type;
+                                    iter_chall.setAttribute('data-challenge-id', c.challengeId);
+                                    iter_chall.setAttribute('data-order-id', order.orderId);
+                                    iter_chall.setAttribute('data-key-auth', c.keyAuth);
+                                    iter_chall.setAttribute('data-auth-code', c.authCode);
+                                    cmbChallenges.appendChild(iter_chall);
+                                });
+                                cmbChallenges.value = domainClaim.challenges[0].type;
+                                cmbChallenges.disabled = domainClaim.challenges.length <= 1;
+        
+                                const challengeChange = (event) => {
+                                    const challengeType = event.target.value,
+                                          challenge = domainClaim.challenges.filter(c => c.type === challengeType)[0];
+        
+                                    empty(errors);
+                                    empty(materials);
+                                    
+                                    switch (challengeType) {
+                                        case 'dns-01':
+                                            const dnsMat1 = document.createElement('li'),
+                                                  dnsMat2 = document.createElement('li'),
+                                                  dnsMat3 = document.createElement('li');
+        
+                                            challengeDesc.innerHTML = 'This challenges requires you to add a record in DNS';
+                                            dnsMat1.innerHTML = 'Record type: TXT';
+                                            dnsMat2.innerHTML = 'Name: ' + '<b>_acme-challenge</b><i>.' + domainClaim.domain + '</i>';
+                                            dnsMat3.innerHTML = 'Value: ' + challenge.content;
+        
+                                            materials.appendChild(dnsMat1);
+                                            materials.appendChild(dnsMat2);
+                                            materials.appendChild(dnsMat3);
+                                            break;
+        
+                                        case 'http-01':
+                                            const httpMat1 = document.createElement('li'),
+                                                  httpMat2 = document.createElement('li'),
+                                                  httpMat3 = document.createElement('li'),
+                                                  url = `http://${domainClaim.domain}/.well-known/acme-challenge/${challenge.title}`;
+        
+                                            challengeDesc.innerHTML = 'This challenge requires you to serve text over HTTP';
+                                            httpMat1.innerHTML = 'Url: <a href="' + url + '">here</a>';
+                                            httpMat2.innerHTML = 'Content: <a href="#">download</a>';
+                                            httpMat3.innerHTML = 'Test: <a href="#">here</a> (optional)';
+        
+                                            materials.appendChild(httpMat1);
+                                            materials.appendChild(httpMat2);
+                                            materials.appendChild(httpMat3);
+                                            break;
+                                        default:
+                                            errors.innerHTML = 'Unsupported challenge type: ' + challengeType;
+                                            break;
+                                    }
+                                };
+                                cmbChallenges.onchange = challengeChange;
+                                challengeChange({ target: cmbChallenges });
+        
+                                submitChallenge.onclick = () => {
+                                    modal.classList.add('loading');
+                                    const dataset = cmbChallenges.selectedOptions[0].dataset;
+                                    svc(true, 'challenge', 'POST', dataset)
+                                        .then(json => {
+                                            console.log(json);
+                                            obtain_edit_order(orderMeta).then(list_accounts);
+                                        })
+                                        .catch(err => {
+                                            console.warn(err);
+                                            errors.innerHTML = err.detail
+                                                ? err.detail.map(d => d.message || d).join('<br>')
+                                                : err.message || err;
+                                        })
+                                        .finally(() => modal.classList.remove('loading'));
+                                };
+                            };
+                            cmbDomains.onchange = domainChange;
+                            domainChange({ target: cmbDomains });
 
-                                    challengeDesc.innerHTML = 'This challenges requires you to add a record in DNS';
-                                    dnsMat1.innerHTML = 'Record type: TXT';
-                                    dnsMat2.innerHTML = 'Name: ' + challenge.title;
-                                    dnsMat3.innerHTML = 'Value: ' + challenge.content;
-
-                                    materials.appendChild(dnsMat1);
-                                    materials.appendChild(dnsMat2);
-                                    materials.appendChild(dnsMat3);
-                                    break;
-
-                                case 'http-01':
-                                    const httpMat1 = document.createElement('li'),
-                                          httpMat2 = document.createElement('li'),
-                                          httpMat3 = document.createElement('li'),
-                                          url = `http://acme-challenge.${domainClaim.domain}/${challenge.title}`;
-
-                                    challengeDesc.innerHTML = 'This challenge requires you to serve text over HTTP';
-                                    httpMat1.innerHTML = 'Url: <a href="' + url + '">here</a>';
-                                    httpMat2.innerHTML = 'Content: <a href="#">download</a>';
-                                    httpMat3.innerHTML = 'Test: <a href="#">here</a> (optional)';
-
-                                    materials.appendChild(httpMat1);
-                                    materials.appendChild(httpMat2);
-                                    materials.appendChild(httpMat3);
-                                    break;
-                                default:
-                                    errors.innerHTML = 'Unsupported challenge type: ' + challengeType;
-                                    break;
-                            }
-
-                            console.log('wootie-o', challenge);
-                        };
-                        cmbChallenges.onchange = challengeChange;
-                        challengeChange({ target: cmbChallenges });
-
-                        submitChallenge.onclick = () => {
-                            modal.classList.add('loading');
-                            const dataset = cmbChallenges.selectedOptions[0].dataset;
-                            svc(true, 'challenge', 'POST', dataset)
-                                .then(json => {
-                                    console.log(json);
-                                    obtain_edit_order(orderMeta).then(list_accounts);
-                                })
-                                .catch(err => {
-                                    console.warn(err);
-                                    errors.innerHTML = err.detail
-                                        ? err.detail.map(d => d.message || d).join('<br>')
-                                        : err.message || err;
-                                })
-                                .finally(() => modal.classList.remove('loading'));
-                        };
-                    };
-                    cmbDomains.onchange = domainChange;
-                    domainChange({ target: cmbDomains });
+                            break;
+                    }
                 })
                 .catch(err => {
                     console.warn(err);

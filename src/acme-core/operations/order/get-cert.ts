@@ -5,12 +5,12 @@ export class GetCertOperation extends JsonOperation<IGetCertRequest, IGetCertRes
 
     private readonly CONTENT_TYPE_OPTS: Array<string> = [
         'application/pem-certificate-chain',
-        'applicaiton/pkcs7-mime',
+        'application/pkcs7-mime',
         'application/pkix-cert',
         'application/x-pkcs12',
     ];
     
-    constructor (baseUrl: string) {
+    constructor (private baseUrl: string) {
 
         super(`${baseUrl}/cert/{certCode}`, 'get');
     }
@@ -21,8 +21,8 @@ export class GetCertOperation extends JsonOperation<IGetCertRequest, IGetCertRes
         requestData = requestData || {} as IGetCertRequest;
         const contentType = (requestData.contentType || '').toLowerCase();
 
-        if (!requestData.certificateUrl || requestData.certificateUrl.length == 0) {
-            messages.push('Certificate url is required');
+        if (!requestData.certCode || requestData.certCode.length == 0) {
+            messages.push('Cert code is required');
         }
 
         if (contentType != '' && this.CONTENT_TYPE_OPTS.indexOf(contentType) == -1) {
@@ -34,7 +34,7 @@ export class GetCertOperation extends JsonOperation<IGetCertRequest, IGetCertRes
         }
 
         // Once deemed valid; correct the operation url at invocation time
-        this._url = requestData.certificateUrl;
+        this._url = `${this.baseUrl}/cert/${requestData.certCode}`;
 
         this.headers.delete('accept');
         if (requestData.contentType) {

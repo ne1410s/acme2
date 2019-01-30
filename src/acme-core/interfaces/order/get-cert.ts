@@ -1,7 +1,7 @@
 
 export interface IGetCertRequest {
-    contentType: string;
-    certificateUrl: string;
+    certCode: string;
+    contentType?: string;
 }
 
 export interface IGetCertResponse {

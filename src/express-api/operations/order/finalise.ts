@@ -33,7 +33,7 @@ export class FinaliseOrderOperation extends OperationBase<IFinaliseOrderRequest,
               svc = new Acme2Service(env as any),
               token_response = await svc.tokens.get.invoke();
 
-        const finalise_response = await svc.orders.finalise.invoke({
+        const svc_response = await svc.orders.finalise.invoke({
             accountId: db_order.AccountID,
             orderId: db_order.OrderID,
             token: token_response.token,
@@ -43,15 +43,27 @@ export class FinaliseOrderOperation extends OperationBase<IFinaliseOrderRequest,
             department: requestData.department
         });
 
-        if (finalise_response.status === 'valid') {
-            await this.db.dbOrder.update(
-                { CertPrivateKeyDER: finalise_response.originalCsr.der },
-                { where: { OrderID: db_order.OrderID }
-            });
+        if (svc_response.status !== 'valid') {
+            console.log('Unable to finalise order', svc_response);
+            throw new ValidationError('Unable to finalise order', svc_response);
         } 
-        else {
-            console.log('------------------------');
-            console.log('Invalid Response!', finalise_response);
+        
+        await this.db.dbOrder.update(
+            { CertPrivateKeyDER: svc_response.originalCsr.der },
+            { where: { OrderID: db_order.OrderID }
+        });
+
+        // service status was valid; but order status requires polling
+        let pollStatusOutcome = 'pending',
+            pollCount = 0,
+            svc_order;
+
+        while (pollStatusOutcome === 'pending' && ++pollCount <= 5) {
+            svc_order = await svc.orders.get.invoke({
+                accountId: db_order.AccountID,
+                orderId: db_order.OrderID
+            });
+            pollStatusOutcome = svc_order.status;
         }
 
         return Promise.resolve({});

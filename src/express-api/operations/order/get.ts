@@ -43,12 +43,17 @@ export class GetOrderOperation extends OperationBase<IOrderRequest, IOrder> {
             domainClaims.push(claim);
         }
 
+        let certCode;
+        if (svc_order.certificateUrl) {
+            const parts = svc_order.certificateUrl.split('/');
+            certCode = parts[parts.length - 1];
+        }
+
         return {
             orderId: svc_order.orderId,
             expires: svc_order.expires,
             status: svc_order.status,
-            certificateUrl: svc_order.certificateUrl,
-            finaliseUrl: svc_order.finaliseUrl,
+            certCode,
             domainClaims,
         };
     }
