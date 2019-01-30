@@ -421,22 +421,33 @@
                                             const httpMat1 = document.createElement('li'),
                                                   httpMat2 = document.createElement('li'),
                                                   httpMat3 = document.createElement('li'),
+                                                  textLink = document.createElement('a'),
                                                   testLink = document.createElement('a'),
-                                                  url = `http://${domainClaim.domain}/.well-known/acme-challenge/${challenge.title}`;
+                                                  path = '/.well-known/acme-challenge/',
+                                                  absoluteUrl = `http://${domainClaim.domain}${path}${challenge.title}`;
         
-                                            testLink.setAttribute('href', 'javascript:void(0)');
+                                            textLink.setAttribute('download', challenge.title);
+                                            textLink.setAttribute('href', `data:application/octet-stream;charset=utf-8,${challenge.content}`);
+                                            textLink.textContent = 'Download the test content';
+                                            
+                                            testLink.setAttribute('href', absoluteUrl);
                                             testLink.textContent = 'Test the file here';
-                                            testLink.onclick = () => {
-                                                const testReply = await fetch({ url }),
-                                                      testPass = testReply.ok 
-                                                        && testReply.headers.get('content-type' === 'text/plain')
-                                                        && testReply.text() === challenge.content;
-                                                alert(testPass);
+                                            testLink.onclick = (event) => {
+                                                event.preventDefault();
+                                                fetch(absoluteUrl, {})
+                                                    .then(response => {
+                                                        if (response.ok && response.headers.get('content-type') === 'text/plain') {
+                                                            response.text().then(text => alert(text === challenge.content ? 'win' : 'fail - content mismatch'));
+                                                        } else {
+                                                            alert('fail - bad response type');
+                                                        }
+                                                    })
+                                                    .catch((err) => alert('fail - error occurred'));
                                             };
 
                                             challengeDesc.innerHTML = 'This challenge requires you to serve text over HTTP';
-                                            httpMat1.innerHTML = 'Url: <a href="' + url + '">here</a>';
-                                            httpMat2.innerHTML = 'Content: <a href="#">download</a>';
+                                            httpMat1.appendChild(textLink);
+                                            httpMat2.innerHTML = 'Serve the file on <b>http</b> under: ' + path;
                                             httpMat3.appendChild(testLink);
         
                                             materials.appendChild(httpMat1);
