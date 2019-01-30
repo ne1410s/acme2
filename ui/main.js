@@ -421,12 +421,23 @@
                                             const httpMat1 = document.createElement('li'),
                                                   httpMat2 = document.createElement('li'),
                                                   httpMat3 = document.createElement('li'),
+                                                  testLink = document.createElement('a'),
                                                   url = `http://${domainClaim.domain}/.well-known/acme-challenge/${challenge.title}`;
         
+                                            testLink.setAttribute('href', 'javascript:void(0)');
+                                            testLink.textContent = 'Test the file here';
+                                            testLink.onclick = () => {
+                                                const testReply = await fetch({ url }),
+                                                      testPass = testReply.ok 
+                                                        && testReply.headers.get('content-type' === 'text/plain')
+                                                        && testReply.text() === challenge.content;
+                                                alert(testPass);
+                                            };
+
                                             challengeDesc.innerHTML = 'This challenge requires you to serve text over HTTP';
                                             httpMat1.innerHTML = 'Url: <a href="' + url + '">here</a>';
                                             httpMat2.innerHTML = 'Content: <a href="#">download</a>';
-                                            httpMat3.innerHTML = 'Test: <a href="#">here</a> (optional)';
+                                            httpMat3.appendChild(testLink);
         
                                             materials.appendChild(httpMat1);
                                             materials.appendChild(httpMat2);
