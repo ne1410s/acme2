@@ -42,19 +42,18 @@
                 <div class="pending status">
                     <h1>Order Pending</h1>
                     <p class="expires"></p>
+                    <label>Domains</label>
                     <select class="domain"></select>
                     <div class="pending sub-status">
-                        <p>This domain is pending</p>
+                        <label>Challenges</label>
                         <select class="challenge"></select>
                         <p class="challenge-desc"></p>
                         <ul class="materials"></ul>
                         <input type="button" id="submit-challenge" value="Submit Challenge"/>
                     </div>
-                    <div class="ready sub-status">
-                        <p>domain: ready</p>
-                    </div>
                     <div class="valid sub-status">
-                        <p>domain: valid</p>
+                        <p>This domain is valid. Good work!</p>
+                        <p>Please choose another.</p>
                     </div>
                 </div>
                 <div class="ready status">
@@ -67,11 +66,12 @@
                 <div class="valid status">
                     <h1>Order Valid</h1>
                     <p class="expires"></p>
+                    <label>Formats</label>
                     <select class="cert-type">
-                        <option value="pem">pem format</option>
-                        <option value="p12">p12 format</option>
+                        <option value="pem">pem</option>
+                        <option value="pfx">pfx</option>
                     </select>
-                    <div class="p12 cert-type">
+                    <div class="pfx cert-type">
                         <input type="password" placeholder="password"/>
                     </div>
                     <input type="button" id="download-cert" value="Download Certificate"/>

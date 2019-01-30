@@ -336,7 +336,7 @@
                                 const certType = cmbCertTypes.value;
                                 let getCertUrl = `order/${order.orderId}/cert/${order.certCode}/${certType}`;
 
-                                if (certType === 'p12') {
+                                if (certType === 'pfx') {
                                     const password = q2f('input[placeholder="password"]', modal).value;
                                     if (password) getCertUrl += ('/' + encodeURIComponent(password));
                                 }
