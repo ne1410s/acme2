@@ -426,6 +426,8 @@
                                                   path = '/.well-known/acme-challenge/',
                                                   absoluteUrl = `http://${domainClaim.domain}${path}${challenge.title}`;
         
+                                            //let absoluteUrl = `http://localhost:8081${path}${challenge.title}`;
+
                                             textLink.setAttribute('download', challenge.title);
                                             textLink.setAttribute('href', `data:application/octet-stream;charset=utf-8,${challenge.content}`);
                                             textLink.textContent = 'Download the test content';
@@ -434,15 +436,14 @@
                                             testLink.textContent = 'Test the file here';
                                             testLink.onclick = (event) => {
                                                 event.preventDefault();
-                                                fetch(absoluteUrl, {})
-                                                    .then(response => {
-                                                        if (response.ok && response.headers.get('content-type') === 'text/plain') {
-                                                            response.text().then(text => alert(text === challenge.content ? 'win' : 'fail - content mismatch'));
-                                                        } else {
-                                                            alert('fail - bad response type');
-                                                        }
+                                                fetch(absoluteUrl)
+                                                    .then(res => {
+                                                        res.text().then(text => alert(text === challenge.content ? 'pass' : 'fail'));
                                                     })
-                                                    .catch((err) => alert('fail - error occurred'));
+                                                    .catch(err => {
+                                                        console.warn(err);
+                                                        alert('fail');
+                                                    });
                                             };
 
                                             challengeDesc.innerHTML = 'This challenge requires you to serve text over HTTP';
