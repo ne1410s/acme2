@@ -72,7 +72,7 @@ db.syncStructure().then(() => {
         'recaptcha': process.env['acme::recaptcha::public'] 
     }));
     expr_api.get('/main.js', (q, r) => r.render(path.resolve(__dirname, '../ui/main.js'), {
-        'baseUrl': `${process.env['acme::host']}:${apiConfig.portNumber}`,
+        'baseUrl': process.env['acme::svchost'],
         'recaptcha': process.env['acme::recaptcha::public'] 
     }));
 
