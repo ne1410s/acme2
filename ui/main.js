@@ -336,7 +336,7 @@
                                 const certType = cmbCertTypes.value;
                                 let getCertUrl = `order/${order.orderId}/cert/${order.certCode}/${certType}`;
 
-                                if (certType === 'p12') {
+                                if (certType === 'pfx') {
                                     const password = q2f('input[placeholder="password"]', modal).value;
                                     if (password) getCertUrl += ('/' + encodeURIComponent(password));
                                 }
@@ -421,12 +421,35 @@
                                             const httpMat1 = document.createElement('li'),
                                                   httpMat2 = document.createElement('li'),
                                                   httpMat3 = document.createElement('li'),
-                                                  url = `http://${domainClaim.domain}/.well-known/acme-challenge/${challenge.title}`;
+                                                  textLink = document.createElement('a'),
+                                                  testLink = document.createElement('a'),
+                                                  path = '/.well-known/acme-challenge/',
+                                                  absoluteUrl = `http://${domainClaim.domain}${path}${challenge.title}`;
         
+                                            //let absoluteUrl = `http://localhost:8081${path}${challenge.title}`;
+
+                                            textLink.setAttribute('download', challenge.title);
+                                            textLink.setAttribute('href', `data:application/octet-stream;charset=utf-8,${challenge.content}`);
+                                            textLink.textContent = 'Download the test content';
+                                            
+                                            testLink.setAttribute('href', absoluteUrl);
+                                            testLink.textContent = 'Test the file here';
+                                            testLink.onclick = (event) => {
+                                                event.preventDefault();
+                                                fetch(absoluteUrl)
+                                                    .then(res => {
+                                                        res.text().then(text => alert(text === challenge.content ? 'pass' : 'fail'));
+                                                    })
+                                                    .catch(err => {
+                                                        console.warn(err);
+                                                        alert('fail');
+                                                    });
+                                            };
+
                                             challengeDesc.innerHTML = 'This challenge requires you to serve text over HTTP';
-                                            httpMat1.innerHTML = 'Url: <a href="' + url + '">here</a>';
-                                            httpMat2.innerHTML = 'Content: <a href="#">download</a>';
-                                            httpMat3.innerHTML = 'Test: <a href="#">here</a> (optional)';
+                                            httpMat1.appendChild(textLink);
+                                            httpMat2.innerHTML = 'Serve the file on <b>http</b> under: ' + path;
+                                            httpMat3.appendChild(testLink);
         
                                             materials.appendChild(httpMat1);
                                             materials.appendChild(httpMat2);

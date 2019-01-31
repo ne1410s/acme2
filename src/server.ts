@@ -96,6 +96,12 @@ db.syncStructure().then(() => {
     // Challenge Operations
     expr_api.post('/challenge', (q, r) => sec_proc(q, r, 'challenges', 'submit'));
 
+    //TESTING HTTP CHALLENGE
+    // expr_api.get('/.well-known/acme-challenge/uEaZuRK9saKiro0C4Wob-AU7mENJ_p1T36hfoUOjRTQ', (q, r) => {
+    //     r.set('Content-Type', 'text/plain');
+    //     r.send('uEaZuRK9saKiro0C4Wob-AU7mENJ_p1T36hfoUOjRTQ.apZrwmBLCWnSK5iZUEe0EI-moQWFn5NsC0lQJYzpgrc');
+    // });
+
     // Start!
     expr_api.listen(apiConfig.portNumber, () => {
         console.log(`Listening on port ${apiConfig.portNumber}`);

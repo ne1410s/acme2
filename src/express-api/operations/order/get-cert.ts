@@ -38,7 +38,7 @@ export class GetCertOperation extends OperationBase<ICertRequest, ICertResponse>
         }
 
         switch (requestData.certType) {        
-            case 'p12':
+            case 'pfx':
                 const pem_parts = svc_cert.content.split(/-----(?:BEGIN|END) CERTIFICATE-----/)
                         .map(p => p.replace(/\s/g, ''))
                         .filter(p => p),

@@ -73,6 +73,13 @@ article > h1 {
     display: none;
 }
 
+.modal label {
+    text-transform: uppercase;
+    font-size: .7rem;
+    font-weight: bold;
+    margin: .25rem 0 0;
+}
+
 .modal span {
     font-size: .7rem;
     width: 100%;
@@ -159,11 +166,10 @@ section > span {
 .modal[data-status=invalid] .invalid.status { display: initial; }
 .modal[data-sub-status=pending] .pending.sub-status { display: initial; }
 .modal[data-sub-status=valid] .valid.sub-status { display: initial; }
-.modal[data-sub-status=ready] .ready.sub-status { display: initial; }
 .modal[data-sub-status=invalid] .invalid.sub-status { display: initial; }
 .modal[data-cert-type] div.cert-type { display: none; }
 .modal[data-cert-type=pem] div.cert-type.pem { display: initial; }
-.modal[data-cert-type=p12] div.cert-type.p12 { display: initial; }
+.modal[data-cert-type=pfx] div.cert-type.pfx { display: initial; }
 
 .modal { background: rgba(0, 0, 0, .85); }
 .modal > .body { background: rgb(255, 255, 255); }
@@ -174,16 +180,16 @@ section > span {
 
 .modal.login input:focus, .modal.login select:focus, .modal.login textarea:focus { border-color: rgb(0, 110, 201); }
 .modal.login input[type=button]:not(:hover) { background: rgb(0, 110, 201); }
-.modal.login a, .modal.login input[type=button]:hover { color: rgb(0, 110, 201); }
+.modal.login a, .modal.login input[type=button]:hover, .modal.login label { color: rgb(0, 110, 201); }
 
 .modal.register input:focus, .modal.register select:focus, .modal.register textarea:focus { border-color: rgb(0, 85, 0); }
 .modal.register input[type=button]:not(:hover) { background: rgb(0, 85, 0); }
-.modal.register a, .modal.register input[type=button]:hover { color: rgb(0, 85, 0); }
+.modal.register a, .modal.register input[type=button]:hover, .modal.register label { color: rgb(0, 85, 0); }
 
 .modal.account input:focus, .modal.account select:focus, .modal.account textarea:focus, .modal.account > .body { border-color: rgb(151, 0, 0); }
 .modal.account input[type=button]:not(:hover) { background: rgb(151, 0, 0); }
-.modal.account a, .modal.account input[type=button]:hover { color: rgb(151, 0, 0); }
+.modal.account a, .modal.account input[type=button]:hover, .modal.account label { color: rgb(151, 0, 0); }
 
 .modal.order input:focus, .modal.order select:focus, .modal.order textarea:focus, .modal.order > .body { border-color: rgb(144, 144, 0); }
 .modal.order input[type=button]:not(:hover) { background: rgb(144, 144, 0); }
-.modal.order a, .modal.order input[type=button]:hover { color: rgb(144, 144, 0); }
+.modal.order a, .modal.order input[type=button]:hover, .modal.order label { color: rgb(144, 144, 0); }
