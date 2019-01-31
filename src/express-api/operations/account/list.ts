@@ -13,7 +13,7 @@ export class ListAccountsOperation extends OperationBase<ISecureRequest, Array<I
     validateResponse(responseData: Array<IAccountMeta>): void {}
     
     protected async invokeInternal(requestData: ISecureRequest): Promise<IAccountMeta[]> {
-        
+
         const db_accounts = await this.db.dbAccount.findAll({ 
             where: { UserID: requestData.authenticUserId },
             include: [{ model: this.db.dbOrder }]

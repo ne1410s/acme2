@@ -65,13 +65,13 @@ export class RegisterOperation extends OperationBase<IRegisterRequest, IAuthEntr
         });
 
         return {
-            token: await AuthUtils.getToken(newUser.UserID, apiConfig.secretKeys.jwt, apiConfig.tokenMinutes)
+            token: await AuthUtils.getToken(newUser.UserID, process.env['acme::jwt'], apiConfig.tokenMinutes)
         };
     }
 
     private async validateRecaptcha(token: string): Promise<boolean> {
         
-        const url = `${this.recaptchaUrl}?response=${token}&secret=${apiConfig.secretKeys.recaptcha}`,
+        const url = `${this.recaptchaUrl}?response=${token}&secret=${process.env['acme::recaptcha']}`,
               response = await fetch(url, { method: 'POST' }),
               json = await response.json();
 

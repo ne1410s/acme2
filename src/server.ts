@@ -1,5 +1,6 @@
 import * as express from "express";
 import * as cors from "cors";
+import * as ejs from "ejs";
 import * as bodyParser from "body-parser";
 import * as apiConfig from "./api.json"
 import * as path from "path";
@@ -42,7 +43,7 @@ const sec_proc = (q: express.Request, r: express.Response, entity: string, opera
     try {
         const authHeader = q.header('authorization'),
               token = ((authHeader || '').match(/^[Bb]earer ([\w-]*\.[\w-]*\.[\w-]*)$/) || [])[1] || '',
-              userId = AuthUtils.verifyToken(token, apiConfig.secretKeys.jwt);
+              userId = AuthUtils.verifyToken(token, process.env['acme::jwt']);
               
         q.body = { ...q.body, ...q.query, ...q.params };
         q.body.authenticUserId = userId;
@@ -60,13 +61,20 @@ db.syncStructure().then(() => {
 
     expr_api.use(cors());
     expr_api.use(bodyParser.json());
+    expr_api.engine('html', ejs.renderFile);
+    expr_api.engine('js', ejs.renderFile);
 
     // Static resources
     expr_api.get('/style.css', (q, r) => r.sendFile(path.resolve(__dirname, '../ui/style.css')));
-    expr_api.get('/main.js', (q, r) => r.sendFile(path.resolve(__dirname, '../ui/main.js')));
     expr_api.get('/loading.svg', (q, r) => r.sendFile(path.resolve(__dirname, '../ui/loading.svg')));
     expr_api.get('/favicon.ico', (q, r) => r.sendFile(path.resolve(__dirname, '../ui/favicon.ico')));
-    expr_api.get('/', (q, r) => r.sendFile(path.resolve(__dirname, '../ui/index.html')));
+    expr_api.get('/', (q, r) => r.render(path.resolve(__dirname, '../ui/index.html'), {
+        'recaptcha': process.env['acme::recaptcha::public'] 
+    }));
+    expr_api.get('/main.js', (q, r) => r.render(path.resolve(__dirname, '../ui/main.js'), {
+        'baseUrl': `${process.env['acme::host']}:${apiConfig.portNumber}`,
+        'recaptcha': process.env['acme::recaptcha::public'] 
+    }));
 
     // User Operations
     expr_api.post('/user', (q, r) => proc(q, r, 'users', 'register'));

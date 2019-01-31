@@ -9,7 +9,6 @@ ES ACME v2 Wrapper
  - /ui/
 
 ## Amend Keys
- - /dist/api.json
  - /ui/index.html
  - /ui/main.js
 

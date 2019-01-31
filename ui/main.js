@@ -1,7 +1,7 @@
 ((window) => {
 
-    const baseUrl = 'http://localhost:8081',
-          recaptchaKey = '6LchaokUAAAAAMValneQDxXiiirpT-BSC4R7uWfy';
+    const baseUrl = '<%= baseUrl %>',
+          recaptchaKey = '<%= recaptcha %>';
 
     const save_token = (token) => sessionStorage.setItem('token', token),
           load_token = () => sessionStorage.getItem('token'),

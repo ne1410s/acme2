@@ -33,7 +33,7 @@ export class LoginOperation extends OperationBase<IAuthEntryRequest, IAuthEntryR
         }
 
         return {
-            token: await AuthUtils.getToken(user.UserID, apiConfig.secretKeys.jwt, apiConfig.tokenMinutes)
+            token: await AuthUtils.getToken(user.UserID, process.env['acme::jwt'], apiConfig.tokenMinutes)
         };
     }
 

@@ -2,9 +2,5 @@
     "portNumber": 8081,
     "dbConnection": "./dist/database/acme.db",
     "dbLogging": false,
-    "tokenMinutes": 15,
-    "secretKeys": {
-        "jwt": "yGT93wZRVmg5KIBrYJYpmQ",
-        "recaptcha": "6LchaokUAAAAAG1TaYiIm0Cxd2cfZXTkA9JMq9mR"
-    }
+    "tokenMinutes": 15
 }
