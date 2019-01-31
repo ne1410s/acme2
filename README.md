@@ -8,8 +8,10 @@ ES ACME v2 Wrapper
  - /.npmrc
  - /ui/
 
-## Amend Keys
- - /ui/index.html
- - /ui/main.js
+## NB - Environment Variables
+ - acme::host
+ - acme::jwt
+ - acme::recaptcha
+ - acme::recaptcha::public
 
 [//]: # (See https://www.google.com/recaptcha/admin#list)
