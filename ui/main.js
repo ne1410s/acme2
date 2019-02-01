@@ -343,7 +343,7 @@
                                 
                                 svc(true, getCertUrl, 'GET')
                                     .then(json => {
-                                        downloader.setAttribute('download', `cert.${certType}`);
+                                        downloader.setAttribute('download', `cert-${order.orderId}.${certType}`);
                                         downloader.setAttribute('href', `data:${json.contentType};charset=utf-8;base64,${json.base64}`);
                                         downloader.click();
                                     })

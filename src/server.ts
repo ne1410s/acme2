@@ -69,7 +69,8 @@ db.syncStructure().then(() => {
     expr_api.get('/loading.svg', (q, r) => r.sendFile(path.resolve(__dirname, '../ui/loading.svg')));
     expr_api.get('/favicon.ico', (q, r) => r.sendFile(path.resolve(__dirname, '../ui/favicon.ico')));
     expr_api.get('/', (q, r) => r.render(path.resolve(__dirname, '../ui/index.html'), {
-        'recaptcha': process.env['acme::recaptcha::public'] 
+        'acmeTerms': apiConfig.acmeTerms,
+        'recaptcha': process.env['acme::recaptcha::public']
     }));
     expr_api.get('/main.js', (q, r) => r.render(path.resolve(__dirname, '../ui/main.js'), {
         'baseUrl': process.env['acme::svchost'],
