@@ -337,8 +337,10 @@
                                 let getCertUrl = `order/${order.orderId}/cert/${order.certCode}/${certType}`;
 
                                 if (certType === 'pfx') {
-                                    const password = q2f('input[placeholder="password"]', modal).value;
-                                    if (password) getCertUrl += ('/' + encodeURIComponent(password));
+                                    const password = q2f('input[placeholder=password]', modal).value,
+                                          friendlyName = q2f('input[placeholder="friendly name"]', modal).value;
+                                    getCertUrl += ('/' + encodeURIComponent(password || ' '));
+                                    getCertUrl += ('/' + encodeURIComponent(friendlyName || ' '));
                                 }
                                 
                                 svc(true, getCertUrl, 'GET')
