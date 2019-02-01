@@ -3,18 +3,20 @@ import { DbContext } from "../../../database/db-context";
 import * as apiConfig from "../../../api.json";
 import { AuthUtils } from "../../utils/auth";
 import { AuthError } from "../../errors/auth";
-import { IAuthEntryResponse, IAuthEntryRequest } from "../../interfaces/auth";
+import { IAuthEntryResponse, ICaptchaRequest } from "../../interfaces/auth";
 
-export class LoginOperation extends OperationBase<IAuthEntryRequest, IAuthEntryResponse> {
+export class LoginOperation extends OperationBase<ICaptchaRequest, IAuthEntryResponse> {
 
     constructor(private readonly db: DbContext) {
         super();
     }
 
-    validateRequest(requestData: IAuthEntryRequest): void {}
+    validateRequest(requestData: ICaptchaRequest): void {}
     validateResponse(responseData: IAuthEntryResponse): void {}
 
-    protected async invokeInternal(requestData: IAuthEntryRequest): Promise<IAuthEntryResponse> {
+    protected async invokeInternal(requestData: ICaptchaRequest): Promise<IAuthEntryResponse> {
+
+        await AuthUtils.validateRecaptcha(requestData.recaptcha, 'login');
 
         const result = await this.db.dbUser.findAll({
             where: { UserName: requestData.username }
@@ -33,7 +35,7 @@ export class LoginOperation extends OperationBase<IAuthEntryRequest, IAuthEntryR
         }
 
         return {
-            token: await AuthUtils.getToken(user.UserID, process.env['acme::jwt'], apiConfig.tokenMinutes)
+            token: await AuthUtils.getToken(user.UserID, apiConfig.tokenMinutes)
         };
     }
 

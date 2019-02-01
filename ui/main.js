@@ -97,21 +97,29 @@
                 const password = q2f('[placeholder=password]', modal).value,
                       username = q2f('[placeholder=username]', modal).value;
 
-                svc(false, 'login', 'POST', { username, password })
-                    .then(json => {
-                        save_token(json.token);    
-                        modal.classList.remove('open');
-                        q2f('body').classList.add('auth');
-                        clear(modal);
-                        return resolve();
-                    })
-                    .catch(err => {
-                        console.warn(err);
-                        errors.innerHTML = err.detail
-                            ? err.detail.join('<br>')
-                            : err.message || err;
-                    })
-                    .finally(() => set_enabled(modal, true));
+                if (!window.grecaptcha) {
+                    errors.textContent = 'Recaptcha error. Blame google :P';
+                    return set_enabled(modal, true);
+                }
+
+                // obtain recaptcha token for server-side verification
+                grecaptcha.execute(recaptchaKey, {action: 'login'})
+                    .then(recaptcha => svc(false, 'login', 'POST', { username, password, recaptcha })
+                        .then(json => {
+                            save_token(json.token);    
+                            modal.classList.remove('open');
+                            q2f('body').classList.add('auth');
+                            clear(modal);
+                            return resolve();
+                        })
+                        .catch(err => {
+                            console.warn(err);
+                            errors.innerHTML = err.detail
+                                ? err.detail.join('<br>')
+                                : err.message || err;
+                        })
+                        .finally(() => set_enabled(modal, true))
+                    );
             }
         });
     }
@@ -132,7 +140,7 @@
                       username = q2f('[placeholder=username]', modal).value;
 
                 if (!window.grecaptcha) {
-                    errors.textContent = 'Registration error. Blame google :P';
+                    errors.textContent = 'Recaptcha error. Blame google :P';
                     return set_enabled(modal, true);
                 }
 

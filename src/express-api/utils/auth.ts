@@ -1,8 +1,12 @@
 import { Crypto } from "@ne1410s/crypto";
 import { IHashResult } from "../interfaces/auth";
 import * as jwt from "jsonwebtoken";
+import { ValidationError } from "@ne1410s/http";
 
 export abstract class AuthUtils {
+
+    private static readonly JWT_SECRET: string = process.env['acme::jwt'];
+    private static readonly RECAPTCHA_URL: string = 'https://www.google.com/recaptcha/api/siteverify'; 
 
     public static async getHash(text: string): Promise<IHashResult> {
         
@@ -17,7 +21,7 @@ export abstract class AuthUtils {
         return await Crypto.digest(test.salt + text) == test.hash;
     }
 
-    public static getToken(userId: number, appSecret: string, minutes: number): string {
+    public static getToken(userId: number, minutes: number): string {
         
         const payload = {
             aud: ['customer'],
@@ -27,16 +31,34 @@ export abstract class AuthUtils {
             sub: userId,
         };
 
-        return jwt.sign(payload, appSecret);
+        return jwt.sign(payload, AuthUtils.JWT_SECRET);
     }
 
-    public static verifyToken(token: string, appSecret: string): number {
+    public static verifyToken(token: string): number {
 
-        const payload = jwt.verify(token, appSecret, {
+        const payload = jwt.verify(token, AuthUtils.JWT_SECRET, {
             audience: 'customer',
             issuer: 'Acme Express',
         }) as any;
 
         return payload.sub;
+    }
+
+    public static async validateRecaptcha(token: string, action: string): Promise<any> {
+        
+        const url = `${AuthUtils.RECAPTCHA_URL}?response=${token}&secret=${process.env['acme::recaptcha']}`,
+              response = await fetch(url, { method: 'POST' }),
+              json = await response.json();
+
+        let isValid = true;
+
+        isValid = isValid && response.ok;
+        isValid = isValid && json.success === true;       
+        isValid = isValid && json.action === action;
+        isValid = isValid && json.score >= 0.85;
+
+        if (!isValid) {
+            throw new ValidationError('The request is invalid', json, ['Data anomaly']);
+        }
     }
 }

@@ -43,7 +43,7 @@ const sec_proc = (q: express.Request, r: express.Response, entity: string, opera
     try {
         const authHeader = q.header('authorization'),
               token = ((authHeader || '').match(/^[Bb]earer ([\w-]*\.[\w-]*\.[\w-]*)$/) || [])[1] || '',
-              userId = AuthUtils.verifyToken(token, process.env['acme::jwt']);
+              userId = AuthUtils.verifyToken(token);
               
         q.body = { ...q.body, ...q.query, ...q.params };
         q.body.authenticUserId = userId;

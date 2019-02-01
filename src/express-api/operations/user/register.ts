@@ -1,18 +1,16 @@
 import { OperationBase, ValidationError } from "@ne1410s/http";
 import * as apiConfig from "../../../api.json"
-import { IRegisterRequest, IAuthEntryResponse } from "../../interfaces/auth";
+import { ICaptchaRequest, IAuthEntryResponse } from "../../interfaces/auth";
 import { DbContext } from "../../../database/db-context";
 import { AuthUtils } from "../../utils/auth";
 
-export class RegisterOperation extends OperationBase<IRegisterRequest, IAuthEntryResponse> {
-
-    private readonly recaptchaUrl: string = 'https://www.google.com/recaptcha/api/siteverify'; 
+export class RegisterOperation extends OperationBase<ICaptchaRequest, IAuthEntryResponse> {
 
     constructor(private readonly db: DbContext) {
         super();
     }
 
-    validateRequest(requestData: IRegisterRequest): void {
+    validateRequest(requestData: ICaptchaRequest): void {
         
         const messages: string[] = [];
 
@@ -35,16 +33,11 @@ export class RegisterOperation extends OperationBase<IRegisterRequest, IAuthEntr
         }
     }
     
-    validateResponse(responseData: IAuthEntryResponse): void {
-        //
-    }
+    validateResponse(responseData: IAuthEntryResponse): void {}
 
-    protected async invokeInternal(requestData: IRegisterRequest): Promise<IAuthEntryResponse> {
+    protected async invokeInternal(requestData: ICaptchaRequest): Promise<IAuthEntryResponse> {
         
-        const recaptchaOk = await this.validateRecaptcha(requestData.recaptcha);
-        if (!recaptchaOk) {
-            throw new ValidationError('The request is invalid', requestData, ['Data anomaly']);
-        }
+        await AuthUtils.validateRecaptcha(requestData.recaptcha, 'register');
 
         const result = await this.db.dbUser.findAll({
             where: { UserName: requestData.username }
@@ -65,27 +58,7 @@ export class RegisterOperation extends OperationBase<IRegisterRequest, IAuthEntr
         });
 
         return {
-            token: await AuthUtils.getToken(newUser.UserID, process.env['acme::jwt'], apiConfig.tokenMinutes)
+            token: await AuthUtils.getToken(newUser.UserID, apiConfig.tokenMinutes)
         };
-    }
-
-    private async validateRecaptcha(token: string): Promise<boolean> {
-        
-        const url = `${this.recaptchaUrl}?response=${token}&secret=${process.env['acme::recaptcha']}`,
-              response = await fetch(url, { method: 'POST' }),
-              json = await response.json();
-
-        let isValid = true;
-
-        isValid = isValid && response.ok;
-        isValid = isValid && json.success === true;       
-        isValid = isValid && json.action === 'register';
-        isValid = isValid && json.score >= 0.7;
-
-        if (!isValid) {
-            console.warn('Recaptcha failed', json);
-        }
-
-        return isValid;
     }
 }
