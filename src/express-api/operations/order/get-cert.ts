@@ -44,8 +44,8 @@ export class GetCertOperation extends OperationBase<ICertRequest, ICertResponse>
                         .filter(p => p),
                     cert_b64 = pem_parts[0],
                     priv_b64 = db_order.CertPkcs8_Base64,
-                    password = decodeURIComponent(requestData.password),
-                    buffer = await Crypto.pfx(cert_b64, priv_b64, password);
+                    password = decodeURIComponent(requestData.password) || '',
+                    buffer = await Crypto.pfx(requestData.friendlyName, cert_b64, priv_b64, password);
                 return { 
                     contentType: 'application/octet-stream',
                     base64: Text.bufferToBase64(buffer) 

@@ -19,6 +19,7 @@ export interface ICertRequest extends IOrderRequest {
     certCode: string;
     certType: string;
     password: string;
+    friendlyName: string;
 }
 
 export interface ICertResponse {
