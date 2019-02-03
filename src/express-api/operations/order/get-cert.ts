@@ -37,7 +37,17 @@ export class GetCertOperation extends OperationBase<ICertRequest, ICertResponse>
             throw new ValidationError('Unrecognised certificate format', svc_cert);
         }
 
-        switch (requestData.certType) {        
+        switch (requestData.certType) {
+            case 'aws.pem':
+                // TODO: Use pem parts!
+                const parts = svc_cert.content + '\r\n\r\n' +
+                    '-----BEGIN PRIVATE KEY-----\r\n' +
+                    db_order.CertPkcs8_Base64 + '\r\n' + 
+                    '-----END PRIVATE KEY-----\r\n';
+                return {
+                    contentType: 'text/plain',
+                    base64: Text.textToBase64(parts) 
+                };
             case 'pfx':
                 const pem_parts = svc_cert.content.split(/-----(?:BEGIN|END) CERTIFICATE-----/)
                         .map(p => p.replace(/\s/g, ''))

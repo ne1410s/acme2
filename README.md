@@ -15,3 +15,8 @@ ES ACME v2 Wrapper
  - acme::svchost            ->  http://localhost:8081
 
 [//]: # (See https://www.google.com/recaptcha/admin#list)
+
+## Installing your Certificate
+ - IIS: Import the pfx
+ - AWS: In AWS Certificate Manager, import cert and paste the various parts in their PEM format
+   - To then apply to a EBS site, for example: ...
