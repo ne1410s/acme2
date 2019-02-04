@@ -21,7 +21,8 @@ ES ACME v2 Wrapper
  - IIS: Import the pfx
  - AWS (Single Instance EBS):
   - Include the /.ebextensions/ folder in the deployment
-  - Be sure to populate certificates
+  - Populate certificates in /https-instance.config (keep the 6-space indentation for each)
+  - Be sure not to commit changes to VCS!
  - AWS (Load Balanced ELB):
   - In AWS Certificate Manager, import cert and paste the various parts in PEM format
   - In EBS, modify your network configuration accordingly

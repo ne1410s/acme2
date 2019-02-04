@@ -40,7 +40,7 @@ export class GetCertOperation extends OperationBase<ICertRequest, ICertResponse>
         switch (requestData.certType) {
             case 'aws.pem':
                 // TODO: Use pem parts!
-                const parts = svc_cert.content + '\r\n\r\n' +
+                const parts = svc_cert.content + '\r\n' +
                     '-----BEGIN PRIVATE KEY-----\r\n' +
                     db_order.CertPkcs8_Base64 + '\r\n' + 
                     '-----END PRIVATE KEY-----\r\n';
