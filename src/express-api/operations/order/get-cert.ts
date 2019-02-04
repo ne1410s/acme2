@@ -38,20 +38,8 @@ export class GetCertOperation extends OperationBase<ICertRequest, ICertResponse>
         }
 
         switch (requestData.certType) {
-            case 'aws.pem':
-                // TODO: Use pem parts!
-                const parts = svc_cert.content + '\r\n' +
-                    '-----BEGIN PRIVATE KEY-----\r\n' +
-                    db_order.CertPkcs8_Base64 + '\r\n' + 
-                    '-----END PRIVATE KEY-----\r\n';
-                return {
-                    contentType: 'text/plain',
-                    base64: Text.textToBase64(parts) 
-                };
             case 'pfx':
-                const pem_parts = svc_cert.content.split(/-----(?:BEGIN|END) CERTIFICATE-----/)
-                        .map(p => p.replace(/\s/g, ''))
-                        .filter(p => p),
+                const pem_parts = Crypto.pemToBase64Parts(svc_cert.content),
                     cert_b64 = pem_parts[0],
                     priv_b64 = db_order.CertPkcs8_Base64,
                     password = (decodeURIComponent(requestData.password) || '').trimRight(),
@@ -60,6 +48,12 @@ export class GetCertOperation extends OperationBase<ICertRequest, ICertResponse>
                 return { 
                     contentType: 'application/octet-stream',
                     base64: Text.bufferToBase64(buffer) 
+                };
+            case 'key.pem':
+                const keyPem = Crypto.base64ToPem(db_order.CertPkcs8_Base64, 'private key');
+                return {
+                    contentType: 'text/plain',
+                    base64: Text.textToBase64(`${svc_cert.content}\r\n${keyPem}`) 
                 };
             case 'pem':
             default:

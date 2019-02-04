@@ -60,8 +60,6 @@
                 <div class="ready status">
                     <h1>Order Ready</h1>
                     <p class="expires"></p>
-                    <input type="text" placeholder="company"/>
-                    <input type="text" placeholder="department"/>
                     <input type="button" id="finalise-order" value="Finalise Order"/>
                 </div>
                 <div class="valid status">
@@ -69,8 +67,8 @@
                     <p class="expires"></p>
                     <label>Formats</label>
                     <select class="cert-type">
-                        <option value="aws.pem">pem (aws)</option>
                         <option value="pem">pem</option>
+                        <option value="key.pem">pem (+ key)</option>
                         <option value="pfx">pfx</option>
                     </select>
                     <div class="pfx cert-type">

@@ -68,7 +68,6 @@
 
         if (secure === true) {
             q2f('body').classList.add('auth');
-            console.log('Secure service call was successful:', resultjson);
         }
 
         return resultjson;
@@ -113,7 +112,6 @@
                             return resolve();
                         })
                         .catch(err => {
-                            console.warn(err);
                             errors.innerHTML = err.detail
                                 ? err.detail.join('<br>')
                                 : err.message || err;
@@ -155,7 +153,6 @@
                             return resolve();
                         })
                         .catch(err => {
-                            console.warn(err);
                             errors.innerHTML = err.detail
                                 ? err.detail.join('<br>')
                                 : err.message || err;
@@ -198,7 +195,6 @@
                                 list_accounts();
                             })
                             .catch(err => {
-                                console.warn(err);
                                 txtErrors.innerHTML = err.detail
                                     ? err.detail.join('<br>')
                                     : err.message || err;
@@ -223,7 +219,6 @@
                         return resolve(json);
                     })
                     .catch(err => {
-                        console.warn(err);
                         txtErrors.innerHTML = err.detail
                             ? err.detail.join('<br>')
                             : err.message || err;
@@ -256,7 +251,6 @@
                         return resolve(json);
                     })
                     .catch(err => {
-                        console.warn(err);
                         errors.innerHTML = err.detail
                             ? err.detail.map(d => d.message || d).join('<br>')
                             : err.message || err;
@@ -305,12 +299,11 @@
                                                 orderMeta.orderId = json.orderId;
                                                 obtain_edit_order(orderMeta).then(list_accounts);
                                             })
-                                            .catch(err => console.error(err))
                                             .finally(() => modal.classList.remove('loading'))
                                     })
                                     .catch(err => {
-                                        modal.classList.remove('loading');
                                         console.error(err);
+                                        modal.classList.remove('loading');
                                     });
                             };
                             break;
@@ -319,11 +312,9 @@
                             const finaliseOrder = q2f('#finalise-order', modal);
                             finaliseOrder.onclick = () => {       
                                 modal.classList.add('loading');
-                                const company = q2f('input[placeholder=company]', modal).value.trim() || null,
-                                    department = q2f('input[placeholder=department]', modal).value.trim() || null;
-                                svc(true, `order/${order.orderId}/finalise`, 'PUT', { company, department })
+
+                                svc(true, `order/${order.orderId}/finalise`, 'PUT')
                                     .then(() => obtain_edit_order(orderMeta).then(list_accounts))
-                                    .catch(err => console.error(err))
                                     .finally(() => modal.classList.remove('loading'));
                             };
                             break;
@@ -357,7 +348,6 @@
                                         downloader.setAttribute('href', `data:${json.contentType};charset=utf-8;base64,${json.base64}`);
                                         downloader.click();
                                     })
-                                    .catch(err => console.error(err))
                                     .finally(() => modal.classList.remove('loading'));
                             };
                             break;
@@ -477,12 +467,8 @@
                                     modal.classList.add('loading');
                                     const dataset = cmbChallenges.selectedOptions[0].dataset;
                                     svc(true, 'challenge', 'POST', dataset)
-                                        .then(json => {
-                                            console.log(json);
-                                            obtain_edit_order(orderMeta).then(list_accounts);
-                                        })
+                                        .then(() => obtain_edit_order(orderMeta).then(list_accounts))
                                         .catch(err => {
-                                            console.warn(err);
                                             errors.innerHTML = err.detail
                                                 ? err.detail.map(d => d.message || d).join('<br>')
                                                 : err.message || err;
@@ -497,7 +483,6 @@
                     }
                 })
                 .catch(err => {
-                    console.warn(err);
                     errors.innerHTML = err.detail
                         ? err.detail.map(d => d.message || d).join('<br>')
                         : err.message || err;
@@ -573,7 +558,6 @@
                             iterelem_order.classList.add('loading');
                             svc(true, `order/${order.orderId}`, 'DELETE')
                                 .then(list_accounts)
-                                .catch((err) => console.error(err))
                                 .finally(() => iterelem_order.classList.remove('loading'));
                         }
 
