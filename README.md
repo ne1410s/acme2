@@ -5,6 +5,7 @@ ES ACME v2 Wrapper
 ## Zip up the following:
  - /dist/
  - /package.json
+ - /.ebextensions/
  - /.npmrc
  - /ui/
 
@@ -18,5 +19,9 @@ ES ACME v2 Wrapper
 
 ## Installing your Certificate
  - IIS: Import the pfx
- - AWS: In AWS Certificate Manager, import cert and paste the various parts in their PEM format
-   - To then apply to a EBS site, for example: ...
+ - AWS (Single Instance EBS):
+  - Include the /.ebextensions/ folder in the deployment
+  - Be sure to populate certificates
+ - AWS (Load Balanced ELB):
+  - In AWS Certificate Manager, import cert and paste the various parts in PEM format
+  - In EBS, modify your network configuration accordingly
