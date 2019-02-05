@@ -9,6 +9,7 @@ export interface ICaptchaRequest extends IAuthEntryRequest {
 
 export interface IAuthEntryResponse {
     token: string;
+    lifetime: number;
 }
 
 export interface IHashResult {

@@ -35,7 +35,8 @@ export class LoginOperation extends OperationBase<ICaptchaRequest, IAuthEntryRes
         }
 
         return {
-            token: await AuthUtils.getToken(user.UserID, apiConfig.tokenMinutes)
+            token: await AuthUtils.getToken(user.UserID, apiConfig.tokenMinutes),
+            lifetime: apiConfig.tokenMinutes * 60 * 1000
         };
     }
 

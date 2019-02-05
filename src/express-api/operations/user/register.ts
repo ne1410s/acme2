@@ -58,7 +58,8 @@ export class RegisterOperation extends OperationBase<ICaptchaRequest, IAuthEntry
         });
 
         return {
-            token: await AuthUtils.getToken(newUser.UserID, apiConfig.tokenMinutes)
+            token: await AuthUtils.getToken(newUser.UserID, apiConfig.tokenMinutes),
+            lifetime: apiConfig.tokenMinutes * 60 * 1000
         };
     }
 }

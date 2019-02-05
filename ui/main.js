@@ -1,11 +1,25 @@
 ((window) => {
 
     const baseUrl = '<%= baseUrl %>',
-          recaptchaKey = '<%= recaptcha %>';
+          recaptchaKey = '<%= recaptcha %>',
+          maxLife = parseInt('<%= maxLifeMs %>', 10);
 
-    const save_token = (token) => sessionStorage.setItem('token', token),
-          load_token = () => sessionStorage.getItem('token'),
-          wipe_token = () => sessionStorage.removeItem('token');
+    const save_token = (authJson) => {
+            const exp = new Date(Date.now() + authJson.lifetime);
+            sessionStorage.setItem('token', authJson.token);
+            sessionStorage.setItem('exp', exp);
+          },
+          load_token = () => { 
+            const token = sessionStorage.getItem('token'),
+                  exp = new Date(sessionStorage.getItem('exp')),
+                  rem = Math.max(0, exp.getTime() - Date.now()),
+                  pc = (rem * 100 / maxLife).toFixed(2) + '%';
+            return rem > 0 ? { token, exp, rem, pc, tot: maxLife } : { rem, pc, tot: maxLife };
+          },
+          wipe_token = () => {
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('exp');
+          }
 
     const empty = (elem) => { while (elem.firstChild) elem.removeChild(elem.firstChild); },
           remove = (elem) => { if (elem && elem.parentNode) elem.parentNode.removeChild(elem); },
@@ -25,7 +39,7 @@
                 return true;
             })[0];
 
-    const clear = (modal) => { 
+    const clear = (modal) => {
         q2a('input:not([type=button]), select, textarea', modal).forEach(ctrl => ctrl.value = '');
         q2a('[type=checkbox], [type=radio]', modal).forEach(ctrl => ctrl.checked = false);
         empty(q2f('.errors', modal));
@@ -51,7 +65,11 @@
               body = JSON.stringify(json);
 
         if (secure === true) {
-            headers['authorization'] = `Bearer ${load_token()}`;
+
+            const authJson = load_token();
+            console.log('UPDATE LIFETIME (Service Call)', authJson.pc);
+
+            headers['authorization'] = `Bearer ${authJson.token}`;
         }
 
         const response = await fetch(url, { method, headers, body }),
@@ -78,11 +96,15 @@
         return new Promise(resolve => {
 
             if (fresh === true) wipe_token();
-            else if (load_token()) {
+            else {
+                const authJson = load_token();
+                console.log('UPDATE LIFETIME (Login)', authJson.pc);
 
-                // assume auth granted
-                q2f('body').classList.add('auth');
-                return resolve();
+                if (authJson.token && authJson.exp > Date.now()) {
+                    // assume auth granted
+                    q2f('body').classList.add('auth');
+                    return resolve();
+                }
             }
 
             const modal = show_modal('login'),
@@ -104,8 +126,8 @@
                 // obtain recaptcha token for server-side verification
                 grecaptcha.execute(recaptchaKey, {action: 'login'})
                     .then(recaptcha => svc(false, 'login', 'POST', { username, password, recaptcha })
-                        .then(json => {
-                            save_token(json.token);    
+                        .then(authJson => {
+                            save_token(authJson);
                             modal.classList.remove('open');
                             q2f('body').classList.add('auth');
                             clear(modal);
@@ -145,8 +167,8 @@
                 // obtain recaptcha token for server-side verification
                 grecaptcha.execute(recaptchaKey, {action: 'register'})
                     .then(recaptcha => svc(false, 'user', 'POST', { username, password, recaptcha })
-                        .then(json => {     
-                            save_token(json.token);
+                        .then(authJson => {
+                            save_token(authJson);
                             modal.classList.remove('open');
                             q2f('body').classList.add('auth');
                             clear(modal);

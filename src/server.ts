@@ -74,7 +74,8 @@ db.syncStructure().then(() => {
     }));
     expr_api.get('/main.js', (q, r) => r.render(path.resolve(__dirname, '../ui/main.js'), {
         'baseUrl': process.env['acme::svchost'],
-        'recaptcha': process.env['acme::recaptcha::public'] 
+        'recaptcha': process.env['acme::recaptcha::public'],
+        'maxLifeMs': apiConfig.tokenMinutes * 60 * 1000
     }));
 
     // User Operations
