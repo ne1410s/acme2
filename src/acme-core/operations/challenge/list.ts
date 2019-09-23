@@ -5,7 +5,7 @@ export class ListChallengesOperation extends JsonOperation<IListChallengesReques
     
     constructor (private baseUrl: string) {
 
-        super(`${baseUrl}/authz/{authCode}`, 'get');
+        super(`${baseUrl}/authz-v3/{authCode}`, 'get');
     }
 
     validateRequest(requestData: IListChallengesRequest): void {
@@ -21,19 +21,19 @@ export class ListChallengesOperation extends JsonOperation<IListChallengesReques
             throw new ValidationError('The request is invalid', requestData, messages);
         }
 
-        // Once deemed valid; correct the operation url at invocation time
-        this._url = `${this.baseUrl}/authz/${requestData.authCode}`;
+        // once deemed valid; correct the operation url at invocation time
+        this._url = `${this.baseUrl}/authz-v3/${requestData.authCode}`;
     }
 
     async deserialise(response: Response, requestData: IListChallengesRequest): Promise<IListChallengesResponse> {
-        
-        const responseText = await response.text();
+
+        const responseText: string = await response.text();
 
         if (!response.ok) {
             throw new HttpResponseError(response.status, response.statusText, response.headers, responseText);
-        }      
+        }
 
-        const json = JSON.parse(responseText);
+        const json: any = JSON.parse(responseText);
 
         return {
             challenges: json.challenges,
@@ -44,9 +44,9 @@ export class ListChallengesOperation extends JsonOperation<IListChallengesReques
             authCode: requestData.authCode
         };
     }
-    
+
     validateResponse(responseData: IListChallengesResponse): void {
-        
+
         const messages: string[] = [];
         responseData = responseData || {} as IListChallengesResponse;
 
@@ -69,5 +69,5 @@ export class ListChallengesOperation extends JsonOperation<IListChallengesReques
         if (messages.length !== 0) {
             throw new ValidationError('The response is invalid', responseData, messages);
         }
-    }  
+    }
 }

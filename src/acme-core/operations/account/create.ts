@@ -43,21 +43,24 @@ export class CreateAccountOperation extends NonAccountOperation<ICreateAccountRe
     }
 
     async deserialise(response: Response, requestData: ICreateAccountRequest): Promise<ICreateAccountResponse> {
-        
+
         const responseText = await response.text();
 
         if (!response.ok) {
             throw new HttpResponseError(response.status, response.statusText, response.headers, responseText);
-        }      
+        }
 
-        const json = JSON.parse(responseText);
+        const json = JSON.parse(responseText),
+              location = response.headers.get('location') || '',
+              locParts = location.split('/');
+
         return {
-            accountId: json.id,
+            accountId: parseInt(locParts[locParts.length - 1], 10),
             status: json.status,
             created: new Date(json.createdAt),
             initialIp: json.initialIp,
             link: response.headers.get('link'),
-            accountUrl: response.headers.get('location'),
+            accountUrl: location,
             token: response.headers.get('replay-nonce'),
             contacts: json.contact,
             keys: this.keys
