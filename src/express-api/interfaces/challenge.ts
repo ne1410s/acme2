@@ -1,7 +1,7 @@
 import { ISecureRequest } from "./auth";
 
 export interface IChallenge {
-    challengeId: number;
+    challengeId: string;
     orderId: number;
     authCode: string;
     keyAuth: string;

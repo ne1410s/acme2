@@ -6,7 +6,7 @@ export class FulfilChallengeOperation extends AccountOperation<IFulfilChallengeR
  
     constructor(baseUrl: string) {
 
-        super(baseUrl, '/challenge/{authCode}/{id}');
+        super(baseUrl, '/chall-v3/{authCode}/{id}');
     }
 
     validateRequest(requestData: IFulfilChallengeRequest): void {
@@ -32,11 +32,10 @@ export class FulfilChallengeOperation extends AccountOperation<IFulfilChallengeR
             throw new ValidationError('The request is invalid', requestData, messages);
         }
 
-        // Once deemed valid; correct the operation url at invocation time
-        this._url = `${this.baseUrl}/challenge/${requestData.challengeDetail.authCode}/${requestData.challengeDetail.challengeId}`;
+        // once deemed valid; correct the operation url at invocation time
+        this._url = `${this.baseUrl}/chall-v3/${requestData.challengeDetail.authCode}/${requestData.challengeDetail.challengeId}`;
     }
 
-    
     protected async toPayload(requestData: IFulfilChallengeRequest): Promise<IFulfilChallengePayload> {
         return {
             keyAuthorization: requestData.challengeDetail.fulfilmentData.keyAuth
@@ -44,7 +43,7 @@ export class FulfilChallengeOperation extends AccountOperation<IFulfilChallengeR
     }
 
     async deserialise(response: Response, requestData: IFulfilChallengeRequest): Promise<IFulfilChallengeResponse> {
-        
+
         const responseText = await response.text();
 
         if (!response.ok) {
@@ -52,7 +51,7 @@ export class FulfilChallengeOperation extends AccountOperation<IFulfilChallengeR
         }
 
         const json = JSON.parse(responseText);
-    
+ 
         return {
             status: json.status,
             type: json.type,
@@ -62,7 +61,7 @@ export class FulfilChallengeOperation extends AccountOperation<IFulfilChallengeR
     }
     
     validateResponse(responseData: IFulfilChallengeResponse): void {
-        
+
         super.validateResponse(responseData);
 
         const messages: string[] = [];

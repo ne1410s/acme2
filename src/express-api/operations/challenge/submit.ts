@@ -5,7 +5,7 @@ import { Acme2Service } from "../../../acme-core/services/acme2";
 import { IFulfilmentData, IChallengeDetail } from "../../../acme-core/interfaces/challenge/base";
 
 export class SubmitChallengeOperation extends OperationBase<ISubmitChallengeRequest, ISubmitChallengeResponse> {
-    
+
     constructor(private readonly db: DbContext) {
         super();
     }
@@ -47,7 +47,7 @@ export class SubmitChallengeOperation extends OperationBase<ISubmitChallengeRequ
         let pollStatusOutcome = svc_response.status,
             pollCount = 0,
             svc_challenges;
-        
+
         while (pollStatusOutcome === 'pending' && ++pollCount <= 5) {
             svc_challenges = await svc.challenges.list.invoke({
                 authCode: requestData.authCode

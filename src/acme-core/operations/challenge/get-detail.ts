@@ -4,9 +4,9 @@ import { IGetChallengeDetailRequest, IGetChallengeDetailResponse } from "../../i
 import { IFulfilmentData, IChallenge, IChallengeDetail } from "../../interfaces/challenge/base";
 
 export class GetChallengeDetailOperation extends OperationBase<IGetChallengeDetailRequest, IGetChallengeDetailResponse> {
-    
+
     validateRequest(requestData: IGetChallengeDetailRequest): void {
-        
+
         const messages: string[] = [];
 
         if (!requestData.listResponse) {
@@ -21,9 +21,9 @@ export class GetChallengeDetailOperation extends OperationBase<IGetChallengeDeta
             throw new ValidationError('The request is invalid', requestData, messages);
         }
     }
-       
+
     protected async invokeInternal(requestData: IGetChallengeDetailRequest): Promise<IGetChallengeDetailResponse> {
-        
+
         const orig = requestData.listResponse,
               domain = orig.identifier.value,
               detailsArray = await Promise.all(orig.challenges.map(async challenge => {
@@ -31,7 +31,7 @@ export class GetChallengeDetailOperation extends OperationBase<IGetChallengeDeta
                   const retVal = challenge as IChallengeDetail,
                         urlParts = challenge.url.split('/');
 
-                  retVal.challengeId = parseInt(urlParts[urlParts.length - 1], 10);
+                  retVal.challengeId = urlParts[urlParts.length - 1];
                   retVal.authCode = requestData.listResponse.authCode;
                   retVal.fulfilmentData = await this.generateFulfilmentData(challenge, domain, requestData.publicJwk);
 
@@ -58,7 +58,7 @@ export class GetChallengeDetailOperation extends OperationBase<IGetChallengeDeta
                 fdata.title = `_acme-challenge.${domain}`;
                 fdata.content = await Crypto.digest(keyAuth);
                 break;
-            
+
             case 'http-01':
                 fdata.implemented = true;
                 fdata.title = challenge.token;
@@ -69,11 +69,11 @@ export class GetChallengeDetailOperation extends OperationBase<IGetChallengeDeta
                     path: '/.well-known/acme-challenge/'
                 };
                 break;
-            
+
             case 'tls-alpn-01':
                 fdata.implemented = false;
                 break;
-            
+
             default:
                 throw new Error('Unrecognised challenge type: ' + challenge.type);
         }
@@ -86,7 +86,7 @@ export class GetChallengeDetailOperation extends OperationBase<IGetChallengeDeta
         const keyBase = { e: publicJwk.e, kty: publicJwk.kty, n: publicJwk.n },
               keyBaseText = JSON.stringify(keyBase),
               keyBaseHash = await Crypto.digest(keyBaseText);
-        
+
         return `${challengeToken}.${keyBaseHash}`;
     }
 

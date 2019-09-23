@@ -15,7 +15,7 @@ export interface IFulfilmentData {
 }
 
 export interface IChallengeDetail extends IChallenge {
-    challengeId: number;
+    challengeId: string;
     authCode: string;
     fulfilmentData: IFulfilmentData;
 }
