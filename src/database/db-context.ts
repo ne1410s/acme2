@@ -10,8 +10,7 @@ export class DbContext {
     public async syncStructure(): Promise<void> {
         
         const orm = new Sequelize(`sqlite:${apiConfig.dbConnection}`, {
-            logging: apiConfig.dbLogging,
-            operatorsAliases: {}
+            logging: apiConfig.dbLogging
         });
 
         orm.define('User', this.userAttribs);
