@@ -31,14 +31,12 @@ export class GetOrderOperation extends JsonOperation<IOrderRequest, IOrderRespon
 
     async deserialise(response: Response, requestData: IOrderRequest): Promise<IOrderResponse> {
 
-        const responseText: string = await response.text();
-
         if (!response.ok) {
-            throw new HttpResponseError(response.status, response.statusText, response.headers, responseText);
+            throw new HttpResponseError(response, this.verb);
         }
 
-        const json: any = JSON.parse(responseText);
-
+        const json = await response.json();
+        
         return {
             orderId: requestData.orderId,
             status: json.status,

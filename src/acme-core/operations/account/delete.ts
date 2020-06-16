@@ -24,13 +24,12 @@ export class DeleteAccountOperation extends AccountOperation<IAccountRequest, ID
 
     async deserialise(response: Response, requestData: IAccountRequest): Promise<IDeleteAccountResponse> {
         
-        const responseText = await response.text();
-
         if (!response.ok) {
-            throw new HttpResponseError(response.status, response.statusText, response.headers, responseText);
+            throw new HttpResponseError(response, this.verb);
         }      
 
-        const json = JSON.parse(responseText);
+        const json = await response.json();
+        
         return {
             status: json.status,
             token: response.headers.get('replay-nonce')

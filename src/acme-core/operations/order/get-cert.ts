@@ -43,16 +43,14 @@ export class GetCertOperation extends JsonOperation<IGetCertRequest, IGetCertRes
     }
     
     async deserialise(response: Response, requestData: IGetCertRequest): Promise<IGetCertResponse> {
-        
-        const responseText = await response.text();
 
         if (!response.ok) {
-            throw new HttpResponseError(response.status, response.statusText, response.headers, responseText);
+            throw new HttpResponseError(response, this.verb);
         }      
 
         return {
             contentType: response.headers.get('content-type'),
-            content: responseText
+            content: await response.text()
         };
     }
         

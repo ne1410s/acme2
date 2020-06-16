@@ -42,13 +42,12 @@ export class UpdateAccountOperation extends AccountOperation<IUpdateAccountReque
 
     async deserialise(response: Response, requestData: IUpdateAccountRequest): Promise<IAccountResponse> {
         
-        const responseText = await response.text();
-
         if (!response.ok) {
-            throw new HttpResponseError(response.status, response.statusText, response.headers, responseText);
-        }      
+            throw new HttpResponseError(response, this.verb);
+        }
 
-        const json = JSON.parse(responseText);
+        const json = await response.json();
+        
         return {
             status: json.status,
             created: json.createdAt,

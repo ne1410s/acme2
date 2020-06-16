@@ -41,13 +41,11 @@ export class UpsertOrderOperation extends AccountOperation<IUpsertOrderRequest, 
 
     async deserialise(response: Response, requestData: IUpsertOrderRequest): Promise<IActiveOrderResponse> {
         
-        const responseText = await response.text();
-
         if (!response.ok) {
-            throw new HttpResponseError(response.status, response.statusText, response.headers, responseText);
+            throw new HttpResponseError(response, this.verb);
         }      
 
-        const json = JSON.parse(responseText),
+        const json = await response.json(),
               location = response.headers.get('location') || '',
               locParts = location.split('/');
 

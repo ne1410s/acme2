@@ -44,14 +44,12 @@ export class FulfilChallengeOperation extends AccountOperation<IFulfilChallengeR
 
     async deserialise(response: Response, requestData: IFulfilChallengeRequest): Promise<IFulfilChallengeResponse> {
 
-        const responseText = await response.text();
-
         if (!response.ok) {
-            throw new HttpResponseError(response.status, response.statusText, response.headers, responseText);
+            throw new HttpResponseError(response, this.verb);
         }
 
-        const json = JSON.parse(responseText);
- 
+        const json = await response.json();
+         
         return {
             status: json.status,
             type: json.type,

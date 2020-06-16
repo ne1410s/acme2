@@ -52,14 +52,12 @@ export class FinaliseOrderOperation extends AccountOperation<IFinaliseOrderReque
 
     async deserialise(response: Response, requestData: IFinaliseOrderRequest): Promise<IFinaliseOrderResponse> {
         
-        const responseText = await response.text();
-
         if (!response.ok) {
-            throw new HttpResponseError(response.status, response.statusText, response.headers, responseText);
+            throw new HttpResponseError(response, this.verb);
         }
 
-        const json = JSON.parse(responseText);
-
+        const json = await response.json();
+        
         return {
             status: json.status,
             expires: json.expires,

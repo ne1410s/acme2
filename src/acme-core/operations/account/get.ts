@@ -42,7 +42,7 @@ export class GetAccountOperation extends AccountOperation<IAccountRequest, IAcco
             retVal.token = response.headers.get('replay-nonce');
         }
         else {
-            throw new HttpResponseError(response.status, response.statusText, response.headers, responseText);
+            throw new HttpResponseError(response, this.verb);
         }
         
         return retVal;
