@@ -14,7 +14,7 @@ export class UpdateAccountOperation extends OperationBase<IUpdateAccountRequest,
 
     protected async invokeInternal(requestData: IUpdateAccountRequest): Promise<IAccountMeta> {
         
-        const db_account = await this.db.dbAccount.findByPk(requestData.accountId) as any;
+        const db_account = await this.db.Account.findByPk(requestData.accountId) as any;
 
         if (!db_account || db_account.UserID !== requestData.authenticUserId || db_account.IsTest !== requestData.isTest) {
             console.error('No matching account found:', requestData);
@@ -34,7 +34,7 @@ export class UpdateAccountOperation extends OperationBase<IUpdateAccountRequest,
 
         const outEmails = svc_account.contacts.map(c => c.replace('mailto:', ''));
 
-        await this.db.dbAccount.update(
+        await this.db.Account.update(
             { Emails: JSON.stringify(outEmails) },
             { where: { AccountID: db_account.AccountID }
         });

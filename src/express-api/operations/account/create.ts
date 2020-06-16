@@ -24,7 +24,7 @@ export class CreateAccountOperation extends OperationBase<ICreateAccountRequest,
             termsAgreed: requestData.tosAgreed
         });
 
-        await this.db.dbAccount.create({
+        await this.db.Account.create({
             AccountID: svc_account.accountId,
             UserID: requestData.authenticUserId,
             IsTest: !!requestData.isTest,

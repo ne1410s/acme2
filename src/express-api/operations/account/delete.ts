@@ -14,7 +14,7 @@ export class DeleteAccountOperation extends OperationBase<IDeleteAccountRequest,
 
     protected async invokeInternal(requestData: IDeleteAccountRequest): Promise<{}> {
         
-        const db_account = await this.db.dbAccount.findByPk(requestData.accountId) as any;
+        const db_account = await this.db.Account.findByPk(requestData.accountId) as any;
 
         if (!db_account || db_account.UserID !== requestData.authenticUserId) {
             console.error('No matching account found:', requestData);
@@ -31,8 +31,8 @@ export class DeleteAccountOperation extends OperationBase<IDeleteAccountRequest,
              keys: JSON.parse(db_account.JWKPair)
         });
 
-        await this.db.dbOrder.destroy({ where: { AccountID: requestData.accountId } });
-        await this.db.dbAccount.destroy({ where: { AccountID: requestData.accountId } });
+        await this.db.Order.destroy({ where: { AccountID: requestData.accountId } });
+        await this.db.Account.destroy({ where: { AccountID: requestData.accountId } });
 
         return Promise.resolve({});
     }

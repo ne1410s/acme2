@@ -1,117 +1,98 @@
-import * as Sequelize from "sequelize";
+import { Sequelize, Model, ModelAttributes, ModelCtor, INTEGER, STRING, BOOLEAN, DATE } from "sequelize";
 import * as apiConfig from "../api.json";
 
 export class DbContext {
 
-    public dbUser: Sequelize.Model<{}, IDbUserAttribs>;
-    public dbAccount: Sequelize.Model<{}, IDbAccountAttribs>;
-    public dbOrder: Sequelize.Model<{}, IDbOrderAttribs>;
+    public User: ModelCtor<Model>;
+    public Account: ModelCtor<Model>;
+    public Order: ModelCtor<Model>;
 
     public async syncStructure(): Promise<void> {
         
         const orm = new Sequelize(`sqlite:${apiConfig.dbConnection}`, {
             logging: apiConfig.dbLogging,
-            operatorsAliases: false
+            operatorsAliases: {}
         });
 
-        this.dbUser = orm.define('User', this.userAttribs);
-        this.dbAccount = orm.define('Account', this.accountAttribs);
-        this.dbOrder = orm.define('Order', this.orderAttribs);
+        orm.define('User', this.userAttribs);
+        orm.define('Account', this.accountAttribs);
+        orm.define('Order', this.orderAttribs);
 
-        this.dbAccount.belongsTo(this.dbUser, { foreignKey: { name: 'UserID', allowNull: false } });
-        this.dbUser.hasMany(this.dbAccount, { foreignKey: { name: 'UserID' } });        
-        
-        this.dbOrder.belongsTo(this.dbAccount, { foreignKey: { name: 'AccountID', allowNull: false } });
-        this.dbAccount.hasMany(this.dbOrder, { foreignKey: { name: 'AccountID' } });
+        this.User = orm.models.User;
+        this.Account = orm.models.Account;
+        this.Order = orm.models.Order;
+
+        this.Account.belongsTo(this.User, { foreignKey: { name: 'UserID', allowNull: false } });
+        this.User.hasMany(this.Account, { foreignKey: { name: 'UserID' } });        
+
+        this.Order.belongsTo(this.Account, { foreignKey: { name: 'AccountID', allowNull: false } });
+        this.Account.hasMany(this.Order, { foreignKey: { name: 'AccountID' } });
 
         await orm.sync();
     }
 
-    private readonly userAttribs: Sequelize.DefineModelAttributes<IDbUserAttribs> = {
+    private readonly userAttribs: ModelAttributes = {
         UserID: {
-            type: Sequelize.INTEGER,
+            type: INTEGER,
             primaryKey: true,
             autoIncrement: true,
             allowNull: false
         },
         UserName: {
-            type: Sequelize.STRING(25),
+            type: STRING(25),
             allowNull: false,
             unique: true,
         },
         PasswordHash: {
-            type: Sequelize.STRING,
+            type: STRING,
             allowNull: false,
         },
         PasswordSalt: {
-            type: Sequelize.STRING,
+            type: STRING,
             allowNull: false,
         },
         LastActivity: {
-            type: Sequelize.DATE,
+            type: DATE,
             allowNull: false,
             defaultValue: new Date()
         }
     };
 
-    private readonly accountAttribs: Sequelize.DefineModelAttributes<IDbAccountAttribs> = {
+    private readonly accountAttribs: ModelAttributes = {
         AccountID: {
-            type: Sequelize.INTEGER,
+            type: INTEGER,
             primaryKey: true,
             autoIncrement: false,
             allowNull: false
         },
         IsTest: {
-            type: Sequelize.BOOLEAN,
+            type: BOOLEAN,
             allowNull: false,
         },
         JWKPair: {
-            type: Sequelize.STRING(2047),
+            type: STRING(2047),
             allowNull: true,
         },
         Emails: {
-            type: Sequelize.STRING(2047),
+            type: STRING(2047),
             allowNull: false
         }
     };
 
-    private readonly orderAttribs: Sequelize.DefineModelAttributes<IDbOrderAttribs> = {
+    private readonly orderAttribs: ModelAttributes = {
         OrderID: {
-            type: Sequelize.INTEGER,
+            type: INTEGER,
             primaryKey: true,
             autoIncrement: false,
             allowNull: false
         },
         Domains: {
-            type: Sequelize.STRING(2047),
+            type: STRING(2047),
             allowNull: false
         },
         CertPkcs8_Base64: {
-            type: Sequelize.STRING(2047),
+            type: STRING(2047),
             allowNull: true,
         }
     };
-}
-
-export interface IDbUserAttribs {
-    UserID: {},
-    UserName: {},
-    PasswordHash: {},
-    PasswordSalt: {},
-    LastActivity: {}
-}
-
-export interface IDbAccountAttribs {
-    AccountID: {},
-    IsTest: {},
-    JWKPair: {},
-    Emails: {},
-    UserID?: {}
-}
-
-export interface IDbOrderAttribs {
-    OrderID: {},
-    Domains: {},
-    CertPkcs8_Base64: {}
-    AccountID?: {}
 }

@@ -39,7 +39,7 @@ export class RegisterOperation extends OperationBase<ICaptchaRequest, IAuthEntry
         
         await AuthUtils.validateRecaptcha(requestData.recaptcha, 'register');
 
-        const result = await this.db.dbUser.findAll({
+        const result = await this.db.User.findAll({
             where: { UserName: requestData.username }
         });
 
@@ -49,7 +49,7 @@ export class RegisterOperation extends OperationBase<ICaptchaRequest, IAuthEntry
 
         const hashResult = await AuthUtils.getHash(requestData.password);
 
-        const newUser: any = await this.db.dbUser.create({
+        const newUser: any = await this.db.User.create({
             UserID: 0,
             UserName: requestData.username,
             PasswordHash: hashResult.hash,

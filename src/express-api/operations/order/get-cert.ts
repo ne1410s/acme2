@@ -16,10 +16,10 @@ export class GetCertOperation extends OperationBase<ICertRequest, ICertResponse>
 
     protected async invokeInternal(requestData: ICertRequest): Promise<ICertResponse> {
 
-        const db_order = await this.db.dbOrder.findOne({
+        const db_order = await this.db.Order.findOne({
             where: { OrderID: requestData.orderId },
             include: [{
-                model: this.db.dbAccount,
+                model: this.db.Account,
                 where: { UserID: requestData.authenticUserId }
             }]
         }) as any;

@@ -14,7 +14,7 @@ export class CreateOrderOperation extends OperationBase<ICreateOrderRequest, IOr
     
     protected async invokeInternal(requestData: ICreateOrderRequest): Promise<IOrder> {
         
-        const db_account = await this.db.dbAccount.findByPk(requestData.accountId) as any;
+        const db_account = await this.db.Account.findByPk(requestData.accountId) as any;
 
         if (!db_account || db_account.UserID !== requestData.authenticUserId) {
             console.error('No matching account found:', requestData);
@@ -32,7 +32,7 @@ export class CreateOrderOperation extends OperationBase<ICreateOrderRequest, IOr
             keys: JSON.parse(db_account.JWKPair)
         });
 
-        await this.db.dbOrder.create({
+        await this.db.Order.create({
             AccountID: requestData.accountId,
             OrderID: svc_order.orderId,
             Domains: JSON.stringify(requestData.domains),

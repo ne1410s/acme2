@@ -14,9 +14,9 @@ export class ListAccountsOperation extends OperationBase<ISecureRequest, Array<I
     
     protected async invokeInternal(requestData: ISecureRequest): Promise<IAccountMeta[]> {
 
-        const db_accounts = await this.db.dbAccount.findAll({ 
+        const db_accounts = await this.db.Account.findAll({ 
             where: { UserID: requestData.authenticUserId },
-            include: [{ model: this.db.dbOrder }]
+            include: [{ model: this.db.Order }]
         });
 
         return db_accounts.map((acc: any) => ({

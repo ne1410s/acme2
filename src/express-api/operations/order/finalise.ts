@@ -14,10 +14,10 @@ export class FinaliseOrderOperation extends OperationBase<IFinaliseOrderRequest,
 
     protected async invokeInternal(requestData: IFinaliseOrderRequest): Promise<{}> {
         
-        const db_order = await this.db.dbOrder.findOne({
+        const db_order = await this.db.Order.findOne({
             where: { OrderID: requestData.orderId },
             include: [{
-                model: this.db.dbAccount,
+                model: this.db.Account,
                 where: { UserID: requestData.authenticUserId }
             }]
         }) as any;
@@ -48,7 +48,7 @@ export class FinaliseOrderOperation extends OperationBase<IFinaliseOrderRequest,
             throw new ValidationError('Unable to finalise order', svc_response);
         } 
         
-        await this.db.dbOrder.update(
+        await this.db.Order.update(
             { CertPkcs8_Base64: svc_response.originalCsr.pkcs8_b64 },
             { where: { OrderID: db_order.OrderID }
         });

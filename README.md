@@ -1,6 +1,16 @@
 # ne14.acme2
 ES ACME v2 Wrapper
 
+# Local development
+ - Add the environment variables as below
+ - Run some (fairly usual!) scripts:
+    - `npm run build`
+    - `npm run start`
+ - Visit http://localhost:8081/ in your browser
+ - (`npm run clean` will wipe any local db - including your test data!)
+ - For test accounts, the call to ACME2's "get orders" url seems to fail with a 405 - Method not allowed
+    - (The live accounts are fine tho!)
+
 # AWS hosting
 ## Zip up the following:
  - /dist/

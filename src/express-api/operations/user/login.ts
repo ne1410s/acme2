@@ -18,7 +18,7 @@ export class LoginOperation extends OperationBase<ICaptchaRequest, IAuthEntryRes
 
         await AuthUtils.validateRecaptcha(requestData.recaptcha, 'login');
 
-        const result = await this.db.dbUser.findAll({
+        const result = await this.db.User.findAll({
             where: { UserName: requestData.username }
         });
 
