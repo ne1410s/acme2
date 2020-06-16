@@ -3,7 +3,7 @@ import { ICertResponse, ICertRequest } from "../../interfaces/order";
 import { DbContext } from "../../../database/db-context";
 import { Acme2Service } from "../../../acme-core/services/acme2";
 import { Crypto } from "@ne1410s/crypto";
-import { Text } from "@ne1410s/text";
+import * as Text from "@ne1410s/text";
 
 export class GetCertOperation extends OperationBase<ICertRequest, ICertResponse> {
     
