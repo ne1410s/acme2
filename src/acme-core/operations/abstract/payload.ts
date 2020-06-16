@@ -1,5 +1,5 @@
 import * as Text from "@ne1410s/text";
-import { Crypto } from "@ne1410s/crypto";
+import * as Crypto from "@ne1410s/crypto";
 import { JsonOperation, ValidationError } from "@ne1410s/http";
 import { IRequest, IResponse } from "../../interfaces/token/base";
 

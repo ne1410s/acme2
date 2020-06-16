@@ -1,4 +1,4 @@
-import { Crypto } from "@ne1410s/crypto";
+import * as Crypto from "@ne1410s/crypto";
 import { ValidationError, HttpResponseError } from "@ne1410s/http";
 import { AccountOperation } from "../abstract/account";
 import { IFinaliseOrderRequest, IFinaliseOrderResponse, IFinaliseOrderPayload } from "../../interfaces/order/finalise";

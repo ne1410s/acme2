@@ -1,4 +1,4 @@
-import { Crypto } from "@ne1410s/crypto";
+import * as Crypto from "@ne1410s/crypto";
 import { IKeyPair_Jwk } from "@ne1410s/crypto/dist/interfaces";
 import { ValidationError } from "@ne1410s/http";
 import { PayloadOperation } from "./payload";

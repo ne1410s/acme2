@@ -1,4 +1,4 @@
-import { Crypto } from "@ne1410s/crypto";
+import * as Crypto from "@ne1410s/crypto";
 import { OperationBase, ValidationError } from "@ne1410s/http";
 import { IGetChallengeDetailRequest, IGetChallengeDetailResponse } from "../../interfaces/challenge/get-detail";
 import { IFulfilmentData, IChallenge, IChallengeDetail } from "../../interfaces/challenge/base";

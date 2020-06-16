@@ -1,6 +1,6 @@
-import { Crypto } from "@ne1410s/crypto";
-import { IHashResult } from "../interfaces/auth";
+import * as Crypto from "@ne1410s/crypto";
 import * as jwt from "jsonwebtoken";
+import { IHashResult } from "../interfaces/auth";
 import { ValidationError } from "@ne1410s/http";
 
 export abstract class AuthUtils {
