@@ -309,6 +309,7 @@
 
                     switch (order.status) {
 
+                        case 'expired':
                         case 'invalid':
                             const renewOrder = q2f('#renew-order', modal);
                             renewOrder.onclick = () => {

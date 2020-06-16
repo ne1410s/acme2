@@ -164,6 +164,7 @@ section > span {
 .modal[data-status=valid] .valid.status { display: initial; }
 .modal[data-status=ready] .ready.status { display: initial; }
 .modal[data-status=invalid] .invalid.status { display: initial; }
+.modal[data-status=expired] .expired.status { display: initial; }
 .modal[data-sub-status=pending] .pending.sub-status { display: initial; }
 .modal[data-sub-status=valid] .valid.sub-status { display: initial; }
 .modal[data-sub-status=invalid] .invalid.sub-status { display: initial; }

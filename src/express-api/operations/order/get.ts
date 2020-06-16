@@ -1,8 +1,9 @@
-import { OperationBase, ValidationError } from "@ne1410s/http";
-import { IOrderRequest, IOrder } from "../../interfaces/order";
-import { DbContext } from "../../../database/db-context";
+import { OperationBase, ValidationError, HttpResponseError } from "@ne1410s/http";
 import { Acme2Service } from "../../../acme-core/services/acme2";
+import { IOrderResponse } from "../../../acme-core/interfaces/order/base";
+import { DbContext } from "../../../database/db-context";
 import { IDomainClaim } from "../../interfaces/challenge";
+import { IOrderRequest, IOrder } from "../../interfaces/order";
 
 export class GetOrderOperation extends OperationBase<IOrderRequest, IOrder> {
 
@@ -34,7 +35,20 @@ export class GetOrderOperation extends OperationBase<IOrderRequest, IOrder> {
               svc_order = await svc.orders.get.invoke({
                 accountId: db_order.AccountID,
                 orderId: db_order.OrderID
-              });
+              }).catch(err => {
+                do { err = err.cause || err } // establish root cause
+                while (err.cause);
+                if ((err as HttpResponseError).statusCode === 404) {
+                  console.log('GET Order 404 -> assume expiry.', err.url);
+                  return {
+                    orderId: db_order.OrderID,
+                    status: 'expired',
+                    authCodes: []
+                  } as IOrderResponse;
+                }
+                
+                throw err;
+              })
         
         const domainClaims = [] as Array<IDomainClaim>;
         for (let i = 0; i < svc_order.authCodes.length; i++) {
