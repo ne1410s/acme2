@@ -13,11 +13,11 @@ ES ACME v2 Wrapper
 
 # AWS hosting
 ## Zip up the following:
- - /dist/
- - /package.json
  - /.ebextensions/
- - /.npmrc
+ - /dist/
  - /ui/
+ - /.npmrc
+ - /package.json
 
 ## NB - Environment Variables, and (non-production, demo-only) values
  - acme::jwt                ->  <Some random string>
