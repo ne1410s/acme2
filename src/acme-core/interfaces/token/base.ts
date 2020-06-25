@@ -1,7 +1,7 @@
 export interface IToken {
-    token: string;
+  token: string;
 }
 
-export interface IRequest extends IToken { }
+export interface IRequest extends IToken {}
 
-export interface IResponse extends IToken { }
+export interface IResponse extends IToken {}

@@ -1,48 +1,46 @@
-import { OperationBase, ValidationError } from "@ne1410s/http";
-import { ICreateOrderRequest, IOrder } from "../../interfaces/order";
-import { DbContext } from "../../../database/db-context";
-import { Acme2Service } from "../../../acme-core/services/acme2";
+import { OperationBase, ValidationError } from '@ne1410s/http';
+import { ICreateOrderRequest, IOrder } from '../../interfaces/order';
+import { DbContext } from '../../../database/db-context';
+import { Acme2Service } from '../../../acme-core/services/acme2';
 
 export class CreateOrderOperation extends OperationBase<ICreateOrderRequest, IOrder> {
-    
-    constructor(private readonly db: DbContext) {
-        super();
+  constructor(private readonly db: DbContext) {
+    super();
+  }
+
+  validateRequest(requestData: ICreateOrderRequest): void {}
+  validateResponse(responseData: IOrder): void {}
+
+  protected async invokeInternal(requestData: ICreateOrderRequest): Promise<IOrder> {
+    const db_account = (await this.db.Account.findByPk(requestData.accountId)) as any;
+
+    if (!db_account || db_account.UserID !== requestData.authenticUserId) {
+      console.error('No matching account found:', requestData);
+      throw new ValidationError('An error occurred', {}, ['Data inconsistency']);
     }
 
-    validateRequest(requestData: ICreateOrderRequest): void {}
-    validateResponse(responseData: IOrder): void {}
-    
-    protected async invokeInternal(requestData: ICreateOrderRequest): Promise<IOrder> {
-        
-        const db_account = await this.db.Account.findByPk(requestData.accountId) as any;
+    const env = db_account.IsTest ? 'staging' : ('production' as any),
+      svc = new Acme2Service(env),
+      token_response = await svc.tokens.get.invoke();
 
-        if (!db_account || db_account.UserID !== requestData.authenticUserId) {
-            console.error('No matching account found:', requestData);
-            throw new ValidationError('An error occurred', {}, ['Data inconsistency']);
-        }
+    const svc_order = await svc.orders.upsert.invoke({
+      token: token_response.token,
+      accountId: requestData.accountId,
+      domains: requestData.domains,
+      keys: JSON.parse(db_account.JWKPair),
+    });
 
-        const env = db_account.IsTest ? 'staging' : 'production' as any,
-              svc = new Acme2Service(env),
-              token_response = await svc.tokens.get.invoke();
-              
-        const svc_order = await svc.orders.upsert.invoke({
-            token: token_response.token,
-            accountId: requestData.accountId,
-            domains: requestData.domains,
-            keys: JSON.parse(db_account.JWKPair)
-        });
+    await this.db.Order.create({
+      AccountID: requestData.accountId,
+      OrderID: svc_order.orderId,
+      Domains: JSON.stringify(requestData.domains),
+      CertPkcs8_Base64: null,
+    });
 
-        await this.db.Order.create({
-            AccountID: requestData.accountId,
-            OrderID: svc_order.orderId,
-            Domains: JSON.stringify(requestData.domains),
-            CertPkcs8_Base64: null
-        });
-
-        return {
-            orderId: svc_order.orderId,
-            expires: svc_order.expires,
-            status: svc_order.status,
-        } as IOrder;
-    }
+    return {
+      orderId: svc_order.orderId,
+      expires: svc_order.expires,
+      status: svc_order.status,
+    } as IOrder;
+  }
 }

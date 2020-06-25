@@ -1,113 +1,113 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Acme Express</title>
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
-    <link rel="stylesheet" href="style.css"/>
-    <script src='https://www.google.com/recaptcha/api.js?render=<%= recaptcha %>'></script>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://www.google.com/recaptcha/api.js?render=<%= recaptcha %>"></script>
     <script src="main.js"></script>
-</head>
-<body>
-
+  </head>
+  <body>
     <section class="secure">
+      <header>
+        <a id="logout" href="javascript:void(0)">Logout</a>
+      </header>
 
-        <header>
-            <a id="logout" href="javascript:void(0)">Logout</a>
-        </header>
-        
-        <section class="accounts zone"></section>
+      <section class="accounts zone"></section>
 
-        <div class="modal account edit-account">
-            <div class="body">
-                <textarea placeholder="emails" spellcheck="false"></textarea>
-                <label>Agree to <a target="_blank" href="<%= acmeTerms %>">terms</a>?<input type="checkbox" id="agree-tos"/></label>
-                <label>Just a test?<input type="checkbox" id="test-mode"/></label>
-                <span class="errors"></span>
-                <input type="button" value="Save Account"/>
-                <a id="delete-account" href="javascript:void(0)">Delete Account</a>
-            </div>
+      <div class="modal account edit-account">
+        <div class="body">
+          <textarea placeholder="emails" spellcheck="false"></textarea>
+          <label
+            >Agree to <a target="_blank" href="<%= acmeTerms %>">terms</a>?<input
+              type="checkbox"
+              id="agree-tos"
+          /></label>
+          <label>Just a test?<input type="checkbox" id="test-mode" /></label>
+          <span class="errors"></span>
+          <input type="button" value="Save Account" />
+          <a id="delete-account" href="javascript:void(0)">Delete Account</a>
         </div>
+      </div>
 
-        <div class="modal order add-order">
-            <div class="body">
-                <textarea placeholder="domains" spellcheck="false"></textarea>
-                <span class="errors"></span>
-                <input type="button" value="Create Order"/>
-            </div>
+      <div class="modal order add-order">
+        <div class="body">
+          <textarea placeholder="domains" spellcheck="false"></textarea>
+          <span class="errors"></span>
+          <input type="button" value="Create Order" />
         </div>
+      </div>
 
-        <div class="modal order edit-order">
-            <div class="body">
-                <div class="pending status">
-                    <h1>Order Pending</h1>
-                    <p class="expires"></p>
-                    <label>Domains</label>
-                    <select class="domain"></select>
-                    <div class="pending sub-status">
-                        <label>Challenges</label>
-                        <select class="challenge"></select>
-                        <p class="challenge-desc"></p>
-                        <ul class="materials"></ul>
-                        <input type="button" id="submit-challenge" value="Submit Challenge"/>
-                    </div>
-                    <div class="valid sub-status">
-                        <p>This domain is valid. Good work!</p>
-                        <p>Please choose another.</p>
-                    </div>
-                </div>
-                <div class="ready status">
-                    <h1>Order Ready</h1>
-                    <p class="expires"></p>
-                    <input type="button" id="finalise-order" value="Complete Order"/>
-                </div>
-                <div class="valid status">
-                    <h1>Order Complete</h1>
-                    <p class="expires"></p>
-                    <label>Formats</label>
-                    <select class="cert-type">
-                        <option value="pem">pem</option>
-                        <option value="key.pem">pem (+ key)</option>
-                        <option value="pfx">pfx</option>
-                    </select>
-                    <div class="pfx cert-type">
-                        <input type="text" placeholder="friendly name"/>
-                        <input type="password" placeholder="password"/>
-                    </div>
-                    <input type="button" id="download-cert" value="Download Certificate"/>
-                    <a class="hide downloader"></a>
-                </div>
-                <div class="invalid expired status">
-                    <h1 class="invalid status">Order Invalid</h1>
-                    <h1 class="expired status">Order Expired</h1>
-                    <input type="button" id="renew-order" value="Renew Order"/>
-                </div>
-                <span class="errors"></span>
+      <div class="modal order edit-order">
+        <div class="body">
+          <div class="pending status">
+            <h1>Order Pending</h1>
+            <p class="expires"></p>
+            <label>Domains</label>
+            <select class="domain"></select>
+            <div class="pending sub-status">
+              <label>Challenges</label>
+              <select class="challenge"></select>
+              <p class="challenge-desc"></p>
+              <ul class="materials"></ul>
+              <input type="button" id="submit-challenge" value="Submit Challenge" />
             </div>
+            <div class="valid sub-status">
+              <p>This domain is valid. Good work!</p>
+              <p>Please choose another.</p>
+            </div>
+          </div>
+          <div class="ready status">
+            <h1>Order Ready</h1>
+            <p class="expires"></p>
+            <input type="button" id="finalise-order" value="Complete Order" />
+          </div>
+          <div class="valid status">
+            <h1>Order Complete</h1>
+            <p class="expires"></p>
+            <label>Formats</label>
+            <select class="cert-type">
+              <option value="pem">pem</option>
+              <option value="key.pem">pem (+ key)</option>
+              <option value="pfx">pfx</option>
+            </select>
+            <div class="pfx cert-type">
+              <input type="text" placeholder="friendly name" />
+              <input type="password" placeholder="password" />
+            </div>
+            <input type="button" id="download-cert" value="Download Certificate" />
+            <a class="hide downloader"></a>
+          </div>
+          <div class="invalid expired status">
+            <h1 class="invalid status">Order Invalid</h1>
+            <h1 class="expired status">Order Expired</h1>
+            <input type="button" id="renew-order" value="Renew Order" />
+          </div>
+          <span class="errors"></span>
         </div>
-
+      </div>
     </section>
 
     <div class="modal login">
-        <div class="body">
-            <input type="text" placeholder="username" spellcheck="false" autocomplete="false"/>
-            <input type="password" placeholder="password" />
-            <span class="errors"></span>
-            <input type="button" value="Login"/>
-            <span><a id="register" href="javascript:void(0);">New to the site? Register here</a></span>
-        </div>
+      <div class="body">
+        <input type="text" placeholder="username" spellcheck="false" autocomplete="false" />
+        <input type="password" placeholder="password" />
+        <span class="errors"></span>
+        <input type="button" value="Login" />
+        <span><a id="register" href="javascript:void(0);">New to the site? Register here</a></span>
+      </div>
     </div>
 
     <div class="modal register">
-        <div class="body">
-            <input type="text" placeholder="username" spellcheck="false" autocomplete="false"/>
-            <input type="password" placeholder="password"/>
-            <span class="errors"></span>
-            <input type="button" value="Register"/>
-            <span><a id="login" href="javascript:void(0)">Have an account? Login here</a></span>
-        </div>
+      <div class="body">
+        <input type="text" placeholder="username" spellcheck="false" autocomplete="false" />
+        <input type="password" placeholder="password" />
+        <span class="errors"></span>
+        <input type="button" value="Register" />
+        <span><a id="login" href="javascript:void(0)">Have an account? Login here</a></span>
+      </div>
     </div>
-
-</body>
+  </body>
 </html>

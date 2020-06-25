@@ -1,20 +1,20 @@
-import { IKeyPair_Jwk } from "@ne1410s/crypto/dist/interfaces";
-import { IRequest, IResponse } from "../token/base";
+import { IKeyPair_Jwk } from '@ne1410s/crypto/dist/interfaces';
+import { IRequest, IResponse } from '../token/base';
 
 export interface IAccount {
-    accountId: number;
-    keys: IKeyPair_Jwk;
+  accountId: number;
+  keys: IKeyPair_Jwk;
 }
 
 export interface IAccountDetails {
-    status: string;
-    created: Date;
-    initialIp: string;
-    link: string;
-    accountUrl: string;
-    contacts: Array<string>;
+  status: string;
+  created: Date;
+  initialIp: string;
+  link: string;
+  accountUrl: string;
+  contacts: Array<string>;
 }
 
-export interface IAccountRequest extends IRequest, IAccount { }
+export interface IAccountRequest extends IRequest, IAccount {}
 
-export interface IAccountResponse extends IResponse, IAccountDetails { }
+export interface IAccountResponse extends IResponse, IAccountDetails {}

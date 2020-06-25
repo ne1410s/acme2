@@ -1,13 +1,13 @@
-import { IAccountRequest } from "../account/base";
-import { IResponse } from "../token/base";
-import { IChallengeDetail, IChallenge } from "./base";
+import { IAccountRequest } from '../account/base';
+import { IResponse } from '../token/base';
+import { IChallengeDetail, IChallenge } from './base';
 
 export interface IFulfilChallengeRequest extends IAccountRequest {
-    challengeDetail: IChallengeDetail;
+  challengeDetail: IChallengeDetail;
 }
 
 export interface IFulfilChallengePayload {
-    keyAuthorization: string;
+  keyAuthorization: string;
 }
 
-export interface IFulfilChallengeResponse extends IChallenge, IResponse { }
+export interface IFulfilChallengeResponse extends IChallenge, IResponse {}

@@ -1,101 +1,103 @@
-import { ValidationError, HttpResponseError } from "@ne1410s/http";
-import { AccountOperation } from "../abstract/account";
-import { IUpsertOrderRequest, IUpsertOrderPayload } from "../../interfaces/order/upsert";
-import { IActiveOrderResponse } from "../../interfaces/order/base";
+import { ValidationError, HttpResponseError } from '@ne1410s/http';
+import { AccountOperation } from '../abstract/account';
+import { IUpsertOrderRequest, IUpsertOrderPayload } from '../../interfaces/order/upsert';
+import { IActiveOrderResponse } from '../../interfaces/order/base';
 
-export class UpsertOrderOperation extends AccountOperation<IUpsertOrderRequest, IActiveOrderResponse, IUpsertOrderPayload> {
-    
-    constructor (baseUrl: string) {
-        
-        super(baseUrl, '/new-order');
+export class UpsertOrderOperation extends AccountOperation<
+  IUpsertOrderRequest,
+  IActiveOrderResponse,
+  IUpsertOrderPayload
+> {
+  constructor(baseUrl: string) {
+    super(baseUrl, '/new-order');
+  }
+
+  validateRequest(requestData: IUpsertOrderRequest): void {
+    super.validateRequest(requestData);
+
+    const messages: string[] = [];
+
+    if (!requestData.domains || requestData.domains.length == 0) {
+      messages.push('At least one domain is required');
     }
 
-    validateRequest(requestData: IUpsertOrderRequest): void {
-
-        super.validateRequest(requestData);
-
-        const messages: string[] = [];
-
-        if (!requestData.domains || requestData.domains.length == 0) {
-            messages.push('At least one domain is required');
-        }
-
-        if (requestData.startsOn || requestData.endsOn) {
-            messages.push('Start and end dates are not currently implemented');
-        }
-        
-        if (messages.length !== 0) {
-            throw new ValidationError('The request is invalid', requestData, messages);
-        }
+    if (requestData.startsOn || requestData.endsOn) {
+      messages.push('Start and end dates are not currently implemented');
     }
 
-    protected async toPayload(requestData: IUpsertOrderRequest): Promise<IUpsertOrderPayload> {
-        return {
-            // TODO: Map start & end dates to iso strings
-            identifiers: requestData.domains.map(domain => ({
-                type: 'dns',
-                value: domain
-            }))
-        };
+    if (messages.length !== 0) {
+      throw new ValidationError('The request is invalid', requestData, messages);
+    }
+  }
+
+  protected async toPayload(requestData: IUpsertOrderRequest): Promise<IUpsertOrderPayload> {
+    return {
+      // TODO: Map start & end dates to iso strings
+      identifiers: requestData.domains.map((domain) => ({
+        type: 'dns',
+        value: domain,
+      })),
+    };
+  }
+
+  async deserialise(
+    response: Response,
+    requestData: IUpsertOrderRequest
+  ): Promise<IActiveOrderResponse> {
+    if (!response.ok) {
+      throw new HttpResponseError(response, this.verb);
     }
 
-    async deserialise(response: Response, requestData: IUpsertOrderRequest): Promise<IActiveOrderResponse> {
-        
-        if (!response.ok) {
-            throw new HttpResponseError(response, this.verb);
-        }      
+    const json = await response.json(),
+      location = response.headers.get('location') || '',
+      locParts = location.split('/');
 
-        const json = await response.json(),
-              location = response.headers.get('location') || '',
-              locParts = location.split('/');
+    return {
+      orderId: parseInt(locParts[locParts.length - 1], 10),
+      status: json.status,
+      orderUrl: location,
+      expires: json.expires,
+      finaliseUrl: json.finalize,
+      identifiers: json.identifiers,
+      token: response.headers.get('replay-nonce'),
+      authCodes: json.authorizations.map((authUrl: string) => {
+        const authUrlParts = authUrl.split('/');
+        return authUrlParts[authUrlParts.length - 1];
+      }),
+    };
+  }
 
-        return {
-            orderId: parseInt(locParts[locParts.length - 1], 10),
-            status: json.status,
-            orderUrl: location,
-            expires: json.expires,
-            finaliseUrl: json.finalize,
-            identifiers: json.identifiers,
-            token: response.headers.get('replay-nonce'),
-            authCodes: json.authorizations.map((authUrl: string) => {
-                const authUrlParts = authUrl.split('/');
-                return authUrlParts[authUrlParts.length - 1];
-            })
-        };
+  validateResponse(responseData: IActiveOrderResponse): void {
+    super.validateResponse(responseData);
+
+    const messages: string[] = [];
+
+    if (!responseData.orderId) {
+      messages.push('Id is expected');
     }
-        
-    validateResponse(responseData: IActiveOrderResponse): void {
-        
-        super.validateResponse(responseData);
-        
-        const messages: string[] = [];
 
-        if (!responseData.orderId) {
-            messages.push('Id is expected');
-        }
-
-        if (!responseData.orderUrl || responseData.orderUrl == '') {
-            messages.push('Order url is expected');
-        }
-
-        if (!responseData.status || responseData.status == '') {
-            messages.push('Status is expected');
-        }
-
-        if (!responseData.authCodes || responseData.authCodes.length == 0) {
-            messages.push('At least one authorization code is expected');
-        }
-
-        if (!responseData.expires) {
-            messages.push('Expiry date is expected');
-        }
-
-        if (!responseData.finaliseUrl || responseData.finaliseUrl == '') {
-            messages.push('Finalise url is expected');
-        }
-
-        if (messages.length !== 0) {
-            throw new ValidationError('The response is invalid', responseData, messages);
-        }
+    if (!responseData.orderUrl || responseData.orderUrl == '') {
+      messages.push('Order url is expected');
     }
+
+    if (!responseData.status || responseData.status == '') {
+      messages.push('Status is expected');
+    }
+
+    if (!responseData.authCodes || responseData.authCodes.length == 0) {
+      messages.push('At least one authorization code is expected');
+    }
+
+    if (!responseData.expires) {
+      messages.push('Expiry date is expected');
+    }
+
+    if (!responseData.finaliseUrl || responseData.finaliseUrl == '') {
+      messages.push('Finalise url is expected');
+    }
+
+    if (messages.length !== 0) {
+      throw new ValidationError('The response is invalid', responseData, messages);
+    }
+  }
 }

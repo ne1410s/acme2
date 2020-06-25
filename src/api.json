@@ -1,7 +1,7 @@
 {
-    "portNumber": 8081,
-    "dbConnection": "./dist/database/acme.db",
-    "dbLogging": false,
-    "tokenMinutes": 15,
-    "acmeTerms": "https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf"
+  "portNumber": 8081,
+  "dbConnection": "./dist/database/acme.db",
+  "dbLogging": false,
+  "tokenMinutes": 15,
+  "acmeTerms": "https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf"
 }

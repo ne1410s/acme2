@@ -1,22 +1,22 @@
 export interface IAuthEntryRequest {
-    username: string;
-    password: string;
+  username: string;
+  password: string;
 }
 
 export interface ICaptchaRequest extends IAuthEntryRequest {
-    recaptcha: string;
+  recaptcha: string;
 }
 
 export interface IAuthEntryResponse {
-    token: string;
-    lifetime: number;
+  token: string;
+  lifetime: number;
 }
 
 export interface IHashResult {
-    hash: string;
-    salt: string;
+  hash: string;
+  salt: string;
 }
 
 export interface ISecureRequest {
-    authenticUserId: number;
+  authenticUserId: number;
 }

@@ -1,10 +1,9 @@
-
 export interface IGetCertRequest {
-    certCode: string;
-    contentType?: string;
+  certCode: string;
+  contentType?: string;
 }
 
 export interface IGetCertResponse {
-    contentType: string;
-    content: string;
+  contentType: string;
+  content: string;
 }

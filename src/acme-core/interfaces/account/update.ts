@@ -1,9 +1,9 @@
-import { IAccountRequest } from "./base";
+import { IAccountRequest } from './base';
 
 export interface IUpdateAccountRequest extends IAccountRequest {
-    emails: Array<string>;
+  emails: Array<string>;
 }
 
 export interface IUpdateAccountPayload {
-    contact: Array<string>;
+  contact: Array<string>;
 }

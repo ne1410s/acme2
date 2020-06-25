@@ -1,53 +1,55 @@
-import { AccountOperation } from "../abstract/account";
-import { IAccountRequest } from "../../interfaces/account/base";
-import { HttpResponseError, ValidationError } from "@ne1410s/http";
-import { IDeleteAccountResponse } from "../../interfaces/account/delete";
+import { AccountOperation } from '../abstract/account';
+import { IAccountRequest } from '../../interfaces/account/base';
+import { HttpResponseError, ValidationError } from '@ne1410s/http';
+import { IDeleteAccountResponse } from '../../interfaces/account/delete';
 
-export class DeleteAccountOperation extends AccountOperation<IAccountRequest, IDeleteAccountResponse, any> {
-    
-    constructor (baseUrl: string) {
-        
-        super(baseUrl, '/acct/{id}');
+export class DeleteAccountOperation extends AccountOperation<
+  IAccountRequest,
+  IDeleteAccountResponse,
+  any
+> {
+  constructor(baseUrl: string) {
+    super(baseUrl, '/acct/{id}');
+  }
+
+  validateRequest(requestData: IAccountRequest): void {
+    // Once deemed valid; correct the operation url at invocation time
+    this._url = this.getAccountUrl(requestData);
+  }
+
+  protected async toPayload(requestData: IAccountRequest): Promise<any> {
+    return {
+      status: 'deactivated',
+    };
+  }
+
+  async deserialise(
+    response: Response,
+    requestData: IAccountRequest
+  ): Promise<IDeleteAccountResponse> {
+    if (!response.ok) {
+      throw new HttpResponseError(response, this.verb);
     }
 
-    validateRequest(requestData: IAccountRequest): void {
+    const json = await response.json();
 
-        // Once deemed valid; correct the operation url at invocation time
-        this._url = this.getAccountUrl(requestData);
+    return {
+      status: json.status,
+      token: response.headers.get('replay-nonce'),
+    };
+  }
+
+  validateResponse(responseData: IDeleteAccountResponse): void {
+    super.validateResponse(responseData);
+
+    const messages: string[] = [];
+
+    if (responseData.status !== 'deactivated') {
+      messages.push('Unexpected status: ' + responseData.status);
     }
 
-    protected async toPayload(requestData: IAccountRequest): Promise<any> {
-        return {
-            status: 'deactivated'
-        };
+    if (messages.length !== 0) {
+      throw new ValidationError('The response is invalid', responseData, messages);
     }
-
-    async deserialise(response: Response, requestData: IAccountRequest): Promise<IDeleteAccountResponse> {
-        
-        if (!response.ok) {
-            throw new HttpResponseError(response, this.verb);
-        }      
-
-        const json = await response.json();
-        
-        return {
-            status: json.status,
-            token: response.headers.get('replay-nonce')
-        };
-    }
-
-    validateResponse(responseData: IDeleteAccountResponse): void {
-        
-        super.validateResponse(responseData);
-        
-        const messages: string[] = [];
-
-        if (responseData.status !== 'deactivated') {
-            messages.push('Unexpected status: ' + responseData.status);
-        }
-
-        if (messages.length !== 0) {
-            throw new ValidationError('The response is invalid', responseData, messages);
-        }
-    }
+  }
 }
