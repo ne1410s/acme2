@@ -1,32 +1,19 @@
-import { IOrderRequest, IOrderResponse } from '../../interfaces/order/base';
+import { OrderRequest, OrderResponse } from '../../web-models/order/base';
 import { JsonOperation, ValidationError, HttpResponseError } from '@ne1410s/http';
+import { SubmitChallengeOperation } from '../../../express-api/operations/challenge/submit';
 
-export class GetOrderOperation extends JsonOperation<IOrderRequest, IOrderResponse> {
+export class GetOrderOperation extends JsonOperation<OrderRequest, OrderResponse> {
   constructor(private baseUrl: string) {
     super(`${baseUrl}/order/{accountId}/{orderId}`, 'get');
   }
 
-  validateRequest(requestData: IOrderRequest): void {
-    const messages: string[] = [];
-    requestData = requestData || ({} as IOrderRequest);
-
-    if (!requestData.accountId) {
-      messages.push('Account id is required');
-    }
-
-    if (!requestData.orderId) {
-      messages.push('Order id is required');
-    }
-
-    if (messages.length !== 0) {
-      throw new ValidationError('The request is invalid', requestData, messages);
-    }
-
+  validateRequest(requestData: OrderRequest): void {
+    super.validateRequest(requestData);
     // once deemed valid; correct the operation url at invocation time
     this._url = `${this.baseUrl}/order/${requestData.accountId}/${requestData.orderId}`;
   }
 
-  async deserialise(response: Response, requestData: IOrderRequest): Promise<IOrderResponse> {
+  async deserialise(response: Response, requestData: OrderRequest): Promise<OrderResponse> {
     if (!response.ok) {
       throw new HttpResponseError(response, this.verb);
     }
@@ -46,38 +33,5 @@ export class GetOrderOperation extends JsonOperation<IOrderRequest, IOrderRespon
         return authUrlParts[authUrlParts.length - 1];
       }),
     };
-  }
-
-  validateResponse(responseData: IOrderResponse): void {
-    const messages: string[] = [];
-    responseData = responseData || ({} as IOrderResponse);
-
-    if (!responseData.orderId) {
-      messages.push('Id is expected');
-    }
-
-    if (!responseData.orderUrl || responseData.orderUrl == '') {
-      messages.push('Order url is expected');
-    }
-
-    if (!responseData.status || responseData.status == '') {
-      messages.push('Status is expected');
-    }
-
-    if (!responseData.authCodes || responseData.authCodes.length == 0) {
-      messages.push('At least one authorization code is expected');
-    }
-
-    if (!responseData.expires) {
-      messages.push('Expiry date is expected');
-    }
-
-    if (!responseData.finaliseUrl || responseData.finaliseUrl == '') {
-      messages.push('Finalise url is expected');
-    }
-
-    if (messages.length !== 0) {
-      throw new ValidationError('The response is invalid', responseData, messages);
-    }
   }
 }

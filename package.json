@@ -48,8 +48,9 @@
     "typescript": "^3.9.5"
   },
   "dependencies": {
+    "@ne1410s/codl": "0.0.4",
     "@ne1410s/crypto": "^0.2.3",
-    "@ne1410s/http": "^0.3.1",
+    "@ne1410s/http": "^0.3.3",
     "@ne1410s/text": "^0.2.4",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",

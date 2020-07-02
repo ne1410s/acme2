@@ -1,15 +1,21 @@
 import * as Text from '@ne1410s/text';
 import * as Crypto from '@ne1410s/crypto';
+import { Ctor } from '@ne1410s/codl';
 import { JsonOperation, ValidationError } from '@ne1410s/http';
-import { IRequest, IResponse } from '../../interfaces/token/base';
+import { IToken } from '../../web-models/token/base';
 
 export abstract class PayloadOperation<
-  TRequest extends IRequest,
-  TResponse extends IResponse,
+  TRequest extends IToken,
+  TResponse extends IToken,
   TPayload
 > extends JsonOperation<TRequest, TResponse> {
-  constructor(protected baseUrl: string, relativePath: string) {
-    super(`${baseUrl}${relativePath}`, 'post');
+  constructor(
+    protected baseUrl: string,
+    relativePath: string,
+    requestType: Ctor<TRequest>,
+    responseType: Ctor<TResponse>
+  ) {
+    super(`${baseUrl}${relativePath}`, 'post', null, requestType, responseType);
 
     this.headers.set('content-type', 'application/jose+json');
   }
@@ -37,9 +43,9 @@ export abstract class PayloadOperation<
     });
   }
 
-  validateResponse(responseData: IResponse): void {
+  validateResponse(responseData: IToken): void {
     const messages: string[] = [];
-    responseData = responseData || ({} as IResponse);
+    responseData = responseData || ({} as IToken);
 
     if (!responseData.token) {
       messages.push('Token is expected');

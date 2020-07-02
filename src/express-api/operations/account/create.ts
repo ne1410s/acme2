@@ -1,17 +1,14 @@
 import { OperationBase } from '@ne1410s/http';
 import { DbContext } from '../../../database/db-context';
-import { IAccountMeta, ICreateAccountRequest } from '../../interfaces/account';
+import { AccountMeta, CreateAccountRequest } from '../../web-models/account';
 import { Acme2Service } from '../../../acme-core/services/acme2';
 
-export class CreateAccountOperation extends OperationBase<ICreateAccountRequest, IAccountMeta> {
+export class CreateAccountOperation extends OperationBase<CreateAccountRequest, AccountMeta> {
   constructor(private readonly db: DbContext) {
-    super();
+    super(CreateAccountRequest, AccountMeta);
   }
 
-  validateRequest(requestData: ICreateAccountRequest): void {}
-  validateResponse(responseData: IAccountMeta): void {}
-
-  protected async invokeInternal(requestData: ICreateAccountRequest): Promise<IAccountMeta> {
+  protected async invokeInternal(requestData: CreateAccountRequest): Promise<AccountMeta> {
     const env = requestData.isTest ? 'staging' : 'production',
       svc = new Acme2Service(env as any),
       tokenResponse = await svc.tokens.get.invoke();
@@ -32,7 +29,7 @@ export class CreateAccountOperation extends OperationBase<ICreateAccountRequest,
 
     return {
       accountId: svc_account.accountId,
-      emails: svc_account.contacts.map((c) => c.replace('mailto:', '')),
+      emails: svc_account.contacts.map((c: any) => c.replace('mailto:', '')),
       isTest: !!requestData.isTest,
       orders: [],
     };

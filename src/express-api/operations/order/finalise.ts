@@ -1,17 +1,14 @@
 import { OperationBase, ValidationError } from '@ne1410s/http';
-import { IFinaliseOrderRequest } from '../../interfaces/order';
+import { FinaliseOrderRequest } from '../../web-models/order';
 import { DbContext } from '../../../database/db-context';
 import { Acme2Service } from '../../../acme-core/services/acme2';
 
-export class FinaliseOrderOperation extends OperationBase<IFinaliseOrderRequest, {}> {
+export class FinaliseOrderOperation extends OperationBase<FinaliseOrderRequest, {}> {
   constructor(private readonly db: DbContext) {
-    super();
+    super(FinaliseOrderRequest);
   }
 
-  validateRequest(requestData: IFinaliseOrderRequest): void {}
-  validateResponse(responseData: {}): void {}
-
-  protected async invokeInternal(requestData: IFinaliseOrderRequest): Promise<{}> {
+  protected async invokeInternal(requestData: FinaliseOrderRequest): Promise<{}> {
     const db_order = (await this.db.Order.findOne({
       where: { OrderID: requestData.orderId },
       include: [

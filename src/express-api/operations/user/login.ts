@@ -1,19 +1,16 @@
-import { OperationBase, ValidationError } from '@ne1410s/http';
+import { OperationBase } from '@ne1410s/http';
 import { DbContext } from '../../../database/db-context';
 import * as apiConfig from '../../../api.json';
 import { AuthUtils } from '../../utils/auth';
 import { AuthError } from '../../errors/auth';
-import { IAuthEntryResponse, ICaptchaRequest } from '../../interfaces/auth';
+import { AuthEntryResponse, CaptchaRequest } from '../../web-models/auth';
 
-export class LoginOperation extends OperationBase<ICaptchaRequest, IAuthEntryResponse> {
+export class LoginOperation extends OperationBase<CaptchaRequest, AuthEntryResponse> {
   constructor(private readonly db: DbContext) {
-    super();
+    super(CaptchaRequest, AuthEntryResponse);
   }
 
-  validateRequest(requestData: ICaptchaRequest): void {}
-  validateResponse(responseData: IAuthEntryResponse): void {}
-
-  protected async invokeInternal(requestData: ICaptchaRequest): Promise<IAuthEntryResponse> {
+  protected async invokeInternal(requestData: CaptchaRequest): Promise<AuthEntryResponse> {
     await AuthUtils.validateRecaptcha(requestData.recaptcha, 'login');
 
     const result = await this.db.User.findAll({
@@ -33,7 +30,7 @@ export class LoginOperation extends OperationBase<ICaptchaRequest, IAuthEntryRes
     }
 
     return {
-      token: await AuthUtils.getToken(user.UserID, apiConfig.tokenMinutes),
+      token: AuthUtils.getToken(user.UserID, apiConfig.tokenMinutes),
       lifetime: apiConfig.tokenMinutes * 60 * 1000,
     };
   }

@@ -1,17 +1,14 @@
 import { OperationBase, ValidationError } from '@ne1410s/http';
-import { ICreateOrderRequest, IOrder } from '../../interfaces/order';
+import { CreateOrderRequest, Order } from '../../web-models/order';
 import { DbContext } from '../../../database/db-context';
 import { Acme2Service } from '../../../acme-core/services/acme2';
 
-export class CreateOrderOperation extends OperationBase<ICreateOrderRequest, IOrder> {
+export class CreateOrderOperation extends OperationBase<CreateOrderRequest, Order> {
   constructor(private readonly db: DbContext) {
-    super();
+    super(CreateOrderRequest, Order);
   }
 
-  validateRequest(requestData: ICreateOrderRequest): void {}
-  validateResponse(responseData: IOrder): void {}
-
-  protected async invokeInternal(requestData: ICreateOrderRequest): Promise<IOrder> {
+  protected async invokeInternal(requestData: CreateOrderRequest): Promise<Order> {
     const db_account = (await this.db.Account.findByPk(requestData.accountId)) as any;
 
     if (!db_account || db_account.UserID !== requestData.authenticUserId) {
@@ -41,6 +38,6 @@ export class CreateOrderOperation extends OperationBase<ICreateOrderRequest, IOr
       orderId: svc_order.orderId,
       expires: svc_order.expires,
       status: svc_order.status,
-    } as IOrder;
+    } as Order;
   }
 }

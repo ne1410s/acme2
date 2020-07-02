@@ -1,12 +1,12 @@
 import { ValidationError, JsonBodylessOperation } from '@ne1410s/http';
-import { IResponse } from '../../interfaces/token/base';
+import { Token } from '../../web-models/token/base';
 
-export class GetTokenOperation extends JsonBodylessOperation<IResponse> {
+export class GetTokenOperation extends JsonBodylessOperation<Token> {
   constructor(baseUrl: string) {
     super(`${baseUrl}/new-nonce`, 'head');
   }
 
-  async deserialise(response: Response, requestData: any): Promise<IResponse> {
+  async deserialise(response: Response, requestData: any): Promise<Token> {
     await Promise.resolve();
 
     return {
@@ -14,7 +14,7 @@ export class GetTokenOperation extends JsonBodylessOperation<IResponse> {
     };
   }
 
-  validateResponse(responseData: IResponse): void {
+  validateResponse(responseData: Token): void {
     const messages: string[] = [];
 
     if (!/^[\w-]{43,}$/gi.test(responseData.token)) {
@@ -26,3 +26,5 @@ export class GetTokenOperation extends JsonBodylessOperation<IResponse> {
     }
   }
 }
+
+//TODO!!!

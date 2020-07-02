@@ -1,25 +1,21 @@
 import { ValidationError, HttpResponseError } from '@ne1410s/http';
 import { AccountOperation } from '../abstract/account';
-import { IUpsertOrderRequest, IUpsertOrderPayload } from '../../interfaces/order/upsert';
-import { IActiveOrderResponse } from '../../interfaces/order/base';
+import { UpsertOrderRequest, UpsertOrderPayload } from '../../web-models/order/upsert';
+import { ActiveOrderResponse } from '../../web-models/order/base';
 
 export class UpsertOrderOperation extends AccountOperation<
-  IUpsertOrderRequest,
-  IActiveOrderResponse,
-  IUpsertOrderPayload
+  UpsertOrderRequest,
+  ActiveOrderResponse,
+  UpsertOrderPayload
 > {
   constructor(baseUrl: string) {
-    super(baseUrl, '/new-order');
+    super(baseUrl, '/new-order', UpsertOrderRequest, ActiveOrderResponse);
   }
 
-  validateRequest(requestData: IUpsertOrderRequest): void {
+  validateRequest(requestData: UpsertOrderRequest): void {
     super.validateRequest(requestData);
 
     const messages: string[] = [];
-
-    if (!requestData.domains || requestData.domains.length == 0) {
-      messages.push('At least one domain is required');
-    }
 
     if (requestData.startsOn || requestData.endsOn) {
       messages.push('Start and end dates are not currently implemented');
@@ -30,10 +26,10 @@ export class UpsertOrderOperation extends AccountOperation<
     }
   }
 
-  protected async toPayload(requestData: IUpsertOrderRequest): Promise<IUpsertOrderPayload> {
+  protected async toPayload(requestData: UpsertOrderRequest): Promise<UpsertOrderPayload> {
     return {
       // TODO: Map start & end dates to iso strings
-      identifiers: requestData.domains.map((domain) => ({
+      identifiers: requestData.domains.map((domain: any) => ({
         type: 'dns',
         value: domain,
       })),
@@ -42,8 +38,8 @@ export class UpsertOrderOperation extends AccountOperation<
 
   async deserialise(
     response: Response,
-    requestData: IUpsertOrderRequest
-  ): Promise<IActiveOrderResponse> {
+    requestData: UpsertOrderRequest
+  ): Promise<ActiveOrderResponse> {
     if (!response.ok) {
       throw new HttpResponseError(response, this.verb);
     }
@@ -65,39 +61,5 @@ export class UpsertOrderOperation extends AccountOperation<
         return authUrlParts[authUrlParts.length - 1];
       }),
     };
-  }
-
-  validateResponse(responseData: IActiveOrderResponse): void {
-    super.validateResponse(responseData);
-
-    const messages: string[] = [];
-
-    if (!responseData.orderId) {
-      messages.push('Id is expected');
-    }
-
-    if (!responseData.orderUrl || responseData.orderUrl == '') {
-      messages.push('Order url is expected');
-    }
-
-    if (!responseData.status || responseData.status == '') {
-      messages.push('Status is expected');
-    }
-
-    if (!responseData.authCodes || responseData.authCodes.length == 0) {
-      messages.push('At least one authorization code is expected');
-    }
-
-    if (!responseData.expires) {
-      messages.push('Expiry date is expected');
-    }
-
-    if (!responseData.finaliseUrl || responseData.finaliseUrl == '') {
-      messages.push('Finalise url is expected');
-    }
-
-    if (messages.length !== 0) {
-      throw new ValidationError('The response is invalid', responseData, messages);
-    }
   }
 }

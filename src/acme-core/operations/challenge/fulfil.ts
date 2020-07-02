@@ -1,52 +1,27 @@
 import { HttpResponseError, ValidationError } from '@ne1410s/http';
 import { AccountOperation } from '../abstract/account';
 import {
-  IFulfilChallengePayload,
-  IFulfilChallengeResponse,
-  IFulfilChallengeRequest,
-} from '../../interfaces/challenge/fulfil';
+  FulfilChallengePayload,
+  FulfilChallengeResponse,
+  FulfilChallengeRequest,
+} from '../../web-models/challenge/fulfil';
 
 export class FulfilChallengeOperation extends AccountOperation<
-  IFulfilChallengeRequest,
-  IFulfilChallengeResponse,
-  IFulfilChallengePayload
+  FulfilChallengeRequest,
+  FulfilChallengeResponse,
+  FulfilChallengePayload
 > {
   constructor(baseUrl: string) {
-    super(baseUrl, '/chall-v3/{authCode}/{id}');
+    super(baseUrl, '/chall-v3/{authCode}/{id}', FulfilChallengeRequest, FulfilChallengeResponse);
   }
 
-  validateRequest(requestData: IFulfilChallengeRequest): void {
+  validateRequest(requestData: FulfilChallengeRequest): void {
     super.validateRequest(requestData);
-    requestData.challengeDetail = requestData.challengeDetail || ({} as any);
-
-    const messages: string[] = [];
-
-    if (
-      !requestData.challengeDetail.fulfilmentData ||
-      !requestData.challengeDetail.fulfilmentData.keyAuth
-    ) {
-      messages.push('Key auth is required');
-    }
-
-    if (!requestData.challengeDetail.authCode) {
-      messages.push('Auth code is required');
-    }
-
-    if (!requestData.challengeDetail.challengeId) {
-      messages.push('Challenge id is required');
-    }
-
-    if (messages.length !== 0) {
-      throw new ValidationError('The request is invalid', requestData, messages);
-    }
-
     // once deemed valid; correct the operation url at invocation time
     this._url = `${this.baseUrl}/chall-v3/${requestData.challengeDetail.authCode}/${requestData.challengeDetail.challengeId}`;
   }
 
-  protected async toPayload(
-    requestData: IFulfilChallengeRequest
-  ): Promise<IFulfilChallengePayload> {
+  protected async toPayload(requestData: FulfilChallengeRequest): Promise<FulfilChallengePayload> {
     return {
       keyAuthorization: requestData.challengeDetail.fulfilmentData.keyAuth,
     };
@@ -54,8 +29,8 @@ export class FulfilChallengeOperation extends AccountOperation<
 
   async deserialise(
     response: Response,
-    requestData: IFulfilChallengeRequest
-  ): Promise<IFulfilChallengeResponse> {
+    requestData: FulfilChallengeRequest
+  ): Promise<FulfilChallengeResponse> {
     if (!response.ok) {
       throw new HttpResponseError(response, this.verb);
     }
@@ -68,19 +43,5 @@ export class FulfilChallengeOperation extends AccountOperation<
       url: json.url,
       token: response.headers.get('replay-nonce'),
     };
-  }
-
-  validateResponse(responseData: IFulfilChallengeResponse): void {
-    super.validateResponse(responseData);
-
-    const messages: string[] = [];
-
-    if (!responseData.status) {
-      messages.push('Status is expected');
-    }
-
-    if (messages.length !== 0) {
-      throw new ValidationError('The response is invalid', responseData, messages);
-    }
   }
 }

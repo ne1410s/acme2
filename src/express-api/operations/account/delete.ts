@@ -1,17 +1,14 @@
 import { OperationBase, ValidationError } from '@ne1410s/http';
-import { IDeleteAccountRequest } from '../../interfaces/account';
+import { DeleteAccountRequest } from '../../web-models/account';
 import { DbContext } from '../../../database/db-context';
 import { Acme2Service } from '../../../acme-core/services/acme2';
 
-export class DeleteAccountOperation extends OperationBase<IDeleteAccountRequest, {}> {
+export class DeleteAccountOperation extends OperationBase<DeleteAccountRequest, {}> {
   constructor(private readonly db: DbContext) {
-    super();
+    super(DeleteAccountRequest);
   }
 
-  validateRequest(requestData: IDeleteAccountRequest): void {}
-  validateResponse(responseData: {}): void {}
-
-  protected async invokeInternal(requestData: IDeleteAccountRequest): Promise<{}> {
+  protected async invokeInternal(requestData: DeleteAccountRequest): Promise<{}> {
     const db_account = (await this.db.Account.findByPk(requestData.accountId)) as any;
 
     if (!db_account || db_account.UserID !== requestData.authenticUserId) {

@@ -1,17 +1,14 @@
 import { OperationBase } from '@ne1410s/http';
-import { ISecureRequest } from '../../interfaces/auth';
-import { IAccountMeta } from '../../interfaces/account';
+import { SecureRequest } from '../../web-models/auth';
+import { AccountMeta } from '../../web-models/account';
 import { DbContext } from '../../../database/db-context';
 
-export class ListAccountsOperation extends OperationBase<ISecureRequest, Array<IAccountMeta>> {
+export class ListAccountsOperation extends OperationBase<SecureRequest, Array<AccountMeta>> {
   constructor(private readonly db: DbContext) {
-    super();
+    super(SecureRequest, AccountMeta as any);
   }
 
-  validateRequest(requestData: ISecureRequest): void {}
-  validateResponse(responseData: Array<IAccountMeta>): void {}
-
-  protected async invokeInternal(requestData: ISecureRequest): Promise<IAccountMeta[]> {
+  protected async invokeInternal(requestData: SecureRequest): Promise<AccountMeta[]> {
     const db_accounts = await this.db.Account.findAll({
       where: { UserID: requestData.authenticUserId },
       include: [{ model: this.db.Order }],

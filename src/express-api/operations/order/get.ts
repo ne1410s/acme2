@@ -1,19 +1,16 @@
 import { OperationBase, ValidationError, HttpResponseError } from '@ne1410s/http';
 import { Acme2Service } from '../../../acme-core/services/acme2';
-import { IOrderResponse } from '../../../acme-core/interfaces/order/base';
+import { OrderResponse } from '../../../acme-core/web-models/order/base';
 import { DbContext } from '../../../database/db-context';
-import { IDomainClaim } from '../../interfaces/challenge';
-import { IOrderRequest, IOrder } from '../../interfaces/order';
+import { DomainClaim } from '../../web-models/challenge';
+import { OrderRequest, Order } from '../../web-models/order';
 
-export class GetOrderOperation extends OperationBase<IOrderRequest, IOrder> {
+export class GetOrderOperation extends OperationBase<OrderRequest, Order> {
   constructor(private readonly db: DbContext) {
-    super();
+    super(OrderRequest, Order);
   }
 
-  validateRequest(requestData: IOrderRequest): void {}
-  validateResponse(responseData: IOrder): void {}
-
-  protected async invokeInternal(requestData: IOrderRequest): Promise<IOrder> {
+  protected async invokeInternal(requestData: OrderRequest): Promise<Order> {
     const db_order = (await this.db.Order.findOne({
       where: { OrderID: requestData.orderId },
       include: [
@@ -47,13 +44,13 @@ export class GetOrderOperation extends OperationBase<IOrderRequest, IOrder> {
               orderId: db_order.OrderID,
               status: 'expired',
               authCodes: [],
-            } as IOrderResponse;
+            } as OrderResponse;
           }
 
           throw err;
         });
 
-    const domainClaims = [] as Array<IDomainClaim>;
+    const domainClaims = [] as Array<DomainClaim>;
     for (let i = 0; i < svc_order.authCodes.length; i++) {
       const authCode = svc_order.authCodes[i],
         claim = await this.getDomainClaim(svc, requestData.orderId, keys.publicJwk, authCode);
@@ -80,7 +77,7 @@ export class GetOrderOperation extends OperationBase<IOrderRequest, IOrder> {
     orderId: number,
     publicJwk: JsonWebKey,
     authCode: string
-  ): Promise<IDomainClaim> {
+  ): Promise<DomainClaim> {
     const svc_challenge = await svc.challenges.list.invoke({ authCode }),
       svc_details = await svc.challenges.detail.invoke({ listResponse: svc_challenge, publicJwk });
 
@@ -90,9 +87,9 @@ export class GetOrderOperation extends OperationBase<IOrderRequest, IOrder> {
       wildcard: svc_challenge.wildcard,
       expires: svc_challenge.expires,
       challenges: svc_details.detail
-        .filter((d) => d.fulfilmentData.implemented)
-        .sort((d1, d2) => (d1.type > d2.type ? 1 : d2.type > d1.type ? -1 : 0))
-        .map((d) => ({
+        .filter((d: any) => d.fulfilmentData.implemented)
+        .sort((d1: any, d2: any) => (d1.type > d2.type ? 1 : d2.type > d1.type ? -1 : 0))
+        .map((d: any) => ({
           challengeId: d.challengeId,
           orderId,
           authCode: d.authCode,

@@ -1,20 +1,20 @@
 import * as Crypto from '@ne1410s/crypto';
 import * as jwt from 'jsonwebtoken';
-import { IHashResult } from '../interfaces/auth';
+import { HashResult } from '../web-models/auth';
 import { ValidationError } from '@ne1410s/http';
 
 export abstract class AuthUtils {
   private static readonly JWT_SECRET: string = process.env['acme::jwt'];
   private static readonly RECAPTCHA_URL: string = 'https://www.google.com/recaptcha/api/siteverify';
 
-  public static async getHash(text: string): Promise<IHashResult> {
+  public static async getHash(text: string): Promise<HashResult> {
     const salt = await Crypto.randomString(),
       hash = await Crypto.digest(salt + text);
 
     return { hash, salt };
   }
 
-  public static async verifyHash(text: string, test: IHashResult): Promise<boolean> {
+  public static async verifyHash(text: string, test: HashResult): Promise<boolean> {
     return (await Crypto.digest(test.salt + text)) == test.hash;
   }
 

@@ -1,7 +1,7 @@
 import { JsonOperation, HttpResponseError, ValidationError } from '@ne1410s/http';
-import { IGetCertRequest, IGetCertResponse } from '../../interfaces/order/get-cert';
+import { GetCertRequest, GetCertResponse } from '../../web-models/order/get-cert';
 
-export class GetCertOperation extends JsonOperation<IGetCertRequest, IGetCertResponse> {
+export class GetCertOperation extends JsonOperation<GetCertRequest, GetCertResponse> {
   private readonly CONTENT_TYPE_OPTS: Array<string> = [
     'application/pem-certificate-chain',
     'application/pkcs7-mime',
@@ -13,14 +13,12 @@ export class GetCertOperation extends JsonOperation<IGetCertRequest, IGetCertRes
     super(`${baseUrl}/cert/{certCode}`, 'get');
   }
 
-  validateRequest(requestData: IGetCertRequest): void {
-    const messages: string[] = [];
-    requestData = requestData || ({} as IGetCertRequest);
-    const contentType = (requestData.contentType || '').toLowerCase();
+  validateRequest(requestData: GetCertRequest): void {
+    super.validateRequest(requestData);
 
-    if (!requestData.certCode || requestData.certCode.length == 0) {
-      messages.push('Cert code is required');
-    }
+    const messages: string[] = [];
+    requestData = requestData || ({} as GetCertRequest);
+    const contentType = (requestData.contentType || '').toLowerCase();
 
     if (contentType != '' && this.CONTENT_TYPE_OPTS.indexOf(contentType) == -1) {
       messages.push('Content type not supported: ' + contentType);
@@ -39,7 +37,7 @@ export class GetCertOperation extends JsonOperation<IGetCertRequest, IGetCertRes
     }
   }
 
-  async deserialise(response: Response, requestData: IGetCertRequest): Promise<IGetCertResponse> {
+  async deserialise(response: Response, requestData: GetCertRequest): Promise<GetCertResponse> {
     if (!response.ok) {
       throw new HttpResponseError(response, this.verb);
     }
@@ -50,9 +48,9 @@ export class GetCertOperation extends JsonOperation<IGetCertRequest, IGetCertRes
     };
   }
 
-  validateResponse(responseData: IGetCertResponse): void {
+  validateResponse(responseData: GetCertResponse): void {
     const messages: string[] = [];
-    responseData = responseData || ({} as IGetCertResponse);
+    responseData = responseData || ({} as GetCertResponse);
 
     if (!responseData.contentType) {
       messages.push('Content type is expected');

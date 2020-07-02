@@ -1,23 +1,20 @@
 import { DbContext } from '../../../database/db-context';
-import { ISubmitChallengeRequest, ISubmitChallengeResponse } from '../../interfaces/challenge';
+import { SubmitChallengeRequest, SubmitChallengeResponse } from '../../web-models/challenge';
 import { OperationBase, ValidationError } from '@ne1410s/http';
 import { Acme2Service } from '../../../acme-core/services/acme2';
-import { IFulfilmentData, IChallengeDetail } from '../../../acme-core/interfaces/challenge/base';
+import { FulfilmentData, ChallengeDetail } from '../../../acme-core/web-models/challenge/base';
 
 export class SubmitChallengeOperation extends OperationBase<
-  ISubmitChallengeRequest,
-  ISubmitChallengeResponse
+  SubmitChallengeRequest,
+  SubmitChallengeResponse
 > {
   constructor(private readonly db: DbContext) {
-    super();
+    super(SubmitChallengeRequest, SubmitChallengeResponse);
   }
 
-  validateRequest(requestData: ISubmitChallengeRequest): void {}
-  validateResponse(responseData: ISubmitChallengeResponse): void {}
-
   protected async invokeInternal(
-    requestData: ISubmitChallengeRequest
-  ): Promise<ISubmitChallengeResponse> {
+    requestData: SubmitChallengeRequest
+  ): Promise<SubmitChallengeResponse> {
     const db_order = (await this.db.Order.findOne({
       where: { OrderID: requestData.orderId },
       include: [
@@ -45,8 +42,8 @@ export class SubmitChallengeOperation extends OperationBase<
       challengeDetail: {
         challengeId: requestData.challengeId,
         authCode: requestData.authCode,
-        fulfilmentData: { keyAuth: requestData.keyAuth } as IFulfilmentData,
-      } as IChallengeDetail,
+        fulfilmentData: { keyAuth: requestData.keyAuth } as FulfilmentData,
+      } as ChallengeDetail,
     });
 
     let pollStatusOutcome = svc_response.status,

@@ -1,45 +1,21 @@
-import { ValidationError, HttpResponseError } from '@ne1410s/http';
+import { HttpResponseError } from '@ne1410s/http';
 import { NonAccountOperation } from '../abstract/non-account';
 import {
-  ICreateAccountRequest,
-  ICreateAccountResponse,
-  ICreateAccountPayload,
-} from '../../interfaces/account/create';
+  CreateAccountRequest,
+  CreateAccountResponse,
+  CreateAccountPayload,
+} from '../../web-models/account/create';
 
 export class CreateAccountOperation extends NonAccountOperation<
-  ICreateAccountRequest,
-  ICreateAccountResponse,
-  ICreateAccountPayload
+  CreateAccountRequest,
+  CreateAccountResponse,
+  CreateAccountPayload
 > {
   constructor(baseUrl: string) {
-    super(baseUrl, '/new-acct');
+    super(baseUrl, '/new-acct', CreateAccountRequest, CreateAccountResponse);
   }
 
-  validateRequest(requestData: ICreateAccountRequest): void {
-    super.validateRequest(requestData);
-
-    const messages: string[] = [];
-
-    if (requestData.emails.length == 0) {
-      messages.push('At least one email is required');
-    }
-
-    requestData.emails.forEach((email) => {
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-        messages.push('Email is invalid: ' + email);
-      }
-    });
-
-    if (!requestData.termsAgreed) {
-      messages.push('Terms agreement is required');
-    }
-
-    if (messages.length !== 0) {
-      throw new ValidationError('The request is invalid', requestData, messages);
-    }
-  }
-
-  protected async toPayload(requestData: ICreateAccountRequest): Promise<ICreateAccountPayload> {
+  protected async toPayload(requestData: CreateAccountRequest): Promise<CreateAccountPayload> {
     return {
       contact: requestData.emails.map((r) => `mailto:${r}`),
       onlyReturnExisting: false,
@@ -49,8 +25,8 @@ export class CreateAccountOperation extends NonAccountOperation<
 
   async deserialise(
     response: Response,
-    requestData: ICreateAccountRequest
-  ): Promise<ICreateAccountResponse> {
+    requestData: CreateAccountRequest
+  ): Promise<CreateAccountResponse> {
     if (!response.ok) {
       throw new HttpResponseError(response, this.verb);
     }
@@ -70,23 +46,5 @@ export class CreateAccountOperation extends NonAccountOperation<
       contacts: json.contact,
       keys: this.keys,
     };
-  }
-
-  validateResponse(responseData: ICreateAccountResponse): void {
-    super.validateResponse(responseData);
-
-    const messages: string[] = [];
-
-    if (!responseData.accountId) {
-      messages.push('Id is expected');
-    }
-
-    if (!responseData.keys) {
-      messages.push('Keys are expected');
-    }
-
-    if (messages.length !== 0) {
-      throw new ValidationError('The response is invalid', responseData, messages);
-    }
   }
 }

@@ -1,17 +1,14 @@
 import { OperationBase, ValidationError } from '@ne1410s/http';
-import { IUpdateAccountRequest, IAccountMeta } from '../../interfaces/account';
+import { UpdateAccountRequest, AccountMeta } from '../../web-models/account';
 import { DbContext } from '../../../database/db-context';
 import { Acme2Service } from '../../../acme-core/services/acme2';
 
-export class UpdateAccountOperation extends OperationBase<IUpdateAccountRequest, IAccountMeta> {
+export class UpdateAccountOperation extends OperationBase<UpdateAccountRequest, AccountMeta> {
   constructor(private readonly db: DbContext) {
-    super();
+    super(UpdateAccountRequest, AccountMeta);
   }
 
-  validateRequest(requestData: IUpdateAccountRequest): void {}
-  validateResponse(responseData: IAccountMeta): void {}
-
-  protected async invokeInternal(requestData: IUpdateAccountRequest): Promise<IAccountMeta> {
+  protected async invokeInternal(requestData: UpdateAccountRequest): Promise<AccountMeta> {
     const db_account = (await this.db.Account.findByPk(requestData.accountId)) as any;
 
     if (
@@ -45,6 +42,6 @@ export class UpdateAccountOperation extends OperationBase<IUpdateAccountRequest,
       accountId: requestData.accountId,
       isTest: db_account.IsTest,
       emails: outEmails,
-    } as IAccountMeta;
+    } as AccountMeta;
   }
 }

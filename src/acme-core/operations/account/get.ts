@@ -1,26 +1,25 @@
 import { ValidationError, HttpResponseError } from '@ne1410s/http';
 import { AccountOperation } from '../abstract/account';
-import { IAccountRequest, IAccountResponse } from '../../interfaces/account/base';
+import { AccountRequest, AccountResponse } from '../../web-models/account/base';
 
-export class GetAccountOperation extends AccountOperation<IAccountRequest, IAccountResponse, any> {
+export class GetAccountOperation extends AccountOperation<AccountRequest, AccountResponse, any> {
   constructor(baseUrl: string) {
-    super(baseUrl, '/acct/{id}');
+    super(baseUrl, '/acct/{id}', AccountRequest, AccountResponse);
   }
 
-  validateRequest(requestData: IAccountRequest): void {
+  validateRequest(requestData: AccountRequest): void {
     super.validateRequest(requestData);
-
     // Once deemed valid; correct the operation url at invocation time
     this._url = this.getAccountUrl(requestData);
   }
 
-  protected async toPayload(requestData: IAccountRequest): Promise<any> {
+  protected async toPayload(requestData: AccountRequest): Promise<any> {
     return {};
   }
 
-  async deserialise(response: Response, requestData: IAccountRequest): Promise<IAccountResponse> {
+  async deserialise(response: Response, requestData: AccountRequest): Promise<AccountResponse> {
     const responseText = await response.text(),
-      retVal = {} as IAccountResponse;
+      retVal = {} as AccountResponse;
 
     if (response.ok) {
       const json = JSON.parse(responseText);
@@ -42,7 +41,7 @@ export class GetAccountOperation extends AccountOperation<IAccountRequest, IAcco
     return retVal;
   }
 
-  validateResponse(responseData: IAccountResponse): void {
+  validateResponse(responseData: AccountResponse): void {
     super.validateResponse(responseData);
 
     const messages: string[] = [];

@@ -1,19 +1,16 @@
 import * as Crypto from '@ne1410s/crypto';
 import * as Text from '@ne1410s/text';
 import { OperationBase, ValidationError } from '@ne1410s/http';
-import { ICertResponse, ICertRequest } from '../../interfaces/order';
+import { CertResponse, CertRequest } from '../../web-models/order';
 import { DbContext } from '../../../database/db-context';
 import { Acme2Service } from '../../../acme-core/services/acme2';
 
-export class GetCertOperation extends OperationBase<ICertRequest, ICertResponse> {
+export class GetCertOperation extends OperationBase<CertRequest, CertResponse> {
   constructor(private readonly db: DbContext) {
-    super();
+    super(CertRequest, CertResponse);
   }
 
-  validateRequest(requestData: ICertRequest): void {}
-  validateResponse(responseData: ICertResponse): void {}
-
-  protected async invokeInternal(requestData: ICertRequest): Promise<ICertResponse> {
+  protected async invokeInternal(requestData: CertRequest): Promise<CertResponse> {
     const db_order = (await this.db.Order.findOne({
       where: { OrderID: requestData.orderId },
       include: [

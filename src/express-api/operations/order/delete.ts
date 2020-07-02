@@ -1,16 +1,13 @@
 import { OperationBase, ValidationError } from '@ne1410s/http';
-import { IOrderRequest } from '../../interfaces/order';
+import { OrderRequest } from '../../web-models/order';
 import { DbContext } from '../../../database/db-context';
 
-export class DeleteOrderOperation extends OperationBase<IOrderRequest, {}> {
+export class DeleteOrderOperation extends OperationBase<OrderRequest, {}> {
   constructor(private readonly db: DbContext) {
-    super();
+    super(OrderRequest);
   }
 
-  validateRequest(requestData: IOrderRequest): void {}
-  validateResponse(responseData: {}): void {}
-
-  protected async invokeInternal(requestData: IOrderRequest): Promise<{}> {
+  protected async invokeInternal(requestData: OrderRequest): Promise<{}> {
     const db_order = (await this.db.Order.findOne({
       where: { OrderID: requestData.orderId },
       include: [
