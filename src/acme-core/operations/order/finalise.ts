@@ -18,15 +18,6 @@ export class FinaliseOrderOperation extends AccountOperation<
 
   validateRequest(requestData: FinaliseOrderRequest): void {
     super.validateRequest(requestData);
-    const messages: string[] = [];
-    if (requestData.originalCsr != null) {
-      messages.push('Original csr must not be supplied manually');
-    }
-
-    if (messages.length !== 0) {
-      throw new ValidationError('The request is invalid', requestData, messages);
-    }
-
     // Once deemed valid; correct the operation url at invocation time
     this._url = `${this.baseUrl}/finalize/${requestData.accountId}/${requestData.orderId}`;
   }

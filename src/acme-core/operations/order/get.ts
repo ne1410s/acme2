@@ -1,10 +1,9 @@
+import { JsonOperation, HttpResponseError } from '@ne1410s/http';
 import { OrderRequest, OrderResponse } from '../../web-models/order/base';
-import { JsonOperation, ValidationError, HttpResponseError } from '@ne1410s/http';
-import { SubmitChallengeOperation } from '../../../express-api/operations/challenge/submit';
 
 export class GetOrderOperation extends JsonOperation<OrderRequest, OrderResponse> {
   constructor(private baseUrl: string) {
-    super(`${baseUrl}/order/{accountId}/{orderId}`, 'get');
+    super(`${baseUrl}/order/{accountId}/{orderId}`, 'get', null, OrderRequest, OrderResponse);
   }
 
   validateRequest(requestData: OrderRequest): void {

@@ -3,7 +3,11 @@ import { DomainClaim } from './challenge';
 import { Validation } from '@ne1410s/codl';
 
 export class CreateOrderRequest extends SecureRequest {
+  @Validation.required
   accountId: number;
+
+  @Validation.required
+  @Validation.minLength(1)
   domains: Array<string>;
 }
 

@@ -1,4 +1,4 @@
-import { HttpResponseError, JsonOperation, ValidationError } from '@ne1410s/http';
+import { HttpResponseError, JsonOperation } from '@ne1410s/http';
 import { ListChallengesRequest, ListChallengesResponse } from '../../web-models/challenge/list';
 
 export class ListChallengesOperation extends JsonOperation<
@@ -6,7 +6,13 @@ export class ListChallengesOperation extends JsonOperation<
   ListChallengesResponse
 > {
   constructor(private baseUrl: string) {
-    super(`${baseUrl}/authz-v3/{authCode}`, 'get');
+    super(
+      `${baseUrl}/authz-v3/{authCode}`,
+      'get',
+      null,
+      ListChallengesRequest,
+      ListChallengesResponse
+    );
   }
 
   validateRequest(requestData: ListChallengesRequest): void {

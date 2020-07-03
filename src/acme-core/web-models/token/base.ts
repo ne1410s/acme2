@@ -6,5 +6,6 @@ export interface IToken {
 
 export class Token implements IToken {
   @Validation.required
+  @Validation.regex(/^[\w-]{43,}$/gi)
   token: string;
 }

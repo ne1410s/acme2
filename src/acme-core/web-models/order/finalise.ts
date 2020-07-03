@@ -16,7 +16,9 @@ export class FinaliseOrderRequest extends OrderRequest implements IAccountReques
   @Validation.minLength(1)
   identifiers: Array<DomainIdentfier>;
 
+  @Validation.forbidden
   originalCsr?: ICsr_Result;
+
   company?: string;
   department?: string;
 }

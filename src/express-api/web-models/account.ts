@@ -5,6 +5,7 @@ import { Validation } from '@ne1410s/codl';
 export class CreateAccountRequest extends SecureRequest {
   @Validation.required
   @Validation.minLength(1)
+  @Validation.regex(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)
   emails: Array<string>;
 
   @Validation.custom((v) => (v === true ? null : 'You must agree to the terms'))
