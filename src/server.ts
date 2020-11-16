@@ -113,6 +113,6 @@ db.syncStructure().then(() => {
 
   // Start!
   expr_api.listen(apiConfig.portNumber, () => {
-    console.log(`Listening on port ${apiConfig.portNumber}`);
+    console.log(`Listening on http://localhost:${apiConfig.portNumber}`);
   });
 });
