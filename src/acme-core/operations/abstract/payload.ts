@@ -62,7 +62,7 @@ export abstract class PayloadOperation<
    * validation has taken place.
    * @param requestData The request data.
    */
-  protected abstract async toPayload(requestData: TRequest): Promise<TPayload>;
+  protected abstract toPayload(requestData: TRequest): Promise<TPayload>;
 
   /**
    * Additional properties of the protected header vary according to context.
